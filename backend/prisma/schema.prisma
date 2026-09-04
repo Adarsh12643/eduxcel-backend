@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  name         String
+  role         String   // student, faculty, admin
+  department   String?
+  avatar       String?
+  rollNumber   String?  @unique
+  employeeId   String?  @unique
+  semester     Int?
+  section      String?
+  batch        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  studentProfile   StudentProfile?
+  facultyProfile   FacultyProfile?
+  adminProfile     AdminProfile?
+  predictions      Prediction[]
+  attendanceRecords AttendanceRecord[]
+  marksRecords     MarksRecord[]
+  assignments      Assignment[]
+  interventionLogs InterventionLog[]
+}
+
+model StudentProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentSGPA     Float?
+  previousSGPA    Float?
+  targetSGPA      Float?
+  overallRisk     String?  // Low, Medium, High
+  riskScore       Float?
+  attendance      Float?
+  assignmentCompletion Float?
+  internalMarks   Float?
+  predictedGrade  String?
+  predictedConfidence Float?
+  lastPredictedAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  subjects        SubjectEnrollment[]
+  weakSubjects    WeakSubject[]
+}
+
+model FacultyProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialization  String?
+  designation     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  teachingSubjects Subject[]
+}
+
+model AdminProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Subject {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  description String?
+  credits     Int
+  semester    Int
+  department  String
+  syllabus    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  enrollments SubjectEnrollment[]
+  weakFlags   WeakSubject[]
+  faculty     FacultyProfile? @relation(fields: [facultyId], references: [id])
+  facultyId   String?
+  attendanceRecords AttendanceRecord[]
+  marksRecords MarksRecord[]
+  assignments Assignment[]
+  resources   LearningResource[]
+}
+
+model SubjectEnrollment {
+  id              String   @id @default(uuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId       String
+  subject         Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  currentScore    Float?
+  predictedScore  Float?
+  attendance      Float?
+  riskLevel       String? // Low, Medium, High
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([studentId, subjectId])
+}
+
+model WeakSubject {
+  id              String   @id @default(uuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId       String
+  subject         Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  reason          String?
+  priority        Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  @@unique([studentId, subjectId])
+}
+
+model AttendanceRecord {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  date        DateTime
+  status      String   // present, absent, late
+  createdAt   DateTime @default(now())
+}
+
+model MarksRecord {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  type        String   // internal, assignment, practical, midterm, final
+  score       Float?
+  maxScore    Float?
+  grade       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  title       String
+  description String?
+  dueDate     DateTime
+  status      String   // pending, in_progress, submitted, graded, overdue
+  priority    String?  // low, medium, high
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Prediction {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  predictedGrade  String
+  riskLevel       String
+  confidence      Float
+  factors         String   // JSON string
+  weakSubjects    String   // JSON string
+  recommendations String  // JSON string
+  modelVersion    String?
+  inputData       String   // JSON string
+  createdAt       DateTime @default(now())
+}
+
+model InterventionLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String   // not_started, contacted, guidance_provided, recovery_in_progress, improving, recovered
+  notes       String?
+  facultyId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LearningResource {
+  id          String   @id @default(uuid())
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  title       String
+  topic       String
+  type        String   // video, notes, quiz, practice
+  difficulty  String
+  duration    String
+  url         String?
+  aiRecommended Boolean @default(false)
+  createdAt   DateTime @default(now())
+}
