@@ -46,6 +46,10 @@ def calculate_risk(score: float) -> str:
 async def health():
     return {'status': 'ok', 'model': 'EduXcel Predictor v1.0'}
 
+@app.get('/', include_in_schema=False)
+async def home():
+    return "API is live."
+
 @app.post('/predict', response_model=PredictionResult)
 async def predict(input_data: PredictionInput):
     attendance_score = input_data.attendance / 100.0
