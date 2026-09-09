@@ -22,23 +22,11 @@ const corsOrigins = process.env.CORS_ORIGIN
   : ['http://localhost:3000', 'https://eduxcel-frontend.web.app'];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || corsOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
 }));
-
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-  next();
-});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
