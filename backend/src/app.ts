@@ -28,6 +28,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
 }));
 
+// Explicit preflight handling for auth routes
+app.options('/api/auth/*', cors({ origin: true, credentials: true }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
