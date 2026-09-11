@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { useGoogleLogin } from '@react-oauth/google';
 import Logo from '@/components/shared/Logo';
 import { Brain, GraduationCap, Users, ArrowRight, Lock, Mail, User, Moon, Sun } from 'lucide-react';
 import { type Role } from '@/types';
@@ -24,6 +25,29 @@ export default function AuthPage() {
   const text    = isDark ? '#e6edf3' : '#0B1E4A';
   const muted   = isDark ? '#8b949e' : '#64748b';
   const inputBg = isDark ? '#21262d' : '#f8fafc';
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setError('');
+      setGoogleLoading(true);
+      try {
+        const res = await api.auth.googleLogin(tokenResponse.access_token, role);
+        localStorage.setItem('eduxcel_token', res.data.token);
+        localStorage.setItem('eduxcel_user', JSON.stringify(res.data.user));
+        if (role === 'student') navigate('/student/dashboard');
+        else if (role === 'faculty') navigate('/faculty/dashboard');
+        else navigate('/admin/dashboard');
+      } catch (err: any) {
+        setError(err.message || 'Google login failed');
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      setError('Google login was cancelled or failed');
+      setGoogleLoading(false);
+    },
+  });
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,8 +81,7 @@ export default function AuthPage() {
   };
 
   const handleGoogleLogin = () => {
-    // Redirect to backend OAuth endpoint which will redirect to Google consent screen
-    window.location.href = `https://eduxcel-backend-c20f.onrender.com/api/auth/google?role=${role}`;
+    googleLogin();
   };
 
   const inputStyle: React.CSSProperties = {
