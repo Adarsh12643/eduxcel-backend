@@ -1,11 +1,110 @@
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User';
 import { AuthRequest } from '../types';
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleClient = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  'https://eduxcel-backend-c20f.onrender.com/api/auth/google/callback'
+);
+
+export const googleOAuthRedirect = async (req: Request, res: Response) => {
+  try {
+    const role = req.query.role as string || 'student';
+    
+    const scopes = [
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+    ];
+
+    const authUrl = googleClient.generateAuthUrl({
+      access_type: 'offline',
+      scope: scopes,
+      state: role,
+      prompt: 'consent',
+    });
+
+    return res.redirect(authUrl);
+  } catch (error: any) {
+    console.error('Google OAuth redirect error:', error);
+    return res.status(500).json({ success: false, message: error.message || 'OAuth redirect failed' });
+  }
+};
+
+export const googleOAuthCallback = async (req: Request, res: Response) => {
+  try {
+    const { code, state } = req.query;
+    
+    // Validate role
+    const validRoles = ['student', 'faculty', 'admin'] as const;
+    const role = (state as string) || 'student';
+    if (!validRoles.includes(role as any)) {
+      return res.redirect('https://eduxcel-frontend.web.app/auth?error=invalid_role');
+    }
+    const typedRole = role as 'student' | 'faculty' | 'admin';
+    
+    if (!code) {
+      return res.redirect('https://eduxcel-frontend.web.app/auth?error=missing_code');
+    }
+
+    const { tokens } = await googleClient.getToken(code as string);
+    googleClient.setCredentials(tokens);
+
+    if (!tokens.id_token) {
+      return res.redirect('https://eduxcel-frontend.web.app/auth?error=missing_id_token');
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.redirect('https://eduxcel-frontend.web.app/auth?error=invalid_token');
+    }
+
+    const { email, name, picture, sub: googleId } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+      if (user.authProvider === 'local' && !user.googleId) {
+        user.googleId = payload.sub;
+        user.authProvider = 'google';
+        user.avatar = picture || user.avatar;
+        await user.save();
+      }
+      if (user.role !== role) {
+        return res.redirect('https://eduxcel-frontend.web.app/auth?error=invalid_role');
+      }
+    } else {
+      user = await User.create({
+        email,
+        name: name || email.split('@')[0],
+        googleId,
+        authProvider: 'google',
+        role: typedRole,
+        avatar: picture,
+        password: undefined,
+      });
+    }
+
+    const token = jwt.sign(
+      { id: String(user._id), email: user.email, role: user.role, name: user.name },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    return res.redirect(`https://eduxcel-frontend.web.app/auth/callback?token=${token}&role=${typedRole}`);
+  } catch (error: any) {
+    console.error('Google OAuth callback error:', error);
+    return res.redirect('https://eduxcel-frontend.web.app/auth?error=oauth_failed');
+  }
+};
 
 export const register = async (req: AuthRequest, res: Response) => {
   try {
