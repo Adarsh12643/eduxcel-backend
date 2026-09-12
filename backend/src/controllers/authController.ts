@@ -8,7 +8,7 @@ import { AuthRequest } from '../types';
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_CALLBACK_URL || 'https://eduxcel-backend-c20f.onrender.com/api/auth/google/callback'
+  process.env.GOOGLE_CALLBACK_URL || 'https://eduxcel-backend-1.onrender.com/api/auth/google/callback'
 );
 
 export const googleOAuthRedirect = async (req: Request, res: Response) => {
