@@ -6,7 +6,7 @@ import Logo from '@/components/shared/Logo';
 import { Brain, GraduationCap, Users, ArrowRight, Lock, Mail, User, Moon, Sun } from 'lucide-react';
 import { type Role } from '@/types';
 import { useTheme } from '@/context/ThemeContext';
-import api from '@/lib/api';
+import api, { API_BASE_URL } from '@/lib/api';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -81,7 +81,12 @@ export default function AuthPage() {
   };
 
   const handleGoogleLogin = () => {
-    googleLogin();
+    const hasClientId = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
+    if (hasClientId) {
+      googleLogin();
+    } else {
+      window.location.href = `${API_BASE_URL}/auth/google?role=${role}`;
+    }
   };
 
   const inputStyle: React.CSSProperties = {

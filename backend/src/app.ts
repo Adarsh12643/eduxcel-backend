@@ -24,36 +24,41 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   process.env.CLIENT_URL,
-].filter(Boolean) as string[];
+].filter(Boolean).map(o => (o as string).replace(/\/$/, ''));
+
+const isOriginAllowed = (origin: string | undefined): boolean => {
+  if (!origin) return true;
+  const normalized = origin.replace(/\/$/, '');
+  if (allowedOrigins.includes(normalized)) return true;
+  try {
+    const url = new URL(origin);
+    if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') return true;
+    if (url.hostname.endsWith('.web.app') || url.hostname.endsWith('.firebaseapp.com')) return true;
+  } catch {
+    // ignore
+  }
+  return false;
+};
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (isOriginAllowed(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 204,
+};
 
 // CORS configuration with explicit origin validation
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error(`CORS policy: Origin ${origin} not allowed`));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-}));
+app.use(cors(corsOptions));
 
 // Explicitly handle preflight OPTIONS for all routes
-app.options('*', cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error(`CORS policy: Origin ${origin} not allowed`));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-}));
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -79,6 +84,9 @@ app.use(errorHandler);
 const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
 
 const killProcessOnPort = (port: number): Promise<void> => {
+  if (process.platform !== 'win32') {
+    return Promise.resolve();
+  }
   return new Promise((resolve) => {
     exec(`netstat -ano | findstr :${port} | findstr LISTENING`, (error, stdout) => {
       if (!error && stdout) {

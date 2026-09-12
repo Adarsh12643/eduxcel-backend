@@ -1,0 +1,6 @@
+{
+  "name": "EduXcel",
+  "description": "AI Student Performance Catalyst - Turn Academic Risk Into Academic Recovery.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
