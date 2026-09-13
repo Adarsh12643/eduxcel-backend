@@ -50,19 +50,40 @@ function getGreeting() {
 function Overview({ userData }: { userData: any }) {
   const navigate = useNavigate();
   const firstName = userData?.name?.split(' ')[0] || 'Student';
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const { default: api } = await import('@/lib/api');
+        const res = await api.student.getDashboard();
+        if (res.success) {
+          setDashboardData(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, []);
+
+  if (loading) return <div className="p-10 text-center animate-pulse">Loading live data...</div>;
 
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 bg-white dark:bg-dark-surface border border-slate-100 dark:border-dark-border">
           <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/8 rounded-full -translate-y-4 translate-x-4 group-hover:scale-150 transition-transform duration-500" />
           <div className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-2">Overall Score</div>
           <div className="flex items-end gap-2 mb-3">
-            <div className="text-4xl font-mono-numbers font-black text-brand-900 dark:text-white tracking-tighter">84.2<span className="text-lg text-slate-400">%</span></div>
+            <div className="text-4xl font-mono-numbers font-black text-brand-900 dark:text-white tracking-tighter">{dashboardData?.overallPerformance || 0}<span className="text-lg text-slate-400">%</span></div>
             <div className="text-xs font-bold text-emerald-600 mb-1 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-md">
-              <TrendingUp className="w-3 h-3" /> +2.4%
+              <TrendingUp className="w-3 h-3" /> Live
             </div>
           </div>
           <div className="h-10 w-full mt-auto">
@@ -76,31 +97,31 @@ function Overview({ userData }: { userData: any }) {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 bg-white dark:bg-dark-surface border border-slate-100 dark:border-dark-border">
           <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/8 rounded-full -translate-y-4 translate-x-4 group-hover:scale-150 transition-transform duration-500" />
-          <div className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-2">Projected SGPA</div>
-          <div className="text-4xl font-mono-numbers font-black text-brand-900 dark:text-white tracking-tighter mb-3">8.8<span className="text-lg text-slate-400">/10</span></div>
+          <div className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-2">Current SGPA</div>
+          <div className="text-4xl font-mono-numbers font-black text-brand-900 dark:text-white tracking-tighter mb-3">{dashboardData?.currentSGPA || 'N/A'}<span className="text-lg text-slate-400">/10</span></div>
           <div className="mt-auto flex items-center gap-3">
             <svg width="36" height="36" viewBox="0 0 48 48" className="-rotate-90">
               <circle cx="24" cy="24" r="20" fill="none" stroke="#e2e8f0" strokeWidth="6" />
               <motion.circle initial={{ strokeDashoffset: 125 }} animate={{ strokeDashoffset: 15 }} transition={{ duration: 1.5, delay: 0.5 }}
                 cx="24" cy="24" r="20" fill="none" stroke="#a855f7" strokeWidth="6" strokeDasharray="125" strokeLinecap="round" />
             </svg>
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Top <span className="text-purple-600 font-bold">12%</span> of cohort</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Target <span className="text-purple-600 font-bold">{dashboardData?.targetSGPA || '8.0'}</span></span>
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 bg-white dark:bg-dark-surface border border-slate-100 dark:border-dark-border">
           <div className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-2 flex justify-between items-center">
             Academic Risk
             <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span>
           </div>
-          <div className="text-3xl font-black text-emerald-600 tracking-tight mb-3">LOW</div>
+          <div className={cn("text-3xl font-black tracking-tight mb-3 uppercase", dashboardData?.academicRisk === 'High' ? 'text-red-600' : dashboardData?.academicRisk === 'Medium' ? 'text-amber-500' : 'text-emerald-600')}>{dashboardData?.academicRisk || 'LOW'}</div>
           <div className="mt-auto">
-            <div className="text-xs font-semibold text-slate-400 mb-2">System operating optimally</div>
+            <div className="text-xs font-semibold text-slate-400 mb-2">ML Analysis Active</div>
             <div className="flex gap-1.5 h-1.5 w-full">
-              <div className="h-full flex-1 bg-emerald-500 rounded-full" />
+              <div className={cn("h-full flex-1 rounded-full", dashboardData?.academicRisk === 'High' ? 'bg-red-500' : dashboardData?.academicRisk === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500')} />
               <div className="h-full flex-1 bg-slate-200 dark:bg-slate-700 rounded-full" />
               <div className="h-full flex-1 bg-slate-200 dark:bg-slate-700 rounded-full" />
             </div>
@@ -108,10 +129,10 @@ function Overview({ userData }: { userData: any }) {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+          className="card p-5 rounded-2xl flex flex-col relative overflow-hidden group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 bg-white dark:bg-dark-surface border border-slate-100 dark:border-dark-border">
           <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/8 rounded-full -translate-y-4 translate-x-4 group-hover:scale-150 transition-transform duration-500" />
           <div className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-2">Attendance</div>
-          <div className="text-4xl font-mono-numbers font-black text-brand-900 dark:text-white tracking-tighter mb-3">82<span className="text-lg text-slate-400">%</span></div>
+          <div className="text-4xl font-mono-numbers font-black text-brand-900 dark:text-white tracking-tighter mb-3">{dashboardData?.attendance || 0}<span className="text-lg text-slate-400">%</span></div>
           <div className="h-10 w-full mt-auto">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[{v:100},{v:80},{v:100},{v:60},{v:100}]} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
@@ -422,6 +443,16 @@ export default function StudentDashboard() {
             )}
           </div>
           <div className="flex items-center gap-3">
+            {userData?.streak && (
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm"
+              >
+                <span className="text-lg animate-pulse">🔥</span>
+                <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} Day Streak!</span>
+              </motion.div>
+            )}
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -456,22 +487,8 @@ export default function StudentDashboard() {
         </div>
       </main>
 
-      {/* Floating AI Button & Widget */}
-      <XceloChatbot isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} roleContext="student" />
-      <div className="fixed bottom-8 right-8 z-50">
-        <button
-          onClick={() => setIsAIOpen(!isAIOpen)}
-          className={cn(
-            "w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300",
-            isAIOpen ? "bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white shadow-slate-900/20" : "bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white shadow-brand-500/30 hover:scale-105 active:scale-95"
-          )}
-        >
-          {isAIOpen ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
-          {!isAIOpen && (
-            <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 border-2 border-white dark:border-dark-bg rounded-full"></span>
-          )}
-        </button>
-      </div>
+      {/* Floating Action Button */}
+      <ChatbotButton isAIOpen={isAIOpen} setIsAIOpen={setIsAIOpen} roleContext="student" />
     </div>
   );
 }

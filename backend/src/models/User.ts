@@ -15,29 +15,47 @@ export interface IUser extends Document {
   googleId?: string;
   authProvider: 'local' | 'google';
   isActive?: boolean;
+  isOnboarded?: boolean;
+
+  studyHours?: number;
+  weakSubjects?: string[];
+  learningStyle?: string;
+  subjectsTaught?: string[];
+  targetSGPA?: number;
+
   createdAt: Date;
   updatedAt: Date;
 }
 
-const UserSchema = new Schema<IUser>({
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  password: { type: String, required: false },
-  name: { type: String, required: true },
-  role: { type: String, required: true, enum: ['student', 'faculty', 'admin'] },
-  department: { type: String, required: false },
-  avatar: { type: String, required: false },
-  rollNumber: { type: String, required: false },
-  employeeId: { type: String, required: false },
-  semester: { type: Number, required: false },
-  section: { type: String, required: false },
-  batch: { type: String, required: false },
-  googleId: { type: String, required: false },
-  authProvider: { type: String, required: true, enum: ['local', 'google'], default: 'local' },
-  isActive: { type: Boolean, default: true },
-}, {
-  timestamps: true,
-  autoIndex: false,
-});
+const UserSchema = new Schema<IUser>(
+  {
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: false },
+    name: { type: String, required: true },
+    role: { type: String, required: true, enum: ['student', 'faculty', 'admin'] },
+    department: { type: String, required: false },
+    avatar: { type: String, required: false },
+    rollNumber: { type: String, required: false },
+    employeeId: { type: String, required: false },
+    semester: { type: Number, required: false },
+    section: { type: String, required: false },
+    batch: { type: String, required: false },
+    googleId: { type: String, required: false },
+    authProvider: { type: String, required: true, enum: ['local', 'google'], default: 'local' },
+    isActive: { type: Boolean, default: true },
+    isOnboarded: { type: Boolean, default: false },
+
+    studyHours: { type: Number, required: false },
+    weakSubjects: { type: [String], required: false },
+    learningStyle: { type: String, required: false },
+    subjectsTaught: { type: [String], required: false },
+    targetSGPA: { type: Number, required: false },
+  },
+  {
+    timestamps: true,
+    autoIndex: false,
+  }
+);
 
 UserSchema.index({ email: 1 });
 UserSchema.index({ googleId: 1 });

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, X, ChevronRight, BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 
 interface Message { role: 'ai' | 'user'; content: string; }
 
@@ -12,15 +13,9 @@ const QUICK_ACTIONS = {
 };
 
 const INITIAL_MESSAGES: Record<string, string> = {
-  student: 'Hello! I\'m Xcelo. I noticed you\'re struggling with DBMS. Would you like me to explain Database Normalization in simple terms based on your syllabus?',
-  faculty: 'Hello! I\'m Xcelo. Your DBMS class has a high-risk profile this week. Would you like me to generate a personalized intervention plan for struggling students?',
-  admin: 'Hello! I\'m Xcelo. The system is operating optimally today. Would you like me to generate a global analytics report on student retention rates this semester?',
-};
-
-const AI_RESPONSES: Record<string, string> = {
-  student: 'Normalization is the process of organizing data to minimize redundancy. Think of it as organizing a messy closet — every item has exactly one logical place. 1NF removes repeating groups, 2NF removes partial dependencies, and 3NF removes transitive dependencies. Want me to generate a practice quiz on this?',
-  faculty: 'Based on recent assessment data, I recommend scheduling a targeted review session focusing on 3NF. Here\'s a drafted email you can send to the at-risk cohort: "Dear students, we\'ve identified that normalization concepts need reinforcement. Please attend the extra session on Friday at 2 PM."',
-  admin: 'Generating report... Student retention has improved by 4.2% since the new early-warning system was deployed. High-risk interventions have a 78% success rate. Would you like a detailed breakdown by department?',
+  student: 'Hello! I\'m Xcelo. How can I help you excel today?',
+  faculty: 'Hello! I\'m Xcelo. How can I assist you with your classes?',
+  admin: 'Hello! I\'m Xcelo. How can I assist you with system management?',
 };
 
 export default function XceloChatbot({
@@ -43,16 +38,24 @@ export default function XceloChatbot({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const handleSend = (text?: string) => {
+  const handleSend = async (text?: string) => {
     const msg = text || input.trim();
     if (!msg) return;
-    setMessages(prev => [...prev, { role: 'user', content: msg }]);
+    const newMessages = [...messages, { role: 'user', content: msg } as Message];
+    setMessages(newMessages);
     setInput('');
     setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages(prev => [...prev, { role: 'ai', content: AI_RESPONSES[roleContext] }]);
-    }, 1200);
+    try {
+      const res = await api.chat.send(msg, roleContext, messages);
+      if (res.data?.success) {
+        setMessages(prev => [...prev, { role: 'ai', content: res.data.reply }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'ai', content: "I'm having trouble connecting to my brain right now." }]);
+      }
+    } catch (e) {
+      setMessages(prev => [...prev, { role: 'ai', content: "An error occurred." }]);
+    }
+    setIsTyping(false);
   };
 
   return (
@@ -66,12 +69,20 @@ export default function XceloChatbot({
           className="fixed bottom-28 right-8 w-[390px] h-[560px] flex flex-col rounded-3xl overflow-hidden z-50 shadow-2xl border border-white/20 dark:border-white/10 bg-white dark:bg-dark-surface"
         >
           {/* Header */}
-          <div className="p-4 border-b border-slate-100 dark:border-dark-border bg-gradient-to-r from-brand-600 to-brand-700 dark:from-brand-700 dark:to-brand-800 flex items-center justify-between">
+          <div className="p-4 border-b border-slate-100 dark:border-dark-border bg-gradient-to-r from-brand-600 to-brand-700 dark:from-brand-700 dark:to-brand-800 flex items-center justify-between relative">
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 -translate-y-[40px] flex flex-col items-center pointer-events-none drop-shadow-xl z-20">
+              <div className="bg-white text-slate-800 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full shadow-lg mb-1 relative animate-bounce">
+                Hii I am Xcelo!
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45"></div>
+              </div>
+              <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGpmcjFhMGo5MWM0YjdwaDlkMDdxMzdpaG92Zmp5Y25iNzVjcWh5ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/iGZ60bUoM8Y0gI2c48/giphy.gif" alt="Waving Robot" className="w-16 h-16 drop-shadow-lg" />
+            </div>
+
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shadow-sm border border-white/30">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shadow-sm border border-white/30 z-10 relative">
                 <BrainCircuit className="w-5 h-5" />
               </div>
-              <div>
+              <div className="z-10 relative">
                 <h3 className="font-bold text-white">Xcelo AI</h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -83,7 +94,7 @@ export default function XceloChatbot({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+              className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors z-10 relative"
             >
               <X className="w-5 h-5" />
             </button>

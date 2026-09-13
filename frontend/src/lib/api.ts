@@ -6,7 +6,7 @@ async function request(endpoint: string, options: RequestInit = {}) {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers || {}),
     },
   };
 
@@ -37,6 +37,8 @@ export const api = {
     googleLogin: (accessToken: string, role: string) =>
       request('/auth/google', { method: 'POST', body: JSON.stringify({ accessToken, role }) }),
     getProfile: () => request('/auth/profile'),
+    getStreak: () => request('/auth/streak'),
+    onboard: (payload: any) => request('/auth/onboard', { method: 'PUT', body: JSON.stringify(payload) }),
   },
 
   student: {
@@ -45,6 +47,7 @@ export const api = {
     getAssignments: () => request('/students/assignments'),
     getHistory: () => request('/students/history'),
     getRecoveryPlan: () => request('/students/recovery'),
+    runPrediction: (data: any) => request('/predictions/run', { method: 'POST', body: JSON.stringify(data) }),
   },
 
   faculty: {
@@ -71,6 +74,14 @@ export const api = {
     run: (data: any) => request('/predictions/run', { method: 'POST', body: JSON.stringify(data) }),
     getHistory: () => request('/predictions/history'),
     whatIf: (data: any) => request('/predictions/what-if', { method: 'POST', body: JSON.stringify(data) }),
+    getRecommendations: (subjects: string[], userData?: any) =>
+      request('/predictions/recommend', { method: 'POST', body: JSON.stringify({ subjects, ...userData }) }),
+    getRecoveryPlan: () => request('/predictions/recovery-plan'),
+  },
+
+  chat: {
+    send: (message: string, context: string, history: any[]) =>
+      request('/chat', { method: 'POST', body: JSON.stringify({ message, context, history }) }),
   },
 };
 

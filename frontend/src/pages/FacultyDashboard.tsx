@@ -8,6 +8,7 @@ import FacultySchedule from './faculty/FacultySchedule';
 import FacultyAssignments from './faculty/FacultyAssignments';
 import FacultyAnalytics from './faculty/FacultyAnalytics';
 import FacultyProfile from './faculty/FacultyProfile';
+import AllStudents from './faculty/AllStudents';
 import XceloChatbot from '@/components/shared/XceloChatbot';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useTheme } from '@/context/ThemeContext';
@@ -28,6 +29,39 @@ const riskDistribution = [
 
 function FacultyOverview() {
   const navigate = useNavigate();
+  const [studentsList, setStudentsList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const { default: api } = await import('@/lib/api');
+        const res = await api.faculty.getAllStudents();
+        if (res.success && res.data) {
+          setStudentsList(res.data);
+        } else {
+          setStudentsList(students); // fallback to mock if api fails/empty for now
+        }
+      } catch (err) {
+        setStudentsList(students);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  const highRisk = studentsList.filter(s => s.risk === 'High' || s.riskLevel === 'High').length;
+  const medRisk = studentsList.filter(s => s.risk === 'Medium' || s.riskLevel === 'Medium').length;
+  const lowRisk = studentsList.filter(s => s.risk === 'Low' || s.riskLevel === 'Low').length;
+
+  const liveRiskDistribution = [
+    { name: 'Low Risk', value: lowRisk || 1, color: '#10b981' },
+    { name: 'Medium Risk', value: medRisk || 0, color: '#f59e0b' },
+    { name: 'High Risk', value: highRisk || 0, color: '#ef4444' },
+  ];
+
+  if (loading) return <div className="p-10 text-center animate-pulse">Loading live student data...</div>;
 
   return (
     <div className="space-y-6">
@@ -38,6 +72,10 @@ function FacultyOverview() {
           { label: 'Low Risk', value: '182', color: 'text-emerald-500', icon: '🟢' },
           { label: 'Moderate Risk', value: '41', color: 'text-amber-500', icon: '🟡' },
           { label: 'High Risk', value: '17', color: 'text-red-500', icon: '🔴' },
+          { label: 'Total Students', value: studentsList.length.toString(), color: 'text-brand-900 dark:text-white', icon: '👥' },
+          { label: 'Low Risk', value: lowRisk.toString(), color: 'text-emerald-500', icon: '🟢' },
+          { label: 'Moderate Risk', value: medRisk.toString(), color: 'text-amber-500', icon: '🟡' },
+          { label: 'High Risk', value: highRisk.toString(), color: 'text-red-500', icon: '🔴' },
         ].map((kpi, i) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
@@ -57,13 +95,13 @@ function FacultyOverview() {
           </div>
           <div className="h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={riskDistribution} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <BarChart data={liveRiskDistribution} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }} width={100} />
                 <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={30}>
-                  {riskDistribution.map((entry, index) => (
+                  {liveRiskDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Bar>
@@ -79,7 +117,8 @@ function FacultyOverview() {
               <h3 className="text-lg font-bold font-display text-slate-900 dark:text-white">AI Insights</h3>
             </div>
             <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
-              The ML model has identified <span className="font-bold text-red-600 dark:text-red-400">17 students</span> at high risk of failing DBMS this semester. Primary contributing factor is low attendance (&lt; 70%).
+              The ML model has identified <span className="font-bold text-red-600 dark:text-red-400">{highRisk} students</span> at high risk of failing DBMS this semester. Primary contributing factor is low attendance (&lt; 70%).
+              The ML model has identified <span className="font-bold text-red-600 dark:text-red-400">{highRisk} students</span> at high risk of failing this semester. Primary contributing factor is low attendance (&lt; 70%).
             </p>
           </div>
           <button onClick={() => navigate('/faculty/students')} className="w-full py-2.5 bg-brand-50 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-500/30 font-semibold rounded-xl transition-colors border border-brand-200 dark:border-brand-500/30">
@@ -115,7 +154,7 @@ function FacultyOverview() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {students.map((student) => (
+              {studentsList.slice(0, 5).map((student) => (
                 <motion.tr
                   key={student.id}
                   initial={{ opacity: 0, x: -8 }}
@@ -129,22 +168,29 @@ function FacultyOverview() {
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white text-sm">{student.name}</p>
                         {student.weak.length > 0 && <p className="text-xs text-red-500 font-medium">Weak in: {student.weak.join(', ')}</p>}
+                        {student.weak?.length > 0 && <p className="text-xs text-red-500 font-medium">Weak in: {student.weak.join(', ')}</p>}
                       </div>
                     </div>
                   </td>
                   <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.attendance}%</td>
                   <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.internal}%</td>
+                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.attendance || student.overallAttendance || 0}%</td>
+                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.internal || student.overallInternal || 0}%</td>
                   <td className="p-4">
                     <span className="font-bold text-slate-900 dark:text-white">{student.predicted}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{student.predicted || student.predictedGrade || 'N/A'}</span>
                   </td>
                   <td className="p-4">
                     <span className={cn(
                       "px-2.5 py-1 rounded-full text-xs font-bold uppercase",
                       student.risk === 'High' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
                       student.risk === 'Medium' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                      (student.risk || student.riskLevel) === 'High' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                      (student.risk || student.riskLevel) === 'Medium' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
                       'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
                     )}>
                       {student.risk}
+                      {student.risk || student.riskLevel || 'Low'}
                     </span>
                   </td>
                   <td className="p-4">
@@ -419,6 +465,16 @@ export default function FacultyDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {userData?.streak && (
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm"
+              >
+                <span className="text-lg animate-pulse">🔥</span>
+                <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} Day Streak!</span>
+              </motion.div>
+            )}
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -452,100 +508,7 @@ export default function FacultyDashboard() {
       </main>
 
       {/* Floating Action Button */}
-      <button
-        onClick={() => setIsAIOpen(!isAIOpen)}
-        className={cn(
-          "fixed bottom-8 right-8 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 z-50 group",
-          isAIOpen ? "bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white" : "bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white shadow-brand-500/30 hover:scale-105 active:scale-95"
-        )}
-      >
-        {isAIOpen ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6 group-hover:animate-pulse" />}
-        {!isAIOpen && (
-          <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 border-2 border-white dark:border-dark-bg rounded-full"></span>
-        )}
-      </button>
-
-      <XceloChatbot isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} roleContext="faculty" />
-    </div>
-  );
-}
-
-function AllStudents() {
-  const navigate = useNavigate();
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">All Students</h2>
-      <div className="bg-white dark:bg-dark-surface rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-100 dark:border-dark-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex gap-3 w-full sm:w-auto">
-            <div className="relative flex-1 sm:flex-none">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Search students..." className="pl-9 pr-4 py-2 border border-slate-200 dark:border-dark-border rounded-lg text-sm outline-none focus:border-brand-500 w-full sm:w-80 bg-slate-50 dark:bg-dark-bg text-slate-900 dark:text-white placeholder:text-slate-400" />
-            </div>
-            <button className="p-2 border border-slate-200 dark:border-dark-border rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-              <Filter className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-slate-50/50 dark:bg-dark-elevated/50 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                <th className="p-4 pl-6">Student</th>
-                <th className="p-4">Attendance</th>
-                <th className="p-4">Internal</th>
-                <th className="p-4">Predicted Grade</th>
-                <th className="p-4">Risk Level</th>
-                <th className="p-4">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {students.map((student, i) => (
-                <motion.tr
-                  key={student.id}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
-                >
-                  <td className="p-4 pl-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white flex items-center justify-center font-bold text-sm border-2 border-white dark:border-slate-600 shadow-sm">{student.name.charAt(0)}</div>
-                      <div>
-                        <p className="font-bold text-slate-900 dark:text-white text-sm">{student.name}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{student.id}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-4 text-sm font-bold text-slate-700 dark:text-slate-300">{student.attendance}%</td>
-                  <td className="p-4 text-sm font-bold text-slate-700 dark:text-slate-300">{student.internal}%</td>
-                  <td className="p-4">
-                    <span className="font-black text-slate-900 dark:text-white">{student.predicted}</span>
-                  </td>
-                  <td className="p-4">
-                    <span className={cn(
-                      "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                      student.risk === 'High' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' :
-                      student.risk === 'Medium' ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-800' :
-                      'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800'
-                    )}>
-                      {student.risk}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => navigate(`/faculty/student/${student.id}`)}
-                      className="text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 font-semibold text-sm flex items-center gap-1"
-                    >
-                      Analyze <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ChatbotButton isAIOpen={isAIOpen} setIsAIOpen={setIsAIOpen} roleContext="faculty" />
     </div>
   );
 }

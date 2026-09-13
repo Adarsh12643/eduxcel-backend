@@ -6,6 +6,7 @@ import studentRoutes from './routes/students';
 import facultyRoutes from './routes/faculty';
 import adminRoutes from './routes/admin';
 import predictionRoutes from './routes/predictions';
+import chatRoutes from './routes/chat';
 import connectDB from './config/mongoose';
 import { errorHandler, notFound } from './middleware/errorHandler';
 import { exec } from 'child_process';
@@ -77,6 +78,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/predictions', predictionRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -11,6 +11,7 @@ import AuthCallback from './pages/AuthCallback';
 import StudentDashboard from './pages/StudentDashboard';
 import FacultyDashboard from './pages/FacultyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import Onboarding from './pages/Onboarding';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/student/*" element={<StudentDashboard />} />
           <Route path="/faculty/*" element={<FacultyDashboard />} />
           <Route path="/admin/*" element={<AdminDashboard />} />

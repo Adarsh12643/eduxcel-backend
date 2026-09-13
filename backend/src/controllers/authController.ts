@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User';
 import { AuthRequest } from '../types';
+import { updateLoginStreak, getUserStreak } from '../models/EduXcelLogin';
 
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -13,8 +14,12 @@ const googleClient = new OAuth2Client(
 
 export const googleOAuthRedirect = async (req: Request, res: Response) => {
   try {
-    const role = req.query.role as string || 'student';
-    
+    const role = (req.query.role as string) || 'student';
+    const validRoles = ['student', 'faculty', 'admin'];
+    if (!validRoles.includes(role)) {
+      return res.redirect(`${process.env.CLIENT_URL || 'https://eduxcel-frontend.web.app'}/auth?error=invalid_role`);
+    }
+
     const scopes = [
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile',
@@ -30,7 +35,8 @@ export const googleOAuthRedirect = async (req: Request, res: Response) => {
     return res.redirect(authUrl);
   } catch (error: any) {
     console.error('Google OAuth redirect error:', error);
-    return res.status(500).json({ success: false, message: error.message || 'OAuth redirect failed' });
+    const redirectUrl = `${process.env.CLIENT_URL || 'https://eduxcel-frontend.web.app'}/auth?error=oauth_init_failed`;
+    return res.redirect(redirectUrl);
   }
 };
 
@@ -39,15 +45,14 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
 
   try {
     const { code, state } = req.query;
-    
-    // Validate role
+
     const validRoles = ['student', 'faculty', 'admin'] as const;
     const role = (state as string) || 'student';
     if (!validRoles.includes(role as any)) {
       return res.redirect(`${frontendUrl}/auth?error=invalid_role`);
     }
     const typedRole = role as 'student' | 'faculty' | 'admin';
-    
+
     if (!code) {
       return res.redirect(`${frontendUrl}/auth?error=missing_code`);
     }
@@ -95,8 +100,9 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
       });
     }
 
+    const streak = await updateLoginStreak(String(user._id));
     const token = jwt.sign(
-      { id: String(user._id), email: user.email, role: user.role, name: user.name },
+      { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
@@ -132,8 +138,9 @@ export const register = async (req: AuthRequest, res: Response) => {
       authProvider: 'local',
     });
 
+    const streak = await updateLoginStreak(String(user._id));
     const token = jwt.sign(
-      { id: String(user._id), email: user.email, role: user.role, name: user.name },
+      { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
@@ -147,6 +154,9 @@ export const register = async (req: AuthRequest, res: Response) => {
           name: user.name,
           role: user.role,
           department: user.department,
+          avatar: user.avatar,
+          isOnboarded: user.isOnboarded,
+          streak,
         },
         token,
       },
@@ -179,8 +189,9 @@ export const login = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
+    const streak = await updateLoginStreak(String(user._id));
     const token = jwt.sign(
-      { id: String(user._id), email: user.email, role: user.role, name: user.name },
+      { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
@@ -195,6 +206,8 @@ export const login = async (req: AuthRequest, res: Response) => {
           role: user.role,
           department: user.department,
           avatar: user.avatar,
+          isOnboarded: user.isOnboarded,
+          streak,
         },
         token,
       },
@@ -272,8 +285,9 @@ export const googleLogin = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    const streak = await updateLoginStreak(String(user._id));
     const token = jwt.sign(
-      { id: String(user._id), email: user.email, role: user.role, name: user.name },
+      { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
@@ -288,6 +302,8 @@ export const googleLogin = async (req: AuthRequest, res: Response) => {
           role: user.role,
           department: user.department,
           avatar: user.avatar,
+          isOnboarded: user.isOnboarded,
+          streak,
         },
         token,
       },
@@ -306,8 +322,68 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    return res.status(200).json({ success: true, data: { ...user.toObject(), id: user._id } });
+    const streakData = await getUserStreak(String(user._id));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        ...user.toObject(),
+        id: user._id,
+        streak: streakData.currentStreak,
+        highestStreak: streakData.highestStreak,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch profile' });
+  }
+};
+
+export const getStreak = async (req: AuthRequest, res: Response) => {
+  try {
+    const streakData = await getUserStreak(req.user!.id);
+    return res.status(200).json({
+      success: true,
+      data: streakData,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch streak' });
+  }
+};
+
+export const onboard = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await User.findById(req.user!.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const updates = req.body;
+
+    if (user.role === 'student') {
+      user.studyHours = updates.studyHours ?? updates.studyHours === 0 ? updates.studyHours : user.studyHours;
+      user.weakSubjects = updates.weakSubjects || user.weakSubjects;
+      user.learningStyle = updates.learningStyle || user.learningStyle;
+    }
+
+    if (user.role === 'student' || user.role === 'faculty') {
+      user.department = updates.department || user.department;
+    }
+
+    if (user.role === 'faculty') {
+      user.subjectsTaught = updates.subjectsTaught || user.subjectsTaught;
+    }
+
+    user.semester = updates.semester ?? user.semester;
+    user.section = updates.section || user.section;
+    user.batch = updates.batch || user.batch;
+    user.rollNumber = updates.rollNumber || user.rollNumber;
+    user.employeeId = updates.employeeId || user.employeeId;
+    user.targetSGPA = updates.targetSGPA ?? user.targetSGPA;
+
+    user.isOnboarded = true;
+    await user.save();
+
+    return res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    console.error('Onboarding error:', error);
+    return res.status(500).json({ success: false, message: 'Onboarding failed' });
   }
 };

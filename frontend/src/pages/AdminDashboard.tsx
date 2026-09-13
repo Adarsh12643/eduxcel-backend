@@ -11,6 +11,23 @@ import XceloChatbot from '@/components/shared/XceloChatbot';
 import { useTheme } from '@/context/ThemeContext';
 
 function AdminOverview() {
+  const [stats, setStats] = useState<any>({ totalStudents: 0, totalFaculty: 0, totalSubjects: 0, totalPredictions: 0 });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { default: api } = await import('@/lib/api');
+        const res = await api.admin.getOverview();
+        if (res.success && res.data) {
+          setStats(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -19,6 +36,10 @@ function AdminOverview() {
           { title: 'Active Faculty', value: '312', trend: '+2%', icon: Building, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
           { title: 'AI Queries Today', value: '12.4k', trend: '+45%', icon: Sparkles, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30' },
           { title: 'System Health', value: '99.9%', trend: 'Optimal', icon: Database, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-900/30' },
+          { title: 'Total Students', value: stats.totalStudents, trend: 'Live', icon: Users, color: 'text-brand-600 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-500/20' },
+          { title: 'Active Faculty', value: stats.totalFaculty, trend: 'Live', icon: Building, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
+          { title: 'AI Queries (Total)', value: stats.totalPredictions, trend: 'Live', icon: Sparkles, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30' },
+          { title: 'System Health', value: '100%', trend: 'Optimal', icon: Database, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-900/30' },
         ].map((stat, i) => (
           <motion.div
             key={i}
@@ -167,6 +188,16 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {userData?.streak && (
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm"
+              >
+                <span className="text-lg animate-pulse">🔥</span>
+                <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} Day Streak!</span>
+              </motion.div>
+            )}
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -195,20 +226,7 @@ export default function AdminDashboard() {
       </main>
 
       {/* Floating Action Button */}
-      <button
-        onClick={() => setIsAIOpen(!isAIOpen)}
-        className={cn(
-          "fixed bottom-8 right-8 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 z-50 group",
-          isAIOpen ? "bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white" : "bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white shadow-brand-500/30 hover:scale-105 active:scale-95"
-        )}
-      >
-        {isAIOpen ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6 group-hover:animate-pulse" />}
-        {!isAIOpen && (
-          <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 border-2 border-white dark:border-dark-bg rounded-full"></span>
-        )}
-      </button>
-
-      <XceloChatbot isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} roleContext="admin" />
+      <ChatbotButton isAIOpen={isAIOpen} setIsAIOpen={setIsAIOpen} roleContext="admin" />
     </div>
   );
 }

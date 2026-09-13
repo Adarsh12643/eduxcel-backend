@@ -45,13 +45,20 @@ export default function AuthCallback() {
           email: payload.email,
           name: payload.name,
           role: payload.role,
+          isOnboarded: payload.isOnboarded,
+          streak: payload.streak || 1,
         }));
+        
+        if (!payload.isOnboarded && role !== 'admin') {
+          navigate('/onboarding');
+        } else {
+          if (role === 'student') navigate('/student/dashboard');
+          else if (role === 'faculty') navigate('/faculty/dashboard');
+          else navigate('/admin/dashboard');
+        }
+      } else {
+       navigate('/auth?error=invalid_callback');
       }
-      if (role === 'student') navigate('/student/dashboard');
-      else if (role === 'faculty') navigate('/faculty/dashboard');
-      else navigate('/admin/dashboard');
-    } else {
-      navigate('/auth?error=invalid_callback');
     }
   }, [searchParams, navigate]);
 

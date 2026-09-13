@@ -1,14 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { BookOpen, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
-
-const subjects = [
-  { name: 'DBMS', code: 'CS301', credits: 4, attendance: 85, score: 58, predicted: 64, risk: 'Medium', status: 'Needs Focus', color: 'amber' },
-  { name: 'Mathematics III', code: 'MA301', credits: 4, attendance: 72, score: 45, predicted: 55, risk: 'High', status: 'Critical', color: 'red' },
-  { name: 'Operating Systems', code: 'CS302', credits: 3, attendance: 95, score: 88, predicted: 91, risk: 'Low', status: 'Excellent', color: 'emerald' },
-  { name: 'Computer Networks', code: 'CS303', credits: 3, attendance: 80, score: 72, predicted: 76, risk: 'Low', status: 'Good', color: 'brand' },
-];
+import api from '@/lib/api';
 
 const colorMap: Record<string, { badge: string; bar: string; icon: string }> = {
   red: { badge: 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800', bar: 'bg-red-500', icon: 'text-red-500' },
@@ -17,7 +11,42 @@ const colorMap: Record<string, { badge: string; bar: string; icon: string }> = {
   brand: { badge: 'bg-brand-50 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 border-brand-100 dark:border-brand-700', bar: 'bg-brand-500', icon: 'text-brand-500' },
 };
 
+function getColorForRisk(risk: string) {
+  if (risk === 'High') return 'red';
+  if (risk === 'Medium') return 'amber';
+  if (risk === 'Low') return 'emerald';
+  return 'brand';
+}
+
+function getStatusForRisk(risk: string) {
+  if (risk === 'High') return 'Critical';
+  if (risk === 'Medium') return 'Needs Focus';
+  if (risk === 'Low') return 'Excellent';
+  return 'Good';
+}
+
 export default function Subjects() {
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await api.student.getSubjects();
+        if (res.success && res.data) {
+          setSubjects(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSubjects();
+  }, []);
+
+  if (loading) return <div className="p-10 text-center animate-pulse">Loading subjects...</div>;
+
   return (
     <div className="space-y-6">
       <div>
@@ -25,9 +54,22 @@ export default function Subjects() {
         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Subject-wise performance, attendance and AI risk assessment.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {subjects.map((sub, i) => {
-          const c = colorMap[sub.color];
+        {subjects.map((subItem, i) => {
+          const sub = {
+            name: subItem.subject?.name || 'Unknown',
+            code: subItem.subject?.code || '---',
+            credits: subItem.subject?.credits || 0,
+            attendance: subItem.attendance || 0,
+            score: subItem.currentScore || 0,
+            predicted: subItem.predictedScore || 0,
+            risk: subItem.riskLevel || 'Low'
+          };
+          
+          const colorKey = getColorForRisk(sub.risk);
+          const c = colorMap[colorKey];
+          const status = getStatusForRisk(sub.risk);
           const RiskIcon = sub.risk === 'High' ? AlertTriangle : sub.risk === 'Low' ? CheckCircle2 : TrendingUp;
+          
           return (
             <motion.div key={i} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
               className="bg-white dark:bg-dark-surface rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
@@ -43,7 +85,7 @@ export default function Subjects() {
                     </div>
                   </div>
                   <span className={cn('px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border', c.badge)}>
-                    {sub.status}
+                    {status}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -81,6 +123,7 @@ export default function Subjects() {
             </motion.div>
           );
         })}
+        {subjects.length === 0 && <p className="text-slate-500 p-4">No subjects found.</p>}
       </div>
     </div>
   );

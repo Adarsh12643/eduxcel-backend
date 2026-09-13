@@ -6,6 +6,7 @@ export interface User {
   email: string;
   role: Role;
   avatar?: string;
+  isOnboarded?: boolean;
 }
 
 export interface SubjectPerformance {
