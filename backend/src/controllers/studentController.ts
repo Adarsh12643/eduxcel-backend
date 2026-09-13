@@ -52,7 +52,7 @@ export const getStudentDashboard = async (req: AuthRequest, res: Response) => {
           acc[s.subject.name] = s.currentScore || 50;
           return acc;
         }, {}) || {},
-        semester: profile?.semester || 6,
+        semester: user?.semester || 6,
       });
     } catch {
       predictionData = null;

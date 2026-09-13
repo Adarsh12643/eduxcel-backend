@@ -61,7 +61,7 @@ export class MLService {
         throw new Error('ML recommend service unavailable');
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as any;
       if (result.videos) return result.videos;
       return Array.isArray(result) ? result : [];
     } catch (error) {
@@ -96,7 +96,7 @@ export class MLService {
       internalMarks = studentProfile.internalMarks || 60;
       assignmentCompletion = studentProfile.assignmentCompletion || 50;
       previousSGPA = studentProfile.previousSGPA || studentProfile.currentSGPA || 6.0;
-      semester = studentProfile.semester || 6;
+      semester = user.semester || 6;
 
       for (const subj of studentProfile.subjects) {
         subjectPerformance[subj.subject.name] = subj.currentScore || 50;
@@ -142,7 +142,7 @@ export class MLService {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data = (await response.json()) as any;
         const prediction = data.prediction || data;
         const videos: any[] = (data.videos || []).map((v: any, i: number) => ({
           title: v.title || '',
@@ -195,7 +195,7 @@ export class MLService {
       semester,
     });
 
-    const videos: VideoResult[] = [];
+    const videos: (VideoResult & { isTopPick: boolean })[] = [];
     if (targets.length > 0) {
       const ytVideos = await this.getYouTubeRecommendations(targets);
       for (let i = 0; i < ytVideos.length; i++) {
