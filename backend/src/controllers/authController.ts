@@ -1,3 +1,4 @@
+import { mlService } from '../services/mlService';
 import { Response, Request } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -356,6 +357,7 @@ export const getStreak = async (req: AuthRequest, res: Response) => {
   }
 };
 
+
 export const onboard = async (req: AuthRequest, res: Response) => {
   try {
     const user = await User.findById(req.user!.id);
@@ -394,9 +396,17 @@ export const onboard = async (req: AuthRequest, res: Response) => {
     if (user.role === 'student' && updates.previousScores && typeof updates.previousScores === 'object') {
       const prisma = (await import('../config/database')).default;
       
+      let subjectPerformance: Record<string, number> = {};
+      let total = 0;
+      let count = 0;
+
       for (const [subjectName, scores] of Object.entries(updates.previousScores)) {
         const anyScores = scores as any;
-        
+        const subjectTotal = (anyScores.sessional1 || 0) + (anyScores.sessional2 || 0) + (anyScores.classTest || 0);
+        subjectPerformance[subjectName] = subjectTotal;
+        total += subjectTotal;
+        count++;
+
         let prismaSubject = await prisma.subject.findFirst({
           where: { name: subjectName }
         });
@@ -438,6 +448,67 @@ export const onboard = async (req: AuthRequest, res: Response) => {
           }
         });
       }
+
+      const internalMarks = count > 0 ? Math.round(total / count) : 60;
+      
+      const input = {
+        userId: user.id,
+        attendance: 75,
+        internalMarks,
+        previousSGPA: updates.targetSGPA || 6.0,
+        assignmentCompletion: 60,
+        subjectPerformance,
+        semester: updates.semester || 1,
+      };
+
+      try {
+        const result = await mlService.predict(input);
+
+        await prisma.prediction.create({
+          data: {
+            userId: user.id,
+            predictedGrade: result.predictedGrade,
+            riskLevel: result.riskLevel,
+            confidence: result.confidence,
+            factors: JSON.stringify(result.factors),
+            weakSubjects: JSON.stringify(result.weakSubjects),
+            recommendations: JSON.stringify(result.recommendations),
+            modelVersion: 'v1.0',
+            inputData: JSON.stringify(input),
+          }
+        });
+
+        await prisma.studentProfile.upsert({
+          where: { userId: user.id },
+          update: {
+            predictedGrade: result.predictedGrade,
+            overallRisk: result.riskLevel,
+            riskScore: result.confidence / 100,
+            predictedConfidence: result.confidence,
+            lastPredictedAt: new Date(),
+            currentSGPA: updates.targetSGPA || 6.0,
+            previousSGPA: updates.targetSGPA || 6.0,
+            attendance: 75,
+            internalMarks,
+            assignmentCompletion: 60,
+          },
+          create: {
+            userId: user.id,
+            predictedGrade: result.predictedGrade,
+            overallRisk: result.riskLevel,
+            riskScore: result.confidence / 100,
+            predictedConfidence: result.confidence,
+            lastPredictedAt: new Date(),
+            currentSGPA: updates.targetSGPA || 6.0,
+            previousSGPA: updates.targetSGPA || 6.0,
+            attendance: 75,
+            internalMarks,
+            assignmentCompletion: 60,
+          }
+        });
+      } catch (mlError) {
+        console.error('ML Prediction failed during onboarding:', mlError);
+      }
     }
 
     return res.status(200).json({ success: true, data: user });
@@ -446,3 +517,4 @@ export const onboard = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ success: false, message: 'Onboarding failed' });
   }
 };
+
