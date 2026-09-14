@@ -152,7 +152,7 @@ export default function Onboarding() {
           
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
-              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-400">EduXcel</span>, {user.name.split(' ')[0]}!
+              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-400">EduXcel</span>, {user.name?.split(' ')[0] || 'Student'}!
             </h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium">Let's set up your profile to personalize your experience.</p>
           </div>

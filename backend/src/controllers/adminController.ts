@@ -5,6 +5,8 @@ import { AuthRequest } from '../types';
 
 export const getAdminOverview = async (req: AuthRequest, res: Response) => {
   try {
+    const totalStudents = await prisma.user.count({ where: { role: 'student' } });
+    const totalFaculty = await prisma.user.count({ where: { role: 'faculty' } });
     const totalStudents = await User.countDocuments({ role: 'student' });
     const totalFaculty = await User.countDocuments({ role: 'faculty' });
     const totalSubjects = await prisma.subject.count();
@@ -26,6 +28,17 @@ export const getAdminOverview = async (req: AuthRequest, res: Response) => {
 
 export const getAllUsers = async (req: AuthRequest, res: Response) => {  // eslint-disable-line
   try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        department: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
     const users = await User.find({}, {
       _id: 1,
       email: 1,
@@ -36,6 +49,7 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {  // esli
       createdAt: 1,
     }).lean();
 
+    return res.status(200).json({ success: true, data: users });
     const formattedUsers = users.map(u => ({ ...u, id: u._id }));
 
     return res.status(200).json({ success: true, data: formattedUsers });
@@ -44,6 +58,7 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {  // esli
   }
 };
 
+export const getSystemStats = async (req: AuthRequest, res: Response) => {  // eslint-disable-line
 export const getSystemStats = async (req: AuthRequest, res: Response) => {
   try {
     const totalAttendanceRecords = await prisma.attendanceRecord.count();
@@ -67,11 +82,14 @@ export const getSystemStats = async (req: AuthRequest, res: Response) => {
     });
 
     const stats = {
+      totalUsers: await prisma.user.count(),
+      activeUsers: await prisma.user.count({ where: { isActive: true } }),
       totalUsers: await User.countDocuments(),
       activeUsers: await User.countDocuments({ isActive: true }),
       totalPredictions: await prisma.prediction.count(),
       totalAssignments: await prisma.assignment.count(),
       totalMarksRecords: await prisma.marksRecord.count(),
+      totalAttendanceRecords: await prisma.attendanceRecord.count(),
       totalAttendanceRecords,
       overallAttendance,
       riskDistribution,
