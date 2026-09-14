@@ -4,7 +4,7 @@ import { LayoutDashboard, TrendingUp, BookOpen, Target, Sparkles, Calculator, Us
 import { motion } from 'motion/react';
 import Logo from '@/components/shared/Logo';
 import { cn } from '@/lib/utils';
-import XceloChatbot from '@/components/shared/XceloChatbot';
+import ChatbotButton from '@/components/shared/ChatbotButton';
 import { XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Area, AreaChart, BarChart, Bar, Cell, Line } from 'recharts';
 import { useTheme } from '@/context/ThemeContext';
 import Performance from './student/Performance';

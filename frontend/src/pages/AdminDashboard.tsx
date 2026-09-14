@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import AdminUsers from './admin/AdminUsers';
 import AdminAnalytics from './admin/AdminAnalytics';
 import AdminSettings from './admin/AdminSettings';
-import XceloChatbot from '@/components/shared/XceloChatbot';
+import ChatbotButton from '@/components/shared/ChatbotButton';
 import { useTheme } from '@/context/ThemeContext';
 
 function AdminOverview() {
@@ -32,17 +32,10 @@ function AdminOverview() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { title: 'Total Students', value: '4,521', trend: '+12%', icon: Users, color: 'text-brand-600 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-500/20' },
-          { title: 'Active Faculty', value: '312', trend: '+2%', icon: Building, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
-          { title: 'AI Queries Today', value: '12.4k', trend: '+45%', icon: Sparkles, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30' },
-          { title: 'System Health', value: '99.9%', trend: 'Optimal', icon: Database, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-900/30' },
-          { title: 'Total Students', value: stats.totalStudents, trend: 'Live', icon: Users, color: 'text-brand-600 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-500/20' },
-          { title: 'Active Faculty', value: stats.totalFaculty, trend: 'Live', icon: Building, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
-          { title: 'AI Queries (Total)', value: stats.totalPredictions, trend: 'Live', icon: Sparkles, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30' },
-          { title: 'Total Students', value: stats.totalStudents || 0, trend: 'Live', icon: Users, color: 'text-brand-600 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-500/20' },
-          { title: 'Active Faculty', value: stats.totalFaculty || 0, trend: 'Live', icon: Building, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
-          { title: 'AI Queries (Total)', value: stats.totalPredictions || 0, trend: 'Live', icon: Sparkles, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30' },
-          { title: 'System Health', value: '100%', trend: 'Optimal', icon: Database, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-900/30' },
+          { title: 'Total Students', value: stats.totalStudents || 0, trend: '+Live', icon: Users, color: 'text-brand-600 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-500/20' },
+          { title: 'Active Faculty', value: stats.totalFaculty || 0, trend: '+Live', icon: Building, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' },
+          { title: 'Subjects', value: stats.totalSubjects || 0, trend: '+Live', icon: BookOpen, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/30' },
+          { title: 'AI Predictions', value: stats.totalPredictions || 0, trend: '+Live', icon: Sparkles, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-900/30' },
         ].map((stat, i) => (
           <motion.div
             key={i}

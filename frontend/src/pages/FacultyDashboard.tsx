@@ -9,7 +9,7 @@ import FacultyAssignments from './faculty/FacultyAssignments';
 import FacultyAnalytics from './faculty/FacultyAnalytics';
 import FacultyProfile from './faculty/FacultyProfile';
 import AllStudents from './faculty/AllStudents';
-import XceloChatbot from '@/components/shared/XceloChatbot';
+import ChatbotButton from '@/components/shared/ChatbotButton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -40,10 +40,10 @@ function FacultyOverview() {
         if (res.success && res.data) {
           setStudentsList(res.data);
         } else {
-          setStudentsList(students); // fallback to mock if api fails/empty for now
+          setStudentsList([]); 
         }
       } catch (err) {
-        setStudentsList(students);
+        setStudentsList([]);
       } finally {
         setLoading(false);
       }

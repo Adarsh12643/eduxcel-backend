@@ -47,8 +47,8 @@ export default function XceloChatbot({
     setIsTyping(true);
     try {
       const res = await api.chat.send(msg, roleContext, messages);
-      if (res.data?.success) {
-        setMessages(prev => [...prev, { role: 'ai', content: res.data.reply }]);
+      if (res.success) {
+        setMessages(prev => [...prev, { role: 'ai', content: res.reply }]);
       } else {
         setMessages(prev => [...prev, { role: 'ai', content: "I'm having trouble connecting to my brain right now." }]);
       }
@@ -70,14 +70,6 @@ export default function XceloChatbot({
         >
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-dark-border bg-gradient-to-r from-brand-600 to-brand-700 dark:from-brand-700 dark:to-brand-800 flex items-center justify-between relative">
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 -translate-y-[40px] flex flex-col items-center pointer-events-none drop-shadow-xl z-20">
-              <div className="bg-white text-slate-800 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full shadow-lg mb-1 relative animate-bounce">
-                Hii I am Xcelo!
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rotate-45"></div>
-              </div>
-              <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGpmcjFhMGo5MWM0YjdwaDlkMDdxMzdpaG92Zmp5Y25iNzVjcWh5ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/iGZ60bUoM8Y0gI2c48/giphy.gif" alt="Waving Robot" className="w-16 h-16 drop-shadow-lg" />
-            </div>
-
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shadow-sm border border-white/30 z-10 relative">
                 <BrainCircuit className="w-5 h-5" />
