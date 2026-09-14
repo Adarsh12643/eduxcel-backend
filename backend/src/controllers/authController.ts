@@ -37,14 +37,12 @@ export const googleOAuthRedirect = async (req: Request, res: Response) => {
     return res.redirect(authUrl);
   } catch (error: any) {
     console.error('Google OAuth redirect error:', error);
-    const redirectUrl = `${process.env.CLIENT_URL || 'https://eduxcel-frontend.web.app'}/auth?error=oauth_init_failed`;
     const redirectUrl = `${process.env.CLIENT_URL || process.env.CORS_ORIGIN || 'http://localhost:5173'}/auth?error=oauth_init_failed`;
     return res.redirect(redirectUrl);
   }
 };
 
 export const googleOAuthCallback = async (req: Request, res: Response) => {
-  const frontendUrl = process.env.CLIENT_URL?.replace(/\/$/, '') || 'https://eduxcel-frontend.web.app';
   const frontendUrl = process.env.CLIENT_URL?.replace(/\/$/, '') || process.env.CORS_ORIGIN?.replace(/\/$/, '') || 'http://localhost:5173';
 
   try {
