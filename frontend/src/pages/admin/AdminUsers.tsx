@@ -1,21 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Search, Filter, MoreHorizontal, UserPlus, Shield, UserCheck, UserX } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const users = [
-  { id: 1, name: 'Arjun Kumar', email: 'arjun@eduxcel.com', role: 'Student', department: 'CSE', status: 'Active', lastActive: '2 min ago', avatar: 'AK' },
-  { id: 2, name: 'Sarah Williams', email: 'sarah@eduxcel.com', role: 'Student', department: 'CSE', status: 'Active', lastActive: '1 hour ago', avatar: 'SW' },
-  { id: 3, name: 'Prof. Smith', email: 'smith@eduxcel.com', role: 'Faculty', department: 'CSE', status: 'Active', lastActive: '5 min ago', avatar: 'PS' },
-  { id: 4, name: 'System Admin', email: 'admin@eduxcel.com', role: 'Admin', department: 'IT', status: 'Active', lastActive: 'Online', avatar: 'SA' },
-  { id: 5, name: 'Michael Chen', email: 'michael@eduxcel.com', role: 'Student', department: 'CSE', status: 'Inactive', lastActive: '3 days ago', avatar: 'MC' },
-  { id: 6, name: 'Emma Davis', email: 'emma@eduxcel.com', role: 'Student', department: 'ECE', status: 'Active', lastActive: '30 min ago', avatar: 'ED' },
-];
+import api from '@/lib/api';
 
 const roleConfig: Record<string, { bg: string; text: string; border: string; icon: any }> = {
-  Admin: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400', border: 'border-red-100 dark:border-red-800', icon: Shield },
-  Faculty: { bg: 'bg-brand-50 dark:bg-brand-500/20', text: 'text-brand-600 dark:text-brand-300', border: 'border-brand-100 dark:border-brand-700', icon: UserCheck },
-  Student: { bg: 'bg-emerald-50 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-100 dark:border-emerald-800', icon: UserPlus },
+  admin: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400', border: 'border-red-100 dark:border-red-800', icon: Shield },
+  faculty: { bg: 'bg-brand-50 dark:bg-brand-500/20', text: 'text-brand-600 dark:text-brand-300', border: 'border-brand-100 dark:border-brand-700', icon: UserCheck },
+  student: { bg: 'bg-emerald-50 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-100 dark:border-emerald-800', icon: UserPlus },
 };
 
 const statusConfig: Record<string, { bg: string; text: string }> = {
@@ -25,6 +17,26 @@ const statusConfig: Record<string, { bg: string; text: string }> = {
 
 export default function AdminUsers() {
   const [search, setSearch] = useState('');
+  const [users, setUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await api.admin.getAllUsers();
+        if (res.success && res.data) {
+          setUsers(res.data.map((u: any) => ({
+            ...u,
+            status: u.isActive ? 'Active' : 'Inactive',
+            lastActive: new Date(u.createdAt).toLocaleDateString(),
+            avatar: u.name.split(' ').map((n: string) => n[0]).join('').substring(0,2).toUpperCase()
+          })));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const filtered = users.filter(u =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||

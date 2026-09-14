@@ -48,3 +48,4 @@ export const processDailyLoginGamification = async (userId: string, currentStrea
   
   await awardXP(userId, xpToAward, 'Daily Login');
 };
+

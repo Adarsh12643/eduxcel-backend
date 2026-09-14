@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, LineChart, Line, AreaChart, Area } from 'recharts';
 import { TrendingUp, Users, Sparkles, Database, Award } from 'lucide-react';
+import api from '@/lib/api';
 
 const enrollmentData = [
   { month: 'Jan', students: 3200, faculty: 280 },
@@ -33,10 +34,27 @@ const aiUsage = [
 const deptColors = ['#0047BA', '#3567fb', '#00A3E0', '#FF8C00', '#7C3AED'];
 
 export default function AdminAnalytics() {
-  const totalStudents = 4521;
-  const totalFaculty = 312;
-  const aiQueries = 12400;
-  const systemHealth = 99.9;
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await api.admin.getStats();
+        if (res.success && res.data) {
+          setStats(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const totalStudents = stats?.totalUsers || 0;
+  const totalFaculty = stats?.activeUsers || 0;
+  const aiQueries = stats?.totalPredictions || 0;
+  const systemHealth = 100;
+  const attendance = stats?.overallAttendance || 0;
 
   return (
     <div className="space-y-6">
@@ -133,39 +151,68 @@ export default function AdminAnalytics() {
         </motion.div>
       </div>
 
-      {/* Department Performance */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm"
-      >
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Department Performance</h3>
-        <div className="space-y-4">
-          {deptPerformance.map((dept, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 + i * 0.08 }}
-              className="flex items-center gap-4"
-            >
-              <span className="w-20 text-sm font-bold text-slate-700 dark:text-slate-300">{dept.dept}</span>
-              <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+      {/* Platform Risk & Health */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm"
+        >
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">AI Risk Distribution</h3>
+          <div className="space-y-4">
+            {[
+              { label: 'Low Risk', value: stats?.riskDistribution?.Low || 0, color: 'bg-emerald-500' },
+              { label: 'Medium Risk', value: stats?.riskDistribution?.Medium || 0, color: 'bg-yellow-500' },
+              { label: 'High Risk', value: stats?.riskDistribution?.High || 0, color: 'bg-red-500' },
+            ].map((risk, i) => {
+              const totalRisk = (stats?.riskDistribution?.Low || 0) + (stats?.riskDistribution?.Medium || 0) + (stats?.riskDistribution?.High || 0);
+              const percentage = totalRisk > 0 ? Math.round((risk.value / totalRisk) * 100) : 0;
+              
+              return (
                 <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${dept.score}%` }}
-                  transition={{ duration: 1.2, delay: 0.8 + i * 0.1 }}
-                  className="h-full rounded-full"
-                  style={{ background: deptColors[i] }}
-                />
-              </div>
-              <span className="w-12 text-right text-sm font-black text-slate-900 dark:text-white">{dept.score}%</span>
-              <span className="w-16 text-right text-xs font-bold text-red-500 dark:text-red-400">{dept.risk}% risk</span>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+                  key={i}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 + i * 0.08 }}
+                  className="flex items-center gap-4"
+                >
+                  <span className="w-24 text-sm font-bold text-slate-700 dark:text-slate-300">{risk.label}</span>
+                  <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${percentage}%` }}
+                      transition={{ duration: 1.2, delay: 0.8 + i * 0.1 }}
+                      className={`h-full rounded-full ${risk.color}`}
+                    />
+                  </div>
+                  <span className="w-12 text-right text-sm font-black text-slate-900 dark:text-white">{percentage}%</span>
+                  <span className="w-16 text-right text-xs font-bold text-slate-500 dark:text-slate-400">{risk.value} cases</span>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white dark:bg-dark-surface p-6 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm flex flex-col items-center justify-center"
+        >
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 self-start">Overall Attendance</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 self-start mb-6">Institution-wide student attendance average</p>
+          <div className="relative w-48 h-48 flex items-center justify-center">
+            <svg className="w-full h-full transform -rotate-90">
+              <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-slate-100 dark:text-slate-800" />
+              <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="12" fill="transparent" strokeDasharray={`${attendance * 5.02} 502`} className="text-brand-500 transition-all duration-1000 ease-out" />
+            </svg>
+            <div className="absolute text-center">
+              <p className="text-4xl font-black text-slate-900 dark:text-white">{attendance}%</p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
