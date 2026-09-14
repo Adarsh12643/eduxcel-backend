@@ -40,18 +40,58 @@ export const getStudentDashboard = async (req: AuthRequest, res: Response) => {
       assignmentCompletion = profile?.assignmentCompletion || 0;
     }
 
+    const prevScores = await prisma.previousScore.findMany({
+      where: { userId },
+      include: { subject: true },
+    });
+
+    const perfMap: Record<string, number> = {};
+    const formattedSubjects: any[] = [];
+    
+    let totalInternal = 0;
+    
+    if (prevScores.length > 0) {
+      prevScores.forEach(s => {
+        perfMap[s.subject.name] = s.total || 0;
+        totalInternal += s.total || 0;
+        formattedSubjects.push({
+          id: s.id,
+          name: s.subject.name,
+          code: s.subject.code,
+          credits: s.subject.credits,
+          currentScore: s.total || 0,
+          predictedScore: Math.min((s.total || 0) + 10, 100),
+          attendance: attendancePercentage,
+          riskLevel: (s.total || 0) < 60 ? 'High' : 'Low',
+        });
+      });
+    } else if (profile?.subjects) {
+      profile.subjects.forEach(s => {
+        perfMap[s.subject.name] = s.currentScore || 50;
+        formattedSubjects.push({
+          id: s.id,
+          name: s.subject.name,
+          code: s.subject.code,
+          credits: s.subject.credits,
+          currentScore: s.currentScore || 0,
+          predictedScore: s.predictedScore || 0,
+          attendance: s.attendance || 0,
+          riskLevel: s.riskLevel || 'Low',
+        });
+      });
+    }
+
+    const calculatedInternalMarks = prevScores.length > 0 ? Math.round(totalInternal / prevScores.length) : (profile?.internalMarks || 60);
+
     let predictionData = null;
     try {
       predictionData = await mlService.predict({
         userId,
         attendance: attendancePercentage,
-        internalMarks: profile?.internalMarks || 60,
+        internalMarks: calculatedInternalMarks,
         previousSGPA: profile?.previousSGPA || profile?.currentSGPA || 6.0,
         assignmentCompletion,
-        subjectPerformance: profile?.subjects.reduce((acc: Record<string, number>, s: any) => {
-          acc[s.subject.name] = s.currentScore || 50;
-          return acc;
-        }, {}) || {},
+        subjectPerformance: perfMap,
         semester: user?.semester || 6,
       });
     } catch {
@@ -86,16 +126,7 @@ export const getStudentDashboard = async (req: AuthRequest, res: Response) => {
         recommendations: predictionData?.recommendations || [],
         factors: predictionData?.factors || [],
         confidence: predictionData?.confidence || 0,
-        subjects: profile?.subjects.map((s) => ({
-          id: s.id,
-          name: s.subject.name,
-          code: s.subject.code,
-          credits: s.subject.credits,
-          currentScore: s.currentScore || 0,
-          predictedScore: s.predictedScore || 0,
-          attendance: s.attendance || 0,
-          riskLevel: s.riskLevel || 'Low',
-        })) || [],
+        subjects: formattedSubjects,
       },
     });
   } catch (error: any) {
@@ -106,6 +137,23 @@ export const getStudentDashboard = async (req: AuthRequest, res: Response) => {
 
 export const getStudentSubjects = async (req: AuthRequest, res: Response) => {
   try {
+    const prevScores = await prisma.previousScore.findMany({
+      where: { userId: req.user!.id },
+      include: { subject: true },
+    });
+
+    if (prevScores.length > 0) {
+      const data = prevScores.map(s => ({
+        id: s.id,
+        subject: s.subject,
+        currentScore: s.total || 0,
+        predictedScore: Math.min((s.total || 0) + 10, 100),
+        attendance: 80,
+        riskLevel: (s.total || 0) < 60 ? 'High' : 'Low'
+      }));
+      return res.status(200).json({ success: true, data });
+    }
+
     const profile = await prisma.studentProfile.findUnique({
       where: { userId: req.user!.id },
       include: {
@@ -114,7 +162,7 @@ export const getStudentSubjects = async (req: AuthRequest, res: Response) => {
     });
 
     if (!profile) {
-      return res.status(404).json({ success: false, message: 'Student profile not found' });
+      return res.status(200).json({ success: true, data: [] });
     }
 
     return res.status(200).json({ success: true, data: profile.subjects });

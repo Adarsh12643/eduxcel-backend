@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { User, Mail, BookOpen, Calendar, Award, Edit3, Save, Camera } from 'lucide-react';
+import { User, Mail, BookOpen, Calendar, Award, Edit3, Save, Camera, Target, Building } from 'lucide-react';
 
 export default function Profile({ userData }: { userData: any }) {
   const [editing, setEditing] = useState(false);
@@ -11,9 +11,18 @@ export default function Profile({ userData }: { userData: any }) {
     if (u) setStored(JSON.parse(u));
   }, []);
 
-  const name = userData?.name || stored?.name || 'Student';
-  const email = userData?.email || stored?.email || '';
+  const profile = userData || stored || {};
+  const name = profile.name || 'Student';
+  const email = profile.email || '';
   const initials = name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
+
+  const stream = profile.stream || 'B.Tech';
+  const course = profile.course || 'Computer Science';
+  const semester = profile.semester || 1;
+  const rollNumber = profile.rollNumber || 'Not Set';
+  const section = profile.section || 'N/A';
+  const college = profile.college || 'Institute';
+  const targetSGPA = profile.targetSGPA || '8.5';
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -36,7 +45,7 @@ export default function Profile({ userData }: { userData: any }) {
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2 className="text-2xl font-black text-slate-900 dark:text-white">{name}</h2>
-              <p className="text-brand-600 dark:text-brand-400 font-semibold text-sm mt-0.5">B.Tech Computer Science • Semester 6</p>
+              <p className="text-brand-600 dark:text-brand-400 font-semibold text-sm mt-0.5">{stream} {course} • Semester {semester}</p>
             </div>
             <button onClick={() => setEditing(!editing)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-dark-border text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-dark-elevated transition-colors">
@@ -49,11 +58,11 @@ export default function Profile({ userData }: { userData: any }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
           { icon: Mail, label: 'Email', value: email },
-          { icon: BookOpen, label: 'Roll Number', value: userData?.rollNumber || stored?.rollNumber || 'CS-2024-102' },
-          { icon: User, label: 'Department', value: userData?.department || stored?.department || 'Computer Science' },
-          { icon: Calendar, label: 'Batch', value: userData?.batch || stored?.batch || '2021–2025' },
-          { icon: Award, label: 'Current SGPA', value: '8.1 / 10' },
-          { icon: Award, label: 'Predicted Grade', value: 'B+' },
+          { icon: BookOpen, label: 'Roll Number', value: rollNumber },
+          { icon: Building, label: 'College', value: college },
+          { icon: User, label: 'Section', value: section },
+          { icon: Target, label: 'Target SGPA', value: `${targetSGPA} / 10` },
+          { icon: Award, label: 'Study Hours', value: `${profile.studyHours || 3} hrs/day` },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="bg-white dark:bg-dark-surface p-4 rounded-xl border border-slate-100 dark:border-dark-border shadow-sm flex items-center gap-4">

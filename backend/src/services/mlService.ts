@@ -84,19 +84,35 @@ export class MLService {
       },
     });
 
+    const prevScores = await prisma.previousScore.findMany({
+      where: { userId },
+      include: { subject: true },
+    });
+
     let subjectPerformance: Record<string, number> = {};
     let attendance = 70;
     let internalMarks = 60;
     let assignmentCompletion = 50;
     let previousSGPA = 6.0;
-    let semester = 1;
+    let semester = user.semester || 1;
 
-    if (studentProfile) {
+    if (prevScores.length > 0) {
+      let total = 0;
+      for (const p of prevScores) {
+        subjectPerformance[p.subject.name] = p.total || 0;
+        total += p.total || 0;
+      }
+      internalMarks = Math.round(total / prevScores.length);
+      if (studentProfile) {
+        attendance = studentProfile.attendance || 70;
+        assignmentCompletion = studentProfile.assignmentCompletion || 50;
+        previousSGPA = studentProfile.previousSGPA || studentProfile.currentSGPA || 6.0;
+      }
+    } else if (studentProfile) {
       attendance = studentProfile.attendance || 70;
       internalMarks = studentProfile.internalMarks || 60;
       assignmentCompletion = studentProfile.assignmentCompletion || 50;
       previousSGPA = studentProfile.previousSGPA || studentProfile.currentSGPA || 6.0;
-      semester = user.semester || 6;
 
       for (const subj of studentProfile.subjects) {
         subjectPerformance[subj.subject.name] = subj.currentScore || 50;

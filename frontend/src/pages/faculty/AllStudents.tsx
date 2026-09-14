@@ -84,7 +84,14 @@ export default function AllStudents() {
                         <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xs">
                           {student.name?.charAt(0) || 'U'}
                         </div>
-                        <p className="font-semibold text-slate-900 dark:text-white text-sm">{student.name}</p>
+                        <div>
+                          <p className="font-semibold text-slate-900 dark:text-white text-sm">{student.name}</p>
+                          {(student.course || student.stream) && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                              {student.stream} {student.course && `- ${student.course}`} {student.semester && `(Sem ${student.semester})`}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="p-4 font-mono text-slate-500">{student.rollNumber || 'N/A'}</td>
