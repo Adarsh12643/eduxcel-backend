@@ -49,7 +49,7 @@ function getGreeting() {
 
 function Overview({ userData }: { userData: any }) {
   const navigate = useNavigate();
-  const firstName = userData?.name?.split(' ')[0] || 'Student';
+  const firstName = (userData?.name || '').split(' ')[0] || 'Student';
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -342,7 +342,7 @@ export default function StudentDashboard() {
 
   const getHeaderInfo = () => {
     if (location.pathname.includes('recovery')) return { title: 'Recovery Hub', subtitle: 'Your personalized path to academic improvement.' };
-    return { title: location.pathname.includes('/student/') && !location.pathname.includes('dashboard') ? '' : `${getGreeting()}, ${userData?.name?.split(' ')[0] || 'Student'} 👋`, subtitle: "Here's how your academic journey is progressing." };
+    return { title: location.pathname.includes('/student/') && !location.pathname.includes('dashboard') ? '' : `${getGreeting()}, ${(userData?.name || '').split(' ')[0] || 'Student'} 🎓`, subtitle: "Here's how your academic journey is progressing." };
   };
 
   const headerInfo = getHeaderInfo();
