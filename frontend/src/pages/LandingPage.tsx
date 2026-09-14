@@ -47,7 +47,7 @@ export default function LandingPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: isDark ? 'rgba(53,103,251,0.15)' : 'rgba(53,103,251,0.08)', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : 'rgba(53,103,251,0.2)'}`, color: isDark ? '#8aaaff' : '#0047BA', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 40 }}>
             <Sparkles style={{ width: 14, height: 14, color: '#FF8C00' }} />
-            EduXcel Core • v3.0 Intelligence
+            EduXcel Core • v1.0 Intelligence
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}

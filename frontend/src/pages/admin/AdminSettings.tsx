@@ -22,7 +22,7 @@ const settingsSections = [
     color: 'text-purple-600 dark:text-purple-400',
     bg: 'bg-purple-50 dark:bg-purple-900/30',
     fields: [
-      { label: 'Prediction Model', type: 'select', value: 'EduXcel v3.0', options: ['EduXcel v2.0', 'EduXcel v3.0'] },
+      { label: 'Prediction Model', type: 'select', value: 'EduXcel v1.0', options: ['EduXcel v2.0', 'EduXcel v1.0'] },
       { label: 'Confidence Threshold', type: 'text', value: '75%' },
       { label: 'Auto-Intervention', type: 'toggle', value: true },
     ],
