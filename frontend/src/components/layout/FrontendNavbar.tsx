@@ -142,7 +142,7 @@ export default function FrontendNavbar() {
             Sign In
           </button>
           <button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/auth?mode=register')}
             style={{
               background: '#0047BA',
               color: '#fff',
@@ -159,7 +159,7 @@ export default function FrontendNavbar() {
               transition: 'background 0.2s',
             }}
           >
-            Access Platform
+            Register
           </button>
         </div>
       </div>

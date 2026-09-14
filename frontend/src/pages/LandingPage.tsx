@@ -65,7 +65,7 @@ export default function LandingPage() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
             style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center', marginBottom: 64 }}>
-            <button onClick={() => navigate('/auth')}
+            <button onClick={() => navigate('/auth?mode=register')}
               style={{ background: '#0047BA', color: '#fff', border: 'none', padding: '16px 32px', borderRadius: 999, fontWeight: 700, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 8px 24px rgba(0,71,186,0.35)', transition: 'transform 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
               onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}>

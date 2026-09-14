@@ -11,7 +11,7 @@ import api, { API_BASE_URL } from '@/lib/api';
 export default function AuthPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'register');
   const [role, setRole] = useState<Role>((searchParams.get('role') as Role) || 'student');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
