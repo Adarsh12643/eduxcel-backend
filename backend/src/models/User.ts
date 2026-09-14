@@ -27,6 +27,10 @@ export interface IUser extends Document {
   subjectsTaught?: string[];
   targetSGPA?: number;
 
+  xp: number;
+  level: number;
+  badges: string[];
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,6 +63,10 @@ const UserSchema = new Schema<IUser>(
     learningStyle: { type: String, required: false },
     subjectsTaught: { type: [String], required: false },
     targetSGPA: { type: Number, required: false },
+    
+    xp: { type: Number, default: 0 },
+    level: { type: Number, default: 1 },
+    badges: { type: [String], default: [] },
   },
   {
     timestamps: true,

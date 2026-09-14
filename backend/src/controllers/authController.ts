@@ -5,6 +5,7 @@ import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User';
 import { AuthRequest } from '../types';
 import { updateLoginStreak, getUserStreak } from '../models/EduXcelLogin';
+import { processDailyLoginGamification } from '../services/gamificationService';
 
 const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -100,7 +101,8 @@ export const googleOAuthCallback = async (req: Request, res: Response) => {
       });
     }
 
-    const streak = await updateLoginStreak(String(user._id));
+    const { streak, isNewDay } = await updateLoginStreak(String(user._id));
+    if (isNewDay) { await processDailyLoginGamification(String(user._id), streak); }
     const token = jwt.sign(
       { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,
@@ -138,7 +140,8 @@ export const register = async (req: AuthRequest, res: Response) => {
       authProvider: 'local',
     });
 
-    const streak = await updateLoginStreak(String(user._id));
+    const { streak, isNewDay } = await updateLoginStreak(String(user._id));
+    if (isNewDay) { await processDailyLoginGamification(String(user._id), streak); }
     const token = jwt.sign(
       { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,
@@ -189,7 +192,8 @@ export const login = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    const streak = await updateLoginStreak(String(user._id));
+    const { streak, isNewDay } = await updateLoginStreak(String(user._id));
+    if (isNewDay) { await processDailyLoginGamification(String(user._id), streak); }
     const token = jwt.sign(
       { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,
@@ -285,7 +289,8 @@ export const googleLogin = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const streak = await updateLoginStreak(String(user._id));
+    const { streak, isNewDay } = await updateLoginStreak(String(user._id));
+    if (isNewDay) { await processDailyLoginGamification(String(user._id), streak); }
     const token = jwt.sign(
       { id: String(user._id), email: user.email, role: user.role, name: user.name, isOnboarded: user.isOnboarded, streak },
       process.env.JWT_SECRET!,

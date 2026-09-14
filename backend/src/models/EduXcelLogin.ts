@@ -29,7 +29,7 @@ EduXcelLoginSchema.index({ loginDate: 1 });
 const EduXcelLogin = mongoose.model<IEduXcelLogin>('EduXcelLogin', EduXcelLoginSchema, 'users.EduXcel');
 
 
-export const updateLoginStreak = async (userId: string): Promise<number> => {
+export const updateLoginStreak = async (userId: string): Promise<{ streak: number, isNewDay: boolean }> => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -45,7 +45,7 @@ export const updateLoginStreak = async (userId: string): Promise<number> => {
         highestStreak: 1,
         loginHistory: [today],
       });
-      return 1;
+      return { streak: 1, isNewDay: true };
     }
 
     const lastLogin = new Date(loginData.lastLoginDate);
@@ -55,7 +55,7 @@ export const updateLoginStreak = async (userId: string): Promise<number> => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      return loginData.currentStreak;
+      return { streak: loginData.currentStreak, isNewDay: false };
     }
 
     if (diffDays === 1) {
@@ -75,10 +75,10 @@ export const updateLoginStreak = async (userId: string): Promise<number> => {
     }
     await loginData.save();
 
-    return loginData.currentStreak;
+    return { streak: loginData.currentStreak, isNewDay: true };
   } catch (error) {
     console.error('Failed to update login streak:', error);
-    return 0;
+    return { streak: 0, isNewDay: false };
   }
 };
 

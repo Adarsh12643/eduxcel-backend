@@ -76,6 +76,41 @@ export default function Profile({ userData }: { userData: any }) {
           </motion.div>
         ))}
       </div>
+
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        className="bg-white dark:bg-dark-surface rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm p-6">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+          <Award className="w-5 h-5 text-brand-500" /> Gamification & Badges
+        </h3>
+        
+        <div className="flex items-center gap-6 mb-6 p-4 bg-slate-50 dark:bg-dark-elevated rounded-xl border border-slate-100 dark:border-dark-border">
+          <div className="flex-1">
+            <div className="flex justify-between items-end mb-2">
+              <p className="font-bold text-slate-900 dark:text-white">Level {profile.level || 1}</p>
+              <p className="text-sm font-semibold text-brand-600 dark:text-brand-400">{profile.xp || 0} XP</p>
+            </div>
+            <div className="h-2.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-brand-500 to-brand-400 rounded-full" 
+                style={{ width: `${Math.min(((profile.xp || 0) % 1000) / 10, 100)}%` }} 
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Earned Badges</p>
+          <div className="flex flex-wrap gap-3">
+            {profile.badges?.length > 0 ? profile.badges.map((b: string, i: number) => (
+              <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 rounded-lg text-yellow-700 dark:text-yellow-500 font-bold text-sm">
+                ⭐ {b}
+              </div>
+            )) : (
+              <p className="text-sm text-slate-400">Keep learning to earn your first badge!</p>
+            )}
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }

@@ -443,7 +443,17 @@ export default function StudentDashboard() {
             )}
           </div>
           <div className="flex items-center gap-3">
-            {userData?.streak && (
+            {(userData?.level !== undefined) && (
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-full shadow-sm"
+              >
+                <span className="text-lg">⭐</span>
+                <span className="text-sm font-black text-blue-600 dark:text-blue-400">Lvl {userData.level} ({userData.xp} XP)</span>
+              </motion.div>
+            )}
+            {userData?.streak > 0 && (
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
