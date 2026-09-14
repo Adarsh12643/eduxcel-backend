@@ -361,6 +361,10 @@ export const onboard = async (req: AuthRequest, res: Response) => {
       user.studyHours = updates.studyHours ?? updates.studyHours === 0 ? updates.studyHours : user.studyHours;
       user.weakSubjects = updates.weakSubjects || user.weakSubjects;
       user.learningStyle = updates.learningStyle || user.learningStyle;
+      user.stream = updates.stream || user.stream;
+      user.course = updates.course || user.course;
+      user.college = updates.college || user.college;
+      user.previousScores = updates.previousScores || user.previousScores;
     }
 
     if (user.role === 'student' || user.role === 'faculty') {
@@ -380,6 +384,55 @@ export const onboard = async (req: AuthRequest, res: Response) => {
 
     user.isOnboarded = true;
     await user.save();
+
+    if (user.role === 'student' && updates.previousScores && typeof updates.previousScores === 'object') {
+      const prisma = (await import('../config/database')).default;
+      
+      for (const [subjectName, scores] of Object.entries(updates.previousScores)) {
+        const anyScores = scores as any;
+        
+        let prismaSubject = await prisma.subject.findFirst({
+          where: { name: subjectName }
+        });
+
+        if (!prismaSubject) {
+          prismaSubject = await prisma.subject.create({
+            data: {
+              name: subjectName,
+              code: subjectName.toUpperCase().replace(/\s+/g, '_').substring(0, 10),
+              department: user.department || 'General',
+              semester: user.semester || updates.semester || 1,
+              credits: 3
+            }
+          });
+        }
+
+        await prisma.previousScore.upsert({
+          where: {
+            userId_subjectId_semester: {
+              userId: user.id,
+              subjectId: prismaSubject.id,
+              semester: user.semester || updates.semester || 1,
+            }
+          },
+          update: {
+            sessional1: anyScores.sessional1,
+            sessional2: anyScores.sessional2,
+            classTest: anyScores.classTest,
+            total: anyScores.total
+          },
+          create: {
+            userId: user.id,
+            subjectId: prismaSubject.id,
+            semester: user.semester || updates.semester || 1,
+            sessional1: anyScores.sessional1,
+            sessional2: anyScores.sessional2,
+            classTest: anyScores.classTest,
+            total: anyScores.total
+          }
+        });
+      }
+    }
 
     return res.status(200).json({ success: true, data: user });
   } catch (error) {

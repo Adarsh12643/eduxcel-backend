@@ -17,6 +17,10 @@ export interface IUser extends Document {
   isActive?: boolean;
   isOnboarded?: boolean;
 
+  stream?: string;
+  course?: string;
+  college?: string;
+  previousScores?: Record<string, { sessional1?: number; sessional2?: number; classTest?: number; total?: number }>;
   studyHours?: number;
   weakSubjects?: string[];
   learningStyle?: string;
@@ -44,6 +48,11 @@ const UserSchema = new Schema<IUser>(
     authProvider: { type: String, required: true, enum: ['local', 'google'], default: 'local' },
     isActive: { type: Boolean, default: true },
     isOnboarded: { type: Boolean, default: false },
+
+    stream: { type: String, required: false },
+    course: { type: String, required: false },
+    college: { type: String, required: false },
+    previousScores: { type: Schema.Types.Mixed, required: false },
 
     studyHours: { type: Number, required: false },
     weakSubjects: { type: [String], required: false },
