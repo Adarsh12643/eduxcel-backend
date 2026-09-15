@@ -82,7 +82,7 @@ export default function RecoveryHub() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-lg text-slate-900 dark:text-white">Personalized Learning Hub</h3>
             <span className="text-xs font-medium px-2.5 py-1 bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 rounded-full flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> AI Picked YouTube Videos
+              <Sparkles className="w-3 h-3" /> AI Picked YouTube Channels
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -90,25 +90,22 @@ export default function RecoveryHub() {
               <div className="col-span-2 text-center text-slate-500 py-10 animate-pulse">Loading AI video recommendations...</div>
             ) : resources.length > 0 ? resources.map((res, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }}
-                onClick={() => window.open(res.link, '_blank')}
-                className="bg-white dark:bg-dark-surface rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden hover:shadow-lg transition-all group cursor-pointer flex flex-col">
+                onClick={() => setSelectedChannel(res)}
+                className={cn("bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-hidden hover:shadow-lg transition-all group cursor-pointer flex flex-col", { "border-brand-500 ring-2 ring-brand-500/50": res.isTopPick })}>
+                {res.isTopPick && (
+                  <div className="absolute top-2 right-2 bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
+                    Top Pick
+                  </div>
+                )}
                 <div className="h-32 w-full bg-slate-200 dark:bg-slate-800 relative overflow-hidden">
                    <img src={res.thumbnail} alt={res.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors flex items-center justify-center">
-                     <PlayCircle className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all drop-shadow-lg" />
-                   </div>
-                   <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
-                     {res.duration}
-                   </div>
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>
                 <div className="p-4 flex-1 flex flex-col">
-                  <div className="flex justify-between items-start mb-1 gap-2">
-                    <span className="text-[10px] font-bold text-brand-500 dark:text-brand-400 uppercase tracking-wider line-clamp-1">{res.channel}</span>
-                  </div>
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors text-sm line-clamp-2 flex-1">{res.title}</h4>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="text-[10px] text-slate-500">{res.views}</span>
-                    <button className="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded">Watch</button>
+                    <span className="text-[10px] text-slate-500 font-medium">{res.videoCount} videos</span>
+                    <button className="text-[10px] font-bold text-brand-600 bg-brand-50 dark:bg-brand-500/20 px-2 py-1 rounded-md hover:bg-brand-100 dark:hover:bg-brand-500/30 transition-colors">Explore</button>
                   </div>
                 </div>
               </motion.div>
@@ -118,6 +115,42 @@ export default function RecoveryHub() {
           </div>
         </div>
       </div>
+      {selectedChannel && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in-50">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }} className="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl">
+            <div className="p-4 border-b dark:border-dark-border flex justify-between items-center flex-shrink-0">
+              <div>
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">{selectedChannel.title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Playing videos from this channel</p>
+              </div>
+              <button onClick={() => setSelectedChannel(null)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <div className="flex-1 bg-slate-100 dark:bg-black">
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/videoseries?list=UU${selectedChannel.channelId.substring(2)}`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
+            <div className="p-4 border-t dark:border-dark-border flex-shrink-0">
+                <button 
+                  onClick={() => {
+                    // Logic to mark as complete will go here
+                    setSelectedChannel(null);
+                  }}
+                  className="px-4 py-2 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors"
+                >
+                  Mark as Watched & Close
+                </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
