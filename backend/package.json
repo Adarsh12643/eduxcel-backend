@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/app.ts",
-    "build": "npm install && npm run postinstall && prisma generate && prisma db push && tsc && rsync -av --exclude='*.ts' src/ dist/",
-    "postinstall": "pip install -r src/services/ml/requirements.txt",
+    "build": "prisma generate && prisma db push && tsc",
     "start": "node dist/app.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
