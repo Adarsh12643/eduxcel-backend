@@ -86,7 +86,7 @@ export class MLService {
   private mlServiceUrl: string;
 
   constructor() {
-    this.mlServiceUrl = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000';
+    this.mlServiceUrl = process.env.ML_SERVICE_URL || 'https://eduxcel-backend-ml-service.onrender.com';
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
@@ -146,7 +146,7 @@ export class MLService {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000);
+      const timeout = setTimeout(() => controller.abort(), 25000);
 
       const response = await fetch(`${this.mlServiceUrl}/youtube`, {
         method: 'POST',
@@ -240,10 +240,10 @@ export class MLService {
       ? weakSubjects
       : Object.keys(subjectPerformance).filter((k) => subjectPerformance[k] < 60 && !k.startsWith('_'));
 
-    // 3. Try ML service first (with a 5-second timeout)
+    // 3. Try ML service first (with a 25-second timeout for Render cold-start)
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000);
+      const timeout = setTimeout(() => controller.abort(), 25000);
 
       const response = await fetch(`${this.mlServiceUrl}/recommend`, {
         method: 'POST',
@@ -269,13 +269,14 @@ export class MLService {
         const prediction = data.prediction || data;
 
         const channels: VideoResult[] = (data.videos || data.channels || []).map((c: any, i: number) => ({
-          title: c.channel_name || c.channel || c.title || 'Recommended Channel',
+          title: c.title || c.channel_name || c.channel || 'Recommended Video',
           link: c.link || `https://www.youtube.com/channel/${c.channel_id || c.channelId}`,
-          channel: c.channel_name || c.channel || '',
-          channelId: c.channel_id || c.channelId || '',
+          channel: c.channel || c.channel_name || '',
+          channelId: c.channelId || c.channel_id || '',
           thumbnail: c.thumbnail || '',
-          videoCount: c.video_count || c.videoCount || 'N/A',
-          isTopPick: c.is_top_pick || c.isTopPick || i === 0,
+          views: c.views || c.viewCount || '',
+          duration: c.duration || '',
+          isTopPick: c.isTopPick || c.is_top_pick || i === 0,
         }));
 
         const statuses: Array<'done' | 'in_progress' | 'pending'> = ['done', 'in_progress', 'pending', 'pending', 'pending'];
@@ -340,7 +341,7 @@ export class MLService {
     // Try ML service
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000);
+      const timeout = setTimeout(() => controller.abort(), 25000);
       const response = await fetch(`${this.mlServiceUrl}/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
