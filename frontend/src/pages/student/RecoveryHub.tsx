@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, BookOpen, Clock, CheckCircle2, Circle, PlayCircle } from 'lucide-react';
+import { Sparkles, BookOpen, Clock, CheckCircle2, Circle, PlayCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 
@@ -15,12 +15,14 @@ const tasks = [
 export default function RecoveryHub() {
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedChannel, setSelectedChannel] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
         setLoading(true);
         const res = await api.student.getRecoveryPlan();
+        console.log('Recovery plan response:', res);
         if (res.success && res.data) {
           // If the recovery plan returns videoRecommendations, set them
           setResources(res.data.videoRecommendations || res.data);
