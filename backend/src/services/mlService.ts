@@ -245,7 +245,8 @@ export class MLService {
         } as RecoveryPlan;
       }
     } catch (error) {
-      console.warn('ML /recommend endpoint unavailable, using local fallback');
+      console.error('Failed to fetch from ML service:', error);
+      throw new Error('The ML prediction service is currently unavailable.');
     }
 
     const prediction = await this.predict({
