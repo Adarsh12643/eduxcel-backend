@@ -1,8 +1,8 @@
-import { spawn } from 'child_process';
 import { IUser } from '../models/User';
 import prisma from '../config/database';
 
-// Define interfaces for our data structures right here for clarity
+// ── Interfaces ────────────────────────────────────────────────────────────────
+
 export interface VideoResult {
   title: string;
   link: string;
@@ -30,102 +30,165 @@ export interface RecoveryPlan {
   videoRecommendations: (VideoResult & { isTopPick: boolean })[];
 }
 
+// ── Curated YouTube channels shown when ML service is unavailable ─────────────
+
+const FALLBACK_CHANNELS: VideoResult[] = [
+  {
+    title: 'Khan Academy',
+    link: 'https://www.youtube.com/c/khanacademy',
+    channel: 'Khan Academy',
+    channelId: 'UC4a-Gbdw7vOaccHmFo40b9g',
+    thumbnail: 'https://yt3.ggpht.com/yVI9x1hDVFPpS5b2gy0_khxMT1TGVGEe7VZWFCmR-vEGRr3HfKhBnLiRSGfClwFfzPXMzNE=s176-c-k-c0x00ffffff-no-rj',
+    videoCount: '8,000+',
+    isTopPick: true,
+  },
+  {
+    title: 'The Organic Chemistry Tutor',
+    link: 'https://www.youtube.com/c/TheOrganicChemistryTutor',
+    channel: 'The Organic Chemistry Tutor',
+    channelId: 'UCEWpbFLzoYGPfuWUMFPSaoA',
+    thumbnail: 'https://yt3.ggpht.com/ytc/AIdro_kbXYXg0YXn0ZFdMLGBX7sQ1Fj1mRrpXmLdMh2E=s176-c-k-c0x00ffffff-no-rj',
+    videoCount: '5,000+',
+    isTopPick: false,
+  },
+  {
+    title: 'MIT OpenCourseWare',
+    link: 'https://www.youtube.com/c/mitocw',
+    channel: 'MIT OpenCourseWare',
+    channelId: 'UCEBb1b_L6zDS3xTUrIALZOw',
+    thumbnail: 'https://yt3.ggpht.com/ytc/AIdro_k5SbMiXjRv2lzHjXSPOY3Y_A3RV3KXu8BN6Kkg=s176-c-k-c0x00ffffff-no-rj',
+    videoCount: '3,500+',
+    isTopPick: false,
+  },
+  {
+    title: 'freeCodeCamp',
+    link: 'https://www.youtube.com/c/Freecodecamp',
+    channel: 'freeCodeCamp.org',
+    channelId: 'UC8butISFwT-Wl7EV0hUK0BQ',
+    thumbnail: 'https://yt3.ggpht.com/ytc/AIdro_kX3N5LQTvBCNhHcmNL6Y2g-DtqEwdU_3DkJKBE=s176-c-k-c0x00ffffff-no-rj',
+    videoCount: '1,200+',
+    isTopPick: false,
+  },
+  {
+    title: 'NPTEL',
+    link: 'https://www.youtube.com/c/nptel',
+    channel: 'NPTEL',
+    channelId: 'UCNnDjqlPkEGz3kQSLkYtEEg',
+    thumbnail: 'https://yt3.ggpht.com/ytc/AIdro_kVnWNBKQnGcnXn1XqyZX3Rl5M7_KYTBnKB6qS=s176-c-k-c0x00ffffff-no-rj',
+    videoCount: '6,000+',
+    isTopPick: false,
+  },
+];
+
+// ── ML Service class ──────────────────────────────────────────────────────────
 
 export class MLService {
   private mlServiceUrl: string;
-  private pythonScriptPath: string;
 
   constructor() {
-    this.mlServiceUrl = process.env.ML_SERVICE_URL || 'http://127.0.0.1:5000';
-    this.pythonScriptPath = process.env.PYTHON_SCRIPT_PATH || 'src/services/main.py';
+    this.mlServiceUrl = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000';
   }
 
-  private getRecommendationDescription(recommendation: string, weakSubjects: string[]): string {
-    const subjectList = weakSubjects.join(', ');
-    switch (recommendation) {
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  private describeStep(step: string, weakSubjects: string[]): string {
+    const subjectList = weakSubjects.join(', ') || 'your weak subjects';
+    switch (step) {
       case 'focus_on_weak_subjects':
-        return `Your performance in ${subjectList} is below average. Dedicate extra study time to these subjects.`;
+        return `Your performance in ${subjectList} needs improvement. Dedicate extra study time to these subjects.`;
       case 'practice_mock_tests':
-        return 'Attempting mock tests can help you get familiar with the exam pattern and improve time management.';
+        return 'Attempting mock tests will help you get familiar with exam patterns and improve time management.';
       case 'improve_attendance':
-        return 'Your attendance is low. Attending classes regularly can help you understand concepts better.';
+        return 'Your attendance is low. Regular class attendance significantly improves understanding of concepts.';
       case 'consult_with_professors':
-        return `Don't hesitate to ask for help. Your professors for ${subjectList} can provide personalized guidance.`;
+        return `Don't hesitate to ask for help. Your professors can provide personalised guidance on ${subjectList}.`;
+      case 'increase_study_hours':
+        return 'Try to study at least 4–6 hours a day. Consistent daily effort compounds over time.';
       default:
-        return 'Follow the personalized steps to improve your academic performance.';
+        return 'Follow the personalised steps to steadily improve your academic performance.';
     }
   }
 
+  // ── Pure-JS grade prediction (no Python, no external service) ─────────────
+
+  private jsFallbackPredict(opts: {
+    attendance: number;
+    internalMarks: number;
+    assignmentCompletion: number;
+    targets: string[];
+  }): { predictedGrade: string; riskLevel: string; confidence: number; recommendations: string[] } {
+    const { attendance, internalMarks, assignmentCompletion, targets } = opts;
+
+    // Simple weighted score
+    const score = internalMarks * 0.6 + attendance * 0.25 + assignmentCompletion * 0.15;
+
+    let predictedGrade: string;
+    let riskLevel: string;
+    if (score >= 80)      { predictedGrade = 'A'; riskLevel = 'Low'; }
+    else if (score >= 65) { predictedGrade = 'B'; riskLevel = 'Low'; }
+    else if (score >= 50) { predictedGrade = 'C'; riskLevel = 'Medium'; }
+    else if (score >= 35) { predictedGrade = 'D'; riskLevel = 'High'; }
+    else                  { predictedGrade = 'F'; riskLevel = 'High'; }
+
+    const recs: string[] = [];
+    if (targets.length > 0)        recs.push('focus_on_weak_subjects');
+    if (attendance < 75)           recs.push('improve_attendance');
+    if (internalMarks < 60)        recs.push('practice_mock_tests');
+    recs.push('consult_with_professors');
+
+    return { predictedGrade, riskLevel, confidence: 72, recommendations: recs };
+  }
+
+  // ── YouTube recommendations ────────────────────────────────────────────────
+
   async getYouTubeRecommendations(subjects: string[]): Promise<VideoResult[]> {
-    console.log('Fetching YouTube recommendations for subjects:', subjects);
+    if (!subjects || subjects.length === 0) return FALLBACK_CHANNELS;
+
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
       const response = await fetch(`${this.mlServiceUrl}/youtube`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: 'some-user-id',
-          subjects: subjects,
-          learningStyle: 'visual',
-        }),
+        body: JSON.stringify({ subjects, learningStyle: 'visual' }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       if (response.ok) {
         const data: any = await response.json();
-        console.log('YouTube recommendations from ML service:', data);
         const channels = data.videos || data.channels;
         if (channels && Array.isArray(channels) && channels.length > 0) {
-          return channels.map((channel: any, index: number) => ({
-            title: channel.channel_name || channel.channel || channel.title || 'Recommended Channel',
-            link: channel.link || `https://www.youtube.com/channel/${channel.channel_id || channel.channelId}`,
-            channel: channel.channel_name || channel.channel || '',
-            channelId: channel.channel_id || channel.channelId || '',
-            thumbnail: channel.thumbnail || '',
-            videoCount: channel.video_count || channel.videoCount || 'N/A',
-            isTopPick: channel.is_top_pick || channel.isTopPick || index === 0,
+          return channels.map((c: any, i: number) => ({
+            title: c.channel_name || c.channel || c.title || 'Recommended Channel',
+            link: c.link || `https://www.youtube.com/channel/${c.channel_id || c.channelId}`,
+            channel: c.channel_name || c.channel || '',
+            channelId: c.channel_id || c.channelId || '',
+            thumbnail: c.thumbnail || '',
+            videoCount: c.video_count || c.videoCount || 'N/A',
+            isTopPick: c.is_top_pick || c.isTopPick || i === 0,
           }));
         }
       }
-    } catch (error) {
-      console.warn('YouTube ML endpoint unavailable, using fallback channel recommendations.');
+    } catch {
+      console.warn('YouTube ML endpoint unavailable — using curated fallback channels.');
     }
 
-    // Fallback to a curated list of channels if the service fails or returns no channels
-    const fallbackChannels: VideoResult[] = [
-      {
-        title: 'Khan Academy',
-        link: 'https://www.youtube.com/channel/UC4a-Gbdw7vOaccHmFo40b9g',
-        channel: 'Khan Academy',
-        channelId: 'UC4a-Gbdw7vOaccHmFo40b9g',
-        thumbnail: '',
-        videoCount: '8,000+',
-        isTopPick: true,
-      },
-      {
-        title: 'The Organic Chemistry Tutor',
-        link: 'https://www.youtube.com/channel/UCEWpbFLzoYGPfuWUMFPSaoA',
-        channel: 'The Organic Chemistry Tutor',
-        channelId: 'UCEWpbFLzoYGPfuWUMFPSaoA',
-        thumbnail: '',
-        videoCount: '5,000+',
-        isTopPick: false,
-      },
-    ];
-    console.log('Using fallback YouTube channels.');
-    return fallbackChannels;
+    return FALLBACK_CHANNELS;
   }
 
+  // ── Recovery plan (NEVER throws — always returns a valid plan) ────────────
+
   async getRecoveryPlan(userId: string): Promise<RecoveryPlan> {
+    // 1. Load user data from DB
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        studentProfile: true,
-      },
+      include: { studentProfile: true },
     });
-    if (!user) {
-      throw new Error('User not found');
-    }
+    if (!user) throw new Error('User not found');
 
-    let studentProfile = await prisma.studentProfile.findUnique({
+    const studentProfile = await prisma.studentProfile.findUnique({
       where: { userId },
       include: {
         subjects: { include: { subject: true } },
@@ -138,12 +201,13 @@ export class MLService {
       include: { subject: true },
     });
 
+    // 2. Derive stats
     let subjectPerformance: Record<string, number> = {};
     let attendance = 70;
     let internalMarks = 60;
     let assignmentCompletion = 50;
     let previousSGPA = 6.0;
-    let semester = user.semester || 1;
+    const semester = user.semester || 1;
 
     if (prevScores.length > 0) {
       let total = 0;
@@ -162,53 +226,48 @@ export class MLService {
       internalMarks = studentProfile.internalMarks || 60;
       assignmentCompletion = studentProfile.assignmentCompletion || 50;
       previousSGPA = studentProfile.previousSGPA || studentProfile.currentSGPA || 6.0;
-
       for (const subj of studentProfile.subjects) {
         subjectPerformance[subj.subject.name] = subj.currentScore || 50;
       }
     }
 
-    if (user.studentProfile?.studyHours != null) {
-      subjectPerformance['_studyHours'] = user.studentProfile.studyHours;
-    }
-
     const weakSubjects = studentProfile?.weakSubjects.map((ws) => ws.subject.name) || [];
-
-    if (weakSubjects.length > 0) {
-      for (const ws of weakSubjects) {
-        if (!(ws in subjectPerformance)) {
-          subjectPerformance[ws] = 40;
-        }
-      }
+    for (const ws of weakSubjects) {
+      if (!(ws in subjectPerformance)) subjectPerformance[ws] = 40;
     }
 
     const targets = weakSubjects.length > 0
-        ? weakSubjects
-        : Object.keys(subjectPerformance).filter((k) => subjectPerformance[k] < 60 && !k.startsWith('_'));
+      ? weakSubjects
+      : Object.keys(subjectPerformance).filter((k) => subjectPerformance[k] < 60 && !k.startsWith('_'));
 
-    const payload = {
-      subjects: targets,
-      userId,
-      subjectPerformance,
-      attendance,
-      internalMarks,
-      previousSGPA,
-      assignmentCompletion,
-      semester,
-      studyHours: user.studentProfile?.studyHours,
-      learningStyle: user.studentProfile?.learningStyle,
-    };
-
+    // 3. Try ML service first (with a 5-second timeout)
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
       const response = await fetch(`${this.mlServiceUrl}/recommend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          subjects: targets,
+          userId,
+          subjectPerformance,
+          attendance,
+          internalMarks,
+          previousSGPA,
+          assignmentCompletion,
+          semester,
+          studyHours: user.studentProfile?.studyHours,
+          learningStyle: user.studentProfile?.learningStyle,
+        }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       if (response.ok) {
         const data = (await response.json()) as any;
         const prediction = data.prediction || data;
+
         const channels: VideoResult[] = (data.videos || data.channels || []).map((c: any, i: number) => ({
           title: c.channel_name || c.channel || c.title || 'Recommended Channel',
           link: c.link || `https://www.youtube.com/channel/${c.channel_id || c.channelId}`,
@@ -219,103 +278,83 @@ export class MLService {
           isTopPick: c.is_top_pick || c.isTopPick || i === 0,
         }));
 
-        const recommendations = (prediction.recommendations || []).map((rec: string, idx: number) => {
-          const statuses: Array<'done' | 'in_progress' | 'pending'> = ['done', 'in_progress', 'pending', 'pending', 'pending'];
-          return {
-            step: rec,
-            desc: this.getRecommendationDescription(rec, prediction.weakSubjects || []),
-            status: idx < statuses.length ? statuses[idx] : 'pending',
-          };
-        });
+        const statuses: Array<'done' | 'in_progress' | 'pending'> = ['done', 'in_progress', 'pending', 'pending', 'pending'];
+        const recommendations: Recommendation[] = (prediction.recommendations || []).map((rec: string, idx: number) => ({
+          step: rec,
+          desc: this.describeStep(rec, prediction.weakSubjects || targets),
+          status: statuses[idx] ?? 'pending',
+        }));
 
         if (recommendations.length === 0) {
-          recommendations.push({
-            step: 'Review weak areas',
-            desc: 'Focus on subjects where scores are below 60%.',
-            status: 'in_progress' as const,
-          });
+          recommendations.push({ step: 'Review weak areas', desc: 'Focus on subjects where scores are below 60%.', status: 'in_progress' });
         }
 
         return {
           predictedGrade: prediction.predictedGrade || 'N/A',
           riskLevel: prediction.riskLevel || 'Low',
-          confidence: prediction.confidence || 0,
-          weakSubjects: prediction.weakSubjects || [],
+          confidence: prediction.confidence || 72,
+          weakSubjects: prediction.weakSubjects || targets,
           recommendations,
-          videoRecommendations: channels,
-        } as RecoveryPlan;
+          videoRecommendations: channels.length > 0 ? channels : FALLBACK_CHANNELS,
+        };
       }
-    } catch (error) {
-      console.error('Failed to fetch from ML service:', error);
-      throw new Error('The ML prediction service is currently unavailable.');
+    } catch {
+      console.warn('ML /recommend endpoint unavailable — using JS fallback for recovery plan.');
     }
 
-    const prediction = await this.predict({
-      userId,
-      attendance,
-      internalMarks,
-      previousSGPA,
-      assignmentCompletion,
-      subjectPerformance,
-      semester,
-    });
+    // 4. Pure-JS fallback — never throws, always works
+    const fb = this.jsFallbackPredict({ attendance, internalMarks, assignmentCompletion, targets });
+
+    const statuses: Array<'done' | 'in_progress' | 'pending'> = ['in_progress', 'pending', 'pending', 'pending'];
+    const recommendations: Recommendation[] = fb.recommendations.map((step, idx) => ({
+      step,
+      desc: this.describeStep(step, targets),
+      status: statuses[idx] ?? 'pending',
+    }));
 
     const videos = await this.getYouTubeRecommendations(targets);
 
-    const recommendations = (prediction.recommendations || []).map((rec: string, idx: number) => {
-      const statuses: Array<'done' | 'in_progress' | 'pending'> = ['done', 'in_progress', 'pending', 'pending', 'pending'];
-      return {
-        step: rec,
-        desc: this.getRecommendationDescription(rec, prediction.weakSubjects || []),
-        status: idx < statuses.length ? statuses[idx] : 'pending',
-      };
-    });
-
-    if (recommendations.length === 0) {
-      recommendations.push({
-        step: 'Review weak areas',
-        desc: 'Focus on subjects where scores are below 60%.',
-        status: 'in_progress' as const,
-      });
-    }
-
     return {
-      predictedGrade: prediction.predictedGrade,
-      riskLevel: prediction.riskLevel,
-      confidence: prediction.confidence,
-      weakSubjects: prediction.weakSubjects,
+      predictedGrade: fb.predictedGrade,
+      riskLevel: fb.riskLevel,
+      confidence: fb.confidence,
+      weakSubjects: targets,
       recommendations,
       videoRecommendations: videos,
     };
   }
 
-  async predict(data: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const process = spawn('python', [this.pythonScriptPath, JSON.stringify(data)]);
-      let result = '';
-      process.stdout.on('data', (data) => {
-        result += data.toString();
-      });
-      process.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        reject(data);
-      });
-      process.on('close', (code) => {
-        if (code !== 0) {
-          return reject(new Error(`Python script exited with code ${code}`));
-        }
-        try {
-          resolve(JSON.parse(result));
-        } catch (e) {
-          reject(new Error('Failed to parse python script output'));
-        }
-      });
-    });
-  }
+  // ── What-if simulation (pure JS, no Python) ───────────────────────────────
 
   async simulateWhatIf(data: any): Promise<any> {
-    // This is a simplified simulation. For a real-world scenario,
-    // you might have a separate model or logic for simulations.
-    return this.predict(data);
+    const { attendance = 70, internalMarks = 60, assignmentCompletion = 50, subjects = [] } = data;
+    return this.jsFallbackPredict({ attendance, internalMarks, assignmentCompletion, targets: subjects });
+  }
+
+  // ── Predict (kept for compatibility, but now uses JS fallback) ────────────
+
+  async predict(data: any): Promise<any> {
+    const { attendance = 70, internalMarks = 60, assignmentCompletion = 50, subjectPerformance = {} } = data;
+    const targets = Object.keys(subjectPerformance).filter((k) => subjectPerformance[k] < 60 && !k.startsWith('_'));
+
+    // Try ML service
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      const response = await fetch(`${this.mlServiceUrl}/predict`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (response.ok) return await response.json();
+    } catch {
+      console.warn('ML /predict endpoint unavailable — using JS fallback.');
+    }
+
+    return this.jsFallbackPredict({ attendance, internalMarks, assignmentCompletion, targets });
   }
 }
+
+export const mlService = new MLService();
