@@ -68,10 +68,6 @@ function FacultyOverview() {
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Students', value: '240', color: 'text-brand-900 dark:text-white', icon: '👥' },
-          { label: 'Low Risk', value: '182', color: 'text-emerald-500', icon: '🟢' },
-          { label: 'Moderate Risk', value: '41', color: 'text-amber-500', icon: '🟡' },
-          { label: 'High Risk', value: '17', color: 'text-red-500', icon: '🔴' },
           { label: 'Total Students', value: studentsList.length.toString(), color: 'text-brand-900 dark:text-white', icon: '👥' },
           { label: 'Low Risk', value: lowRisk.toString(), color: 'text-emerald-500', icon: '🟢' },
           { label: 'Moderate Risk', value: medRisk.toString(), color: 'text-amber-500', icon: '🟡' },
@@ -117,7 +113,6 @@ function FacultyOverview() {
               <h3 className="text-lg font-bold font-display text-slate-900 dark:text-white">AI Insights</h3>
             </div>
             <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
-              The ML model has identified <span className="font-bold text-red-600 dark:text-red-400">{highRisk} students</span> at high risk of failing DBMS this semester. Primary contributing factor is low attendance (&lt; 70%).
               The ML model has identified <span className="font-bold text-red-600 dark:text-red-400">{highRisk} students</span> at high risk of failing this semester. Primary contributing factor is low attendance (&lt; 70%).
             </p>
           </div>
@@ -164,32 +159,25 @@ function FacultyOverview() {
                 >
                   <td className="p-4 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xs">{student.name.charAt(0)}</div>
+                      <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xs">{(student.name || '?').charAt(0)}</div>
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white text-sm">{student.name}</p>
-                        {student.weak.length > 0 && <p className="text-xs text-red-500 font-medium">Weak in: {student.weak.join(', ')}</p>}
-                        {student.weak?.length > 0 && <p className="text-xs text-red-500 font-medium">Weak in: {student.weak.join(', ')}</p>}
+                        {(student.weak || student.weakSubjects)?.length > 0 && <p className="text-xs text-red-500 font-medium">Weak in: {(student.weak || student.weakSubjects || []).join(', ')}</p>}
                       </div>
                     </div>
                   </td>
-                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.attendance}%</td>
-                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.internal}%</td>
                   <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.attendance || student.overallAttendance || 0}%</td>
-                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.internal || student.overallInternal || 0}%</td>
+                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{student.internal || student.overallInternal || student.internalMarks || 0}%</td>
                   <td className="p-4">
-                    <span className="font-bold text-slate-900 dark:text-white">{student.predicted}</span>
                     <span className="font-bold text-slate-900 dark:text-white">{student.predicted || student.predictedGrade || 'N/A'}</span>
                   </td>
                   <td className="p-4">
                     <span className={cn(
                       "px-2.5 py-1 rounded-full text-xs font-bold uppercase",
-                      student.risk === 'High' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
-                      student.risk === 'Medium' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
                       (student.risk || student.riskLevel) === 'High' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
                       (student.risk || student.riskLevel) === 'Medium' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
                       'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
                     )}>
-                      {student.risk}
                       {student.risk || student.riskLevel || 'Low'}
                     </span>
                   </td>
