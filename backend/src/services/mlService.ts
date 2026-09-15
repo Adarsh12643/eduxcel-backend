@@ -30,6 +30,7 @@ export interface RecoveryPlan {
   videoRecommendations: VideoResult[];
 }
 
+
 export class MLService {
   private mlServiceUrl: string;
   private pythonScriptPath: string;
