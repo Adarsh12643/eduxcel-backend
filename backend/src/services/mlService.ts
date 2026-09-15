@@ -1,95 +1,115 @@
-import { PredictionInput, PredictionResult, RecoveryPlan, VideoResult } from '../types';
-import prisma from '../config/database';
-import User from '../models/User';
+import { spawn } from 'child_process';
+import { User } from '../models/User';
+import prisma from '../utils/prisma';
+
+// Define interfaces for our data structures right here for clarity
+export interface VideoResult {
+  title: string;
+  link: string;
+  channel: string;
+  channelId: string;
+  thumbnail: string;
+  views?: string; // Optional for video
+  duration?: string; // Optional for video
+  videoCount?: string; // Optional for channel
+  isTopPick: boolean;
+}
+
+export interface Recommendation {
+  step: string;
+  desc: string;
+  status: 'done' | 'in_progress' | 'pending';
+}
+
+export interface RecoveryPlan {
+  predictedGrade: string;
+  riskLevel: string;
+  confidence: number;
+  weakSubjects: string[];
+  recommendations: Recommendation[];
+  videoRecommendations: VideoResult[];
+}
 
 export class MLService {
   private mlServiceUrl: string;
+  private pythonScriptPath: string;
 
   constructor() {
-    this.mlServiceUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+    this.mlServiceUrl = process.env.ML_SERVICE_URL || 'http://127.0.0.1:5000';
+    this.pythonScriptPath = process.env.PYTHON_SCRIPT_PATH || 'src/services/main.py';
   }
 
-  async predict(input: PredictionInput): Promise<PredictionResult> {
-    try {
-      const response = await fetch(`${this.mlServiceUrl}/predict`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
-      });
-
-      if (!response.ok) {
-        throw new Error('ML service unavailable');
-      }
-
-      const data = await response.json() as PredictionResult;
-      return data;
-    } catch (error) {
-      console.warn('ML service unavailable, using fallback prediction');
-      return this.fallbackPredict(input);
+  private getRecommendationDescription(recommendation: string, weakSubjects: string[]): string {
+    const subjectList = weakSubjects.join(', ');
+    switch (recommendation) {
+      case 'focus_on_weak_subjects':
+        return `Your performance in ${subjectList} is below average. Dedicate extra study time to these subjects.`;
+      case 'practice_mock_tests':
+        return 'Attempting mock tests can help you get familiar with the exam pattern and improve time management.';
+      case 'improve_attendance':
+        return 'Your attendance is low. Attending classes regularly can help you understand concepts better.';
+      case 'consult_with_professors':
+        return `Don't hesitate to ask for help. Your professors for ${subjectList} can provide personalized guidance.`;
+      default:
+        return 'Follow the personalized steps to improve your academic performance.';
     }
   }
 
-  async simulateWhatIf(input: PredictionInput): Promise<PredictionResult> {
+  async getYouTubeRecommendations(subjects: string[]): Promise<VideoResult[]> {
+    console.log('Fetching YouTube recommendations for subjects:', subjects);
     try {
-      const response = await fetch(`${this.mlServiceUrl}/simulate`, {
+      const response = await fetch(`${this.mlServiceUrl}/youtube`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
+        body: JSON.stringify({
+          userId: 'some-user-id',
+          subjects: subjects,
+          learningStyle: 'visual',
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error('ML service unavailable');
-      }
-
-      return await response.json() as PredictionResult;
-    } catch (error) {
-      console.warn('ML service unavailable, using fallback simulation');
-      return this.fallbackPredict(input);
-    }
-  }
-
-  async getYouTubeRecommendations(subjects: string[]): Promise<any[]> {
-    if (!subjects || subjects.length === 0) return [];
-    try {
-      const response = await fetch(`${this.mlServiceUrl}/recommend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subjects }),
-      });
-
-      if (!response.ok) {
-        throw new Error('ML recommend service unavailable');
-      }
-
-      const result = (await response.json()) as any;
-      if (result.videos) return result.videos;
-      return Array.isArray(result) ? result : [];
-    } catch (error) {
-      console.warn('YouTube recommend service unavailable, using curated static fallback');
-      const staticVideos = [
-        {
-          title: 'Understanding ' + subjects[0] + ' - Crash Course',
-          link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          channel: 'CrashCourse',
-          channelId: 'UCX6b17PVsYBQ0ip5gyeme-Q',
-          thumbnail: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
-          views: '1.2M',
-          duration: '15:32',
-          isTopPick: true,
-        },
-        {
-          title: subjects[0] + ' Tutorial for Beginners',
-          link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          channel: 'FreeCodeCamp',
-          channelId: 'UC8butISFwT-Wl7EV0hUK0BQ',
-          thumbnail: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
-          views: '800K',
-          duration: '45:10',
-          isTopPick: false,
+      if (response.ok) {
+        const data = await response.json();
+        console.log('YouTube recommendations from ML service:', data);
+        if (data.channels && Array.isArray(data.channels) && data.channels.length > 0) {
+          return data.channels.map((channel: any, index: number) => ({
+            title: channel.channel_name || 'Recommended Channel',
+            link: `https://www.youtube.com/channel/${channel.channel_id}`,
+            channel: channel.channel_name || '',
+            channelId: channel.channel_id || '',
+            thumbnail: channel.thumbnail || '',
+            videoCount: channel.video_count || 'N/A',
+            isTopPick: channel.is_top_pick || index === 0,
+          }));
         }
-      ];
-      return staticVideos;
+      }
+    } catch (error) {
+      console.warn('YouTube ML endpoint unavailable, using fallback channel recommendations.');
     }
+
+    // Fallback to a curated list of channels if the service fails or returns no channels
+    const fallbackChannels: VideoResult[] = [
+      {
+        title: 'Khan Academy',
+        link: 'https://www.youtube.com/channel/UC4a-Gbdw7vOaccHmFo40b9g',
+        channel: 'Khan Academy',
+        channelId: 'UC4a-Gbdw7vOaccHmFo40b9g',
+        thumbnail: '',
+        videoCount: '8,000+',
+        isTopPick: true,
+      },
+      {
+        title: 'The Organic Chemistry Tutor',
+        link: 'https://www.youtube.com/channel/UCEWpbFLzoYGPfuWUMFPSaoA',
+        channel: 'The Organic Chemistry Tutor',
+        channelId: 'UCEWpbFLzoYGPfuWUMFPSaoA',
+        thumbnail: '',
+        videoCount: '5,000+',
+        isTopPick: false,
+      },
+    ];
+    console.log('Using fallback YouTube channels.');
+    return fallbackChannels;
   }
 
   async getRecoveryPlan(userId: string, forcedSubjects?: string[]): Promise<RecoveryPlan> {
@@ -182,15 +202,14 @@ export class MLService {
       if (response.ok) {
         const data = (await response.json()) as any;
         const prediction = data.prediction || data;
-        const videos: any[] = (data.videos || []).map((v: any, i: number) => ({
-          title: v.title || '',
-          link: v.link || '',
-          channel: v.channel || '',
-          channelId: v.channelId || '',
-          thumbnail: v.thumbnail || '',
-          views: v.views || '',
-          duration: v.duration || '',
-          isTopPick: v.isTopPick || i === 0,
+        const channels: VideoResult[] = (data.channels || []).map((c: any, i: number) => ({
+          title: c.channel_name || 'Recommended Channel',
+          link: `https://www.youtube.com/channel/${c.channel_id}`,
+          channel: c.channel_name || '',
+          channelId: c.channel_id || '',
+          thumbnail: c.thumbnail || '',
+          videoCount: c.video_count || 'N/A',
+          isTopPick: c.is_top_pick || i === 0,
         }));
 
         const recommendations = (prediction.recommendations || []).map((rec: string, idx: number) => {
@@ -216,7 +235,7 @@ export class MLService {
           confidence: prediction.confidence || 0,
           weakSubjects: prediction.weakSubjects || [],
           recommendations,
-          videoRecommendations: videos,
+          videoRecommendations: channels,
         } as RecoveryPlan;
       }
     } catch (error) {
@@ -233,22 +252,7 @@ export class MLService {
       semester,
     });
 
-    const videos: (VideoResult & { isTopPick: boolean })[] = [];
-    if (targets.length > 0) {
-      const ytVideos = await this.getYouTubeRecommendations(targets);
-      for (let i = 0; i < ytVideos.length; i++) {
-        videos.push({
-          title: ytVideos[i].title || '',
-          link: ytVideos[i].link || '',
-          channel: ytVideos[i].channel || '',
-          channelId: ytVideos[i].channelId || '',
-          thumbnail: ytVideos[i].thumbnail || '',
-          views: ytVideos[i].views || '',
-          duration: ytVideos[i].duration || '',
-          isTopPick: i === 0,
-        });
-      }
-    }
+    const videos = await this.getYouTubeRecommendations(targets);
 
     const recommendations = (prediction.recommendations || []).map((rec, idx) => {
       const statuses: Array<'done' | 'in_progress' | 'pending'> = ['done', 'in_progress', 'pending', 'pending', 'pending'];
@@ -277,81 +281,27 @@ export class MLService {
     };
   }
 
-  private getRecommendationDescription(rec: string, weakSubjects: string[]): string {
-    if (weakSubjects.length > 0) {
-      const matched = weakSubjects.find((ws) => rec.toLowerCase().includes(ws.toLowerCase()));
-      if (matched) {
-        return `Targeted action for ${matched}.`;
-      }
-    }
-    if (rec.toLowerCase().includes('attendance')) {
-      return 'Raise your attendance above the 75% threshold.';
-    }
-    if (rec.toLowerCase().includes('assignment')) {
-      return 'Clear your pending assignment queue to improve completion rate.';
-    }
-    if (rec.toLowerCase().includes('practice')) {
-      return 'Reinforce foundational concepts with targeted exercises.';
-    }
-    return 'Follow the AI-guided roadmap to improve your metrics.';
-  }
-
-  private fallbackPredict(input: PredictionInput): PredictionResult {
-    const { attendance, internalMarks, previousSGPA, assignmentCompletion, subjectPerformance } = input;
-
-    const attendanceScore = attendance / 100;
-    const marksScore = internalMarks / 100;
-    const sgpaScore = previousSGPA / 10;
-    const assignmentScore = assignmentCompletion / 100;
-
-    const subjectScores = Object.entries(subjectPerformance).filter(([k]) => !k.startsWith('_'));
-    const subjectAvg = subjectScores.length > 0
-      ? subjectScores.reduce((acc, [, v]) => acc + v, 0) / subjectScores.length / 100
-      : 0.5;
-
-    const overallScore =
-      attendanceScore * 0.3 +
-      marksScore * 0.3 +
-      sgpaScore * 0.2 +
-      assignmentScore * 0.1 +
-      subjectAvg * 0.1;
-
-    const confidence = Math.min(95, Math.max(60, Math.round(overallScore * 100)));
-    const weakSubjects = Object.entries(subjectPerformance)
-      .filter(([k, v]) => !k.startsWith('_') && v < 60)
-      .map(([subject]) => subject);
-
-    const riskLevel = overallScore >= 0.7 ? 'Low' : overallScore >= 0.5 ? 'Medium' : 'High';
-
-    const gradeMap: Record<number, string> = {
-      10: 'A+', 9: 'A', 8: 'B+', 7: 'B', 6: 'C+', 5: 'C', 4: 'D', 0: 'F',
-    };
-    const gradeIndex = Math.floor(overallScore * 10);
-    const predictedGrade = gradeMap[Math.min(gradeIndex, 10)] || 'C';
-
-    const factors = [
-      { factor: 'Attendance', impact: attendanceScore < 0.7 ? 'Critical Negative' : 'Positive', value: Math.round(attendanceScore * 100), contribution: attendanceScore * 0.3 },
-      { factor: 'Internal Marks', impact: marksScore < 0.7 ? 'High Negative' : 'Positive', value: Math.round(marksScore * 100), contribution: marksScore * 0.3 },
-      { factor: 'Previous SGPA', impact: sgpaScore < 0.7 ? 'Moderate Negative' : 'Positive', value: Math.round(sgpaScore * 100), contribution: sgpaScore * 0.2 },
-      { factor: 'Assignment Completion', impact: assignmentScore < 0.7 ? 'High Negative' : 'Positive', value: Math.round(assignmentScore * 100), contribution: assignmentScore * 0.1 },
-    ];
-
-    const recommendations = [
-      ...weakSubjects.map((s) => `Focus on improving ${s} through targeted practice`),
-      'Attend all classes regularly',
-      'Complete pending assignments',
-      'Schedule weekly review sessions',
-    ];
-
-    return {
-      predictedGrade,
-      riskLevel,
-      confidence,
-      factors,
-      weakSubjects,
-      recommendations,
-    };
+  async predict(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const process = spawn('python', [this.pythonScriptPath, JSON.stringify(data)]);
+      let result = '';
+      process.stdout.on('data', (data) => {
+        result += data.toString();
+      });
+      process.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        reject(data);
+      });
+      process.on('close', (code) => {
+        if (code !== 0) {
+          return reject(new Error(`Python script exited with code ${code}`));
+        }
+        try {
+          resolve(JSON.parse(result));
+        } catch (e) {
+          reject(new Error('Failed to parse python script output'));
+        }
+      });
+    });
   }
 }
-
-export const mlService = new MLService();
