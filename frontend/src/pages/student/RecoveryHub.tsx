@@ -25,7 +25,7 @@ export default function RecoveryHub() {
         console.log('Recovery plan response:', res);
         if (res.success && res.data) {
           // If the recovery plan returns videoRecommendations, set them
-          setResources(res.data.videoRecommendations || res.data);
+          setResources(res.data.videoRecommendations || []);
         }
       } catch (err) {
         console.error('Failed to fetch recommendations', err);
