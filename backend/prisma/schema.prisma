@@ -1,14 +1,15 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id         String   @id @default(uuid())
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   email      String   @unique
   password   String
   name       String
@@ -36,7 +37,7 @@ model User {
 }
 
 model StudentProfile {
-  id                   String    @id @default(uuid())
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
   userId               String    @unique
   user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   currentSGPA          Float?
@@ -57,10 +58,11 @@ model StudentProfile {
 
   subjects     SubjectEnrollment[]
   weakSubjects WeakSubject[]
+  recoveryPlans RecoveryPlan[]
 }
 
 model FacultyProfile {
-  id             String   @id @default(uuid())
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId         String   @unique
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   specialization String?
@@ -72,7 +74,7 @@ model FacultyProfile {
 }
 
 model AdminProfile {
-  id        String   @id @default(uuid())
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -80,7 +82,7 @@ model AdminProfile {
 }
 
 model Subject {
-  id          String   @id @default(uuid())
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
   code        String   @unique
   name        String
   description String?
@@ -100,10 +102,11 @@ model Subject {
   assignments       Assignment[]
   resources         LearningResource[]
   previousScores    PreviousScore[]
+  recoveryPlans     RecoveryPlan[]
 }
 
 model SubjectEnrollment {
-  id             String         @id @default(uuid())
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
   studentId      String
   student        StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   subjectId      String
@@ -119,7 +122,7 @@ model SubjectEnrollment {
 }
 
 model WeakSubject {
-  id        String         @id @default(uuid())
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
   studentId String
   student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   subjectId String
@@ -132,7 +135,7 @@ model WeakSubject {
 }
 
 model AttendanceRecord {
-  id        String   @id @default(uuid())
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjectId String
@@ -143,7 +146,7 @@ model AttendanceRecord {
 }
 
 model MarksRecord {
-  id        String   @id @default(uuid())
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjectId String
@@ -157,7 +160,7 @@ model MarksRecord {
 }
 
 model PreviousScore {
-  id         String   @id @default(uuid())
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjectId  String
@@ -174,7 +177,7 @@ model PreviousScore {
 }
 
 model Assignment {
-  id          String   @id @default(uuid())
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjectId   String
@@ -189,7 +192,7 @@ model Assignment {
 }
 
 model Prediction {
-  id              String   @id @default(uuid())
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
   userId          String
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   predictedGrade  String
@@ -204,7 +207,7 @@ model Prediction {
 }
 
 model InterventionLog {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   status    String // not_started, contacted, guidance_provided, recovery_in_progress, improving, recovered
@@ -215,7 +218,7 @@ model InterventionLog {
 }
 
 model LearningResource {
-  id            String   @id @default(uuid())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   subjectId     String
   subject       Subject  @relation(fields: [subjectId], references: [id])
   title         String
@@ -226,4 +229,27 @@ model LearningResource {
   url           String?
   aiRecommended Boolean  @default(false)
   createdAt     DateTime @default(now())
+}
+
+model RecoveryPlan {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  details   String?
+  status    String // not_started, in_progress, completed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, subjectId])
+}
+
+model Message {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId   String
+  receiverId String
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }
