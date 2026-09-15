@@ -4,3 +4,4 @@ pydantic
 numpy
 youtube-search-python
 python-multipart
+httpx<0.28

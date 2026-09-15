@@ -72,15 +72,16 @@ export class MLService {
       if (response.ok) {
         const data: any = await response.json();
         console.log('YouTube recommendations from ML service:', data);
-        if (data.channels && Array.isArray(data.channels) && data.channels.length > 0) {
-          return data.channels.map((channel: any, index: number) => ({
-            title: channel.channel_name || 'Recommended Channel',
-            link: `https://www.youtube.com/channel/${channel.channel_id}`,
-            channel: channel.channel_name || '',
-            channelId: channel.channel_id || '',
+        const channels = data.videos || data.channels;
+        if (channels && Array.isArray(channels) && channels.length > 0) {
+          return channels.map((channel: any, index: number) => ({
+            title: channel.channel_name || channel.channel || channel.title || 'Recommended Channel',
+            link: channel.link || `https://www.youtube.com/channel/${channel.channel_id || channel.channelId}`,
+            channel: channel.channel_name || channel.channel || '',
+            channelId: channel.channel_id || channel.channelId || '',
             thumbnail: channel.thumbnail || '',
-            videoCount: channel.video_count || 'N/A',
-            isTopPick: channel.is_top_pick || index === 0,
+            videoCount: channel.video_count || channel.videoCount || 'N/A',
+            isTopPick: channel.is_top_pick || channel.isTopPick || index === 0,
           }));
         }
       }
@@ -208,14 +209,14 @@ export class MLService {
       if (response.ok) {
         const data = (await response.json()) as any;
         const prediction = data.prediction || data;
-        const channels: VideoResult[] = (data.channels || []).map((c: any, i: number) => ({
-          title: c.channel_name || 'Recommended Channel',
-          link: `https://www.youtube.com/channel/${c.channel_id}`,
-          channel: c.channel_name || '',
-          channelId: c.channel_id || '',
+        const channels: VideoResult[] = (data.videos || data.channels || []).map((c: any, i: number) => ({
+          title: c.channel_name || c.channel || c.title || 'Recommended Channel',
+          link: c.link || `https://www.youtube.com/channel/${c.channel_id || c.channelId}`,
+          channel: c.channel_name || c.channel || '',
+          channelId: c.channel_id || c.channelId || '',
           thumbnail: c.thumbnail || '',
-          videoCount: c.video_count || 'N/A',
-          isTopPick: c.is_top_pick || i === 0,
+          videoCount: c.video_count || c.videoCount || 'N/A',
+          isTopPick: c.is_top_pick || c.isTopPick || i === 0,
         }));
 
         const recommendations = (prediction.recommendations || []).map((rec: string, idx: number) => {

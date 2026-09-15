@@ -202,8 +202,12 @@ async def simulate(input_data: PredictionInput):
 
 def _search_youtube(query: str, limit: int = 5):
     from youtubesearchpython import VideosSearch
-    search = VideosSearch(query, limit=limit)
-    search_result = search.result()
+    try:
+        search = VideosSearch(query, limit=limit)
+        search_result = search.result()
+    except Exception as e:
+        print(f'[WARN] YouTube search failed for query "{query}": {e}')
+        return []
     videos = []
     if search_result and 'result' in search_result and len(search_result['result']) > 0:
         for video in search_result['result']:
@@ -246,6 +250,31 @@ def _generate_search_queries(subject: str, learning_style: Optional[str] = None)
     queries.append(f"{subject} explained simply")
     queries.append(f"{subject} key concepts examples")
     return queries
+
+
+@app.post('/youtube')
+async def youtube(input_data: RecommendInput):
+    targets = input_data.subjects if input_data.subjects else []
+    all_videos = []
+    for subject in targets:
+        queries = _generate_search_queries(subject, input_data.learningStyle)
+        for query in queries:
+            videos = _search_youtube(query, limit=3)
+            if videos:
+                all_videos.extend([v.model_copy(update={'isTopPick': False}) for v in videos])
+                break
+
+    seen_links = set()
+    unique_videos = []
+    for v in all_videos:
+        if v.link not in seen_links:
+            seen_links.add(v.link)
+            unique_videos.append(v)
+
+    if unique_videos:
+        unique_videos[0].isTopPick = True
+
+    return {'videos': unique_videos, 'topPickIndex': 0 if unique_videos else -1}
 
 
 @app.post('/recommend', response_model=RecommendResponse)
