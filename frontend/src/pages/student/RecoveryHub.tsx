@@ -4,8 +4,15 @@ import { Sparkles, BookOpen, Clock, CheckCircle2, Circle, PlayCircle, X } from '
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 
+const tasks = [
+  { title: 'Improve Attendance', desc: 'Attend next 5 DBMS classes', status: 'done' },
+  { title: 'Complete DBMS Module 3', desc: 'Normalization Practice', status: 'active' },
+  { title: 'Watch Recommended Lecture', desc: 'Math III — Laplace Transforms', status: 'pending' },
+  { title: 'Complete Practice Quiz', desc: 'DBMS Normal Forms Quiz', status: 'pending' },
+  { title: 'Ask AI Assistant', desc: 'Clarify doubts on 3NF', status: 'pending' },
+];
+
 export default function RecoveryHub() {
-  const [tasks, setTasks] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedChannel, setSelectedChannel] = useState<any | null>(null);
@@ -17,8 +24,8 @@ export default function RecoveryHub() {
         const res = await api.student.getRecoveryPlan();
         console.log('Recovery plan response:', res);
         if (res.success && res.data) {
-          setTasks(res.data.recommendations || []);
-          setResources(res.data.videoRecommendations || []);
+          // If the recovery plan returns videoRecommendations, set them
+          setResources(res.data.videoRecommendations || res.data);
         }
       } catch (err) {
         console.error('Failed to fetch recommendations', err);
@@ -30,7 +37,7 @@ export default function RecoveryHub() {
   }, []);
 
   const done = tasks.filter(t => t.status === 'done').length;
-  const pct = Math.round((done / tasks.length) * 100);
+  const pct = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -66,7 +73,7 @@ export default function RecoveryHub() {
                  <Circle className="w-5 h-5 text-slate-300 dark:text-slate-600" />}
               </div>
               <div>
-                <h4 className={cn('font-semibold text-sm', task.status === 'active' ? 'text-brand-900 dark:text-brand-100' : task.status === 'done' ? 'text-emerald-700 dark:text-emerald-400 line-through' : 'text-slate-700 dark:text-slate-300')}>{task.step}</h4>
+                <h4 className={cn('font-semibold text-sm', task.status === 'active' ? 'text-brand-900 dark:text-brand-100' : task.status === 'done' ? 'text-emerald-700 dark:text-emerald-400 line-through' : 'text-slate-700 dark:text-slate-300')}>{task.title}</h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{task.desc}</p>
               </div>
             </motion.div>
