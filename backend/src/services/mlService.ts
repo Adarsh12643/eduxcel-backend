@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
-import { User } from '../models/User';
-import prisma from '../utils/prisma';
+import { IUser } from '../models/User';
+import prisma from '../config/database';
 
 // Define interfaces for our data structures right here for clarity
 export interface VideoResult {
@@ -70,7 +70,7 @@ export class MLService {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: any = await response.json();
         console.log('YouTube recommendations from ML service:', data);
         if (data.channels && Array.isArray(data.channels) && data.channels.length > 0) {
           return data.channels.map((channel: any, index: number) => ({
@@ -114,7 +114,7 @@ export class MLService {
   }
 
   async getRecoveryPlan(userId: string, forcedSubjects?: string[]): Promise<RecoveryPlan> {
-    const user = await User.findById(userId);
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new Error('User not found');
     }

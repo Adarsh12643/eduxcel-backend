@@ -2,7 +2,8 @@ import { Response } from 'express';
 import prisma from '../config/database';
 import User from '../models/User';
 import { AuthRequest } from '../types';
-import { mlService } from '../services/mlService';
+import { MLService } from '../services/mlService';
+const mlService = new MLService();
 
 export const getStudentDashboard = async (req: AuthRequest, res: Response) => {
   try {

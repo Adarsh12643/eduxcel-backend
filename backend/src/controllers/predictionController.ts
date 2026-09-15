@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { PredictionInput, PredictionResult, AuthRequest, RecoveryPlan } from '../types';
-import { mlService } from '../services/mlService';
+import { MLService } from '../services/mlService';
+const mlService = new MLService();
 import prisma from '../config/database';
 import User from '../models/User';
 

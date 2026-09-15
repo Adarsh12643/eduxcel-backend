@@ -1,4 +1,5 @@
-import { mlService } from '../services/mlService';
+import { MLService } from '../services/mlService';
+const mlService = new MLService();
 import { Response, Request } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -517,4 +518,3 @@ export const onboard = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ success: false, message: 'Onboarding failed' });
   }
 };
-
