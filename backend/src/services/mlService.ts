@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import path from 'path';
 import { IUser } from '../models/User';
 import prisma from '../config/database';
 
@@ -37,7 +38,10 @@ export class MLService {
 
   constructor() {
     this.mlServiceUrl = process.env.ML_SERVICE_URL || 'http://127.0.0.1:5000';
-    this.pythonScriptPath = process.env.PYTHON_SCRIPT_PATH || 'src/services/main.py';
+    // Correctly resolve the path to the Python script, accounting for the build directory.
+    const isTsNode = process.argv[0].includes('ts-node');
+    const baseDir = isTsNode ? __dirname : path.join(__dirname, '..');
+    this.pythonScriptPath = path.join(baseDir, 'services', 'ml', 'predict_model.py');
   }
 
   private getRecommendationDescription(recommendation: string, weakSubjects: string[]): string {
