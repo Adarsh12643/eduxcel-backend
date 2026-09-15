@@ -16,8 +16,8 @@ model User {
   role       String // student, faculty, admin
   department String?
   avatar     String?
-  rollNumber String?  @unique
-  employeeId String?  @unique
+  rollNumber String?
+  employeeId String?
   semester   Int?
   section    String?
   batch      String?
