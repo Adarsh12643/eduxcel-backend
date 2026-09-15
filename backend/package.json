@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/app.ts",
-    "build": "prisma generate && prisma db push && tsc",
+    "build": "prisma generate && prisma db push && tsc && rsync -av --exclude='*.ts' src/ dist/",
     "start": "node dist/app.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
