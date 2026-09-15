@@ -34,6 +34,8 @@ model User {
   previousScores    PreviousScore[]
   assignments       Assignment[]
   interventionLogs  InterventionLog[]
+
+  @@map("users")
 }
 
 model StudentProfile {
