@@ -36,11 +36,12 @@ export interface VideoResult {
   title: string;
   link: string;
   channel: string;
-  channelId?: string;
+  channelId: string;
   thumbnail: string;
-  views: string;
-  duration: string;
-  isTopPick?: boolean;
+  views?: string;
+  duration?: string;
+  videoCount?: string;
+  isTopPick: boolean;
 }
 
 export interface RecoveryPlan {

@@ -50,6 +50,8 @@ model StudentProfile {
   predictedGrade       String?
   predictedConfidence  Float?
   lastPredictedAt      DateTime?
+  studyHours           Float?
+  learningStyle        String?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 

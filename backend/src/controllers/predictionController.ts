@@ -159,7 +159,7 @@ export const getRecommendations = async (req: AuthRequest, res: Response) => {
       ? subjects
       : [];
 
-    const plan = await mlService.getRecoveryPlan(userId, resolvedSubjects);
+    const plan = await mlService.getRecoveryPlan(userId);
     return res.status(200).json({
       success: true,
       data: plan,

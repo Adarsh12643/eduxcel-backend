@@ -9,9 +9,9 @@ export interface VideoResult {
   channel: string;
   channelId: string;
   thumbnail: string;
-  views?: string; // Optional for video
-  duration?: string; // Optional for video
-  videoCount?: string; // Optional for channel
+  views?: string;
+  duration?: string;
+  videoCount?: string;
   isTopPick: boolean;
 }
 
@@ -27,7 +27,7 @@ export interface RecoveryPlan {
   confidence: number;
   weakSubjects: string[];
   recommendations: Recommendation[];
-  videoRecommendations: VideoResult[];
+  videoRecommendations: (VideoResult & { isTopPick: boolean })[];
 }
 
 
@@ -113,8 +113,13 @@ export class MLService {
     return fallbackChannels;
   }
 
-  async getRecoveryPlan(userId: string, forcedSubjects?: string[]): Promise<RecoveryPlan> {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+  async getRecoveryPlan(userId: string): Promise<RecoveryPlan> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        studentProfile: true,
+      },
+    });
     if (!user) {
       throw new Error('User not found');
     }
@@ -162,22 +167,22 @@ export class MLService {
       }
     }
 
-    if (user.studyHours !== undefined) {
-      subjectPerformance['_studyHours'] = user.studyHours;
+    if (user.studentProfile?.studyHours != null) {
+      subjectPerformance['_studyHours'] = user.studentProfile.studyHours;
     }
 
-    if (user.weakSubjects && user.weakSubjects.length > 0) {
-      for (const ws of user.weakSubjects) {
+    const weakSubjects = studentProfile?.weakSubjects.map((ws) => ws.subject.name) || [];
+
+    if (weakSubjects.length > 0) {
+      for (const ws of weakSubjects) {
         if (!(ws in subjectPerformance)) {
           subjectPerformance[ws] = 40;
         }
       }
     }
 
-    const targets = forcedSubjects && forcedSubjects.length > 0
-      ? forcedSubjects
-      : user.weakSubjects && user.weakSubjects.length > 0
-        ? user.weakSubjects
+    const targets = weakSubjects.length > 0
+        ? weakSubjects
         : Object.keys(subjectPerformance).filter((k) => subjectPerformance[k] < 60 && !k.startsWith('_'));
 
     const payload = {
@@ -189,8 +194,8 @@ export class MLService {
       previousSGPA,
       assignmentCompletion,
       semester,
-      studyHours: user.studyHours,
-      learningStyle: user.learningStyle,
+      studyHours: user.studentProfile?.studyHours,
+      learningStyle: user.studentProfile?.learningStyle,
     };
 
     try {
@@ -255,11 +260,11 @@ export class MLService {
 
     const videos = await this.getYouTubeRecommendations(targets);
 
-    const recommendations = (prediction.recommendations || []).map((rec, idx) => {
+    const recommendations = (prediction.recommendations || []).map((rec: string, idx: number) => {
       const statuses: Array<'done' | 'in_progress' | 'pending'> = ['done', 'in_progress', 'pending', 'pending', 'pending'];
       return {
         step: rec,
-        desc: this.getRecommendationDescription(rec, prediction.weakSubjects),
+        desc: this.getRecommendationDescription(rec, prediction.weakSubjects || []),
         status: idx < statuses.length ? statuses[idx] : 'pending',
       };
     });
@@ -304,5 +309,11 @@ export class MLService {
         }
       });
     });
+  }
+
+  async simulateWhatIf(data: any): Promise<any> {
+    // This is a simplified simulation. For a real-world scenario,
+    // you might have a separate model or logic for simulations.
+    return this.predict(data);
   }
 }
