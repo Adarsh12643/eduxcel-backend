@@ -393,7 +393,7 @@ export default function StudentDashboard() {
         <div className="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
           {!collapsed && (
             <div className="p-3 bg-white/50 dark:bg-dark-elevated/50 rounded-xl border border-white dark:border-white/10 mb-4 shadow-inner-crisp dark:shadow-inner-crisp">
-              <p className="text-[10px] font-black tracking-widest text-brand-600 dark:text-brand-400 uppercase mb-1">Xcelo Core</p>
+              <p className="text-[10px] font-black tracking-widest text-brand-600 dark:text-brand-400 uppercase mb-1">Xcello Core</p>
               <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight">"Learn Today • Excel Tomorrow • Succeed Forever"</p>
             </div>
           )}

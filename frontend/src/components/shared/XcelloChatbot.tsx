@@ -13,9 +13,9 @@ const QUICK_ACTIONS = {
 };
 
 const INITIAL_MESSAGES: Record<string, string> = {
-  student: "Hi there! I'm **Xcelo**, your AI tutor. How can I help you excel today? 🚀",
-  faculty: "Hi! I'm **Xcelo**, your AI Teaching Assistant. How can I assist with your classes? 📊",
-  admin: "Hi! I'm **Xcelo**, your AI System Admin. How can I help with platform management? ⚙️",
+  student: "Hi there! I'm **Xcello**, your AI tutor. How can I help you excel today? 🚀",
+  faculty: "Hi! I'm **Xcello**, your AI Teaching Assistant. How can I assist with your classes? 📊",
+  admin: "Hi! I'm **Xcello**, your AI System Admin. How can I help with platform management? ⚙️",
 };
 
 // Lightweight markdown renderer (no external deps needed)
@@ -118,7 +118,7 @@ function MarkdownMessage({ content }: { content: string }) {
   return <div className="space-y-0.5">{elements}</div>;
 }
 
-export default function XceloChatbot({
+export default function XcelloChatbot({
   isOpen,
   onClose,
   roleContext = 'student',
@@ -175,7 +175,7 @@ export default function XceloChatbot({
                 <img src="/xcelo-avatar.jpg" alt="Xcello" className="w-full h-full object-cover" />
               </div>
               <div className="z-10 relative">
-                <h3 className="font-bold text-white">Xcelo AI</h3>
+                <h3 className="font-bold text-white">Xcello AI</h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <p className="text-[10px] text-brand-100 font-bold tracking-wider uppercase">
@@ -259,7 +259,7 @@ export default function XceloChatbot({
                 type="text"
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Ask Xcelo anything..."
+                placeholder="Ask Xcello anything..."
                 className="w-full bg-slate-50 dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-xl pl-4 pr-12 py-3 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-500/30 transition-all text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
               <button

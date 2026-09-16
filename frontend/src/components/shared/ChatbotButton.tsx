@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import XceloChatbot from './XceloChatbot';
+import XcelloChatbot from './XcelloChatbot';
 
 interface ChatbotButtonProps {
   isAIOpen: boolean;
@@ -46,7 +46,7 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
             {/* Robot GIF — no circle, no clip, natural shape */}
             <motion.button
               onClick={() => { setIsAIOpen(true); setRibbonDismissed(true); }}
-              aria-label="Open Xcelo AI assistant"
+              aria-label="Open Xcello AI assistant"
               whileHover={{ scale: 1.08, y: -4 }}
               whileTap={{ scale: 0.95 }}
               className="bg-transparent border-0 p-0 cursor-pointer focus:outline-none drop-shadow-xl"
@@ -77,7 +77,7 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
         )}
       </AnimatePresence>
 
-      <XceloChatbot isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} roleContext={roleContext} />
+      <XcelloChatbot isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} roleContext={roleContext} />
     </>
   );
 }
