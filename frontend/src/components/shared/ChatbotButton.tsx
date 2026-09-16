@@ -8,7 +8,6 @@ interface ChatbotButtonProps {
   roleContext: 'student' | 'faculty' | 'admin';
 }
 
-// Direct Google Drive thumbnail URL for the robot GIF
 const XCELO_GIF = 'https://lh3.googleusercontent.com/d/1ti3-Eri8AaVOUlpUVOYPJbkRqlNqHqhQ';
 
 export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: ChatbotButtonProps) {
@@ -23,52 +22,75 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.7, y: 20 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2"
+            className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-1"
           >
-            {/* Ribbon "Hi! I am Xcello." — auto-hides after first click */}
+            {/* Ribbon above the robot */}
             {!ribbonDismissed && (
               <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4, type: 'spring', stiffness: 200, damping: 18 }}
-                className="relative flex items-center"
+                initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.5, type: 'spring', stiffness: 220, damping: 18 }}
+                className="relative flex flex-col items-end"
               >
-                {/* Tail pointing to the GIF button */}
-                <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-slate-900 dark:border-l-brand-600" />
-                <div className="flex items-center gap-2 bg-slate-900 dark:bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl whitespace-nowrap pr-9">
+                {/* Ribbon box */}
+                <div className="flex items-center gap-2 bg-white border-2 border-brand-500 text-slate-800 text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-lg whitespace-nowrap pr-8">
                   <span className="text-base">👋</span>
-                  <span>Hi! I am <span className="text-brand-400 dark:text-white font-extrabold">Xcello</span>.</span>
+                  <span>Hi! I am <span className="text-brand-600 font-extrabold">Xcello</span>.</span>
                 </div>
-                {/* Dismiss X */}
+                {/* Dismiss button */}
                 <button
                   onClick={(e) => { e.stopPropagation(); setRibbonDismissed(true); }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors text-xs leading-none"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors text-xs leading-none font-bold"
                   aria-label="Dismiss"
                 >
                   ✕
                 </button>
+                {/* Triangle tail pointing DOWN-right toward the robot */}
+                <div
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: '8px solid transparent',
+                    borderRight: '0px solid transparent',
+                    borderTop: '10px solid #3b82f6', /* brand-500 border */
+                    marginRight: '28px',
+                  }}
+                />
+                <div
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: '6px solid transparent',
+                    borderRight: '0px solid transparent',
+                    borderTop: '8px solid white',
+                    marginRight: '30px',
+                    marginTop: '-9px',
+                  }}
+                />
               </motion.div>
             )}
 
-            {/* GIF Robot Button */}
+            {/* Robot GIF — no circle, no clip, natural shape */}
             <motion.button
               onClick={() => { setIsAIOpen(true); setRibbonDismissed(true); }}
               aria-label="Open Xcelo AI assistant"
-              whileHover={{ scale: 1.08 }}
+              whileHover={{ scale: 1.08, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className="w-20 h-20 rounded-full overflow-hidden shadow-2xl border-4 border-white dark:border-slate-700 bg-white dark:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-brand-400/50"
+              className="bg-transparent border-0 p-0 cursor-pointer focus:outline-none drop-shadow-xl"
+              style={{ background: 'none' }}
             >
               <img
                 src={XCELO_GIF}
                 alt="Xcello AI"
-                className="w-full h-full object-cover"
+                style={{ width: 90, height: 90, objectFit: 'contain', display: 'block' }}
                 onError={(e) => {
-                  // Fallback if GIF doesn't load from Drive
                   const el = e.currentTarget as HTMLImageElement;
                   el.style.display = 'none';
                   const parent = el.parentElement;
                   if (parent) {
-                    parent.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-500 to-brand-700 text-white text-3xl">🤖</div>`;
+                    parent.insertAdjacentHTML('beforeend',
+                      `<div style="width:90px;height:90px;display:flex;align-items:center;justify-content:center;font-size:56px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2))">🤖</div>`
+                    );
                   }
                 }}
               />
