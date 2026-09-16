@@ -288,7 +288,13 @@ function SchedulePage() {
   const dayColors = ['#0047BA', '#3567fb', '#00A3E0', '#7C3AED', '#FF8C00'];
   return (
     <div className="space-y-6">
-      <div><h2 className="text-2xl font-bold text-slate-900 dark:text-white">Class Schedule</h2><p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Your weekly timetable for Semester 6.</p></div>
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden mb-6">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black mb-1">Class Schedule</h2>
+          <p className="text-brand-100 text-sm max-w-xl">Your weekly timetable for Semester 6.</p>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {days.map((day, i) => (
           <motion.div key={day} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
@@ -338,7 +344,13 @@ function AssignmentsPage() {
   };
   return (
     <div className="space-y-6">
-      <div><h2 className="text-2xl font-bold text-slate-900 dark:text-white">Assignments</h2><p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Track and manage your pending assignments.</p></div>
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden mb-6">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black mb-1">Assignments</h2>
+          <p className="text-brand-100 text-sm max-w-xl">Track and manage your pending assignments.</p>
+        </div>
+      </div>
       <div className="space-y-3">
         {assignments.map((a, i) => (
           <motion.div key={i} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}

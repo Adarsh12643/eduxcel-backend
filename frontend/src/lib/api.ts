@@ -44,6 +44,7 @@ export const api = {
   student: {
     getDashboard: () => request('/students/dashboard'),
     getSubjects: () => request('/students/subjects'),
+    updateSubject: (id: string, data: any) => request(`/students/subjects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     getAssignments: () => request('/students/assignments'),
     getHistory: () => request('/students/history'),
     getRecoveryPlan: () => request('/students/recovery'),

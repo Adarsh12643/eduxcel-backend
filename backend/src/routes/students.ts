@@ -5,6 +5,7 @@ import {
   getStudentAssignments,
   getStudentHistory,
   getRecoveryPlan,
+  updateStudentSubject,
 } from '../controllers/studentController';
 import { authenticate, authorize } from '../middleware/auth';
 
@@ -14,6 +15,7 @@ router.use(authenticate, authorize('student'));
 
 router.get('/dashboard', getStudentDashboard);
 router.get('/subjects', getStudentSubjects);
+router.put('/subjects/:id', updateStudentSubject);
 router.get('/assignments', getStudentAssignments);
 router.get('/history', getStudentHistory);
 router.get('/recovery', getRecoveryPlan);

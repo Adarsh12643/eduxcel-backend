@@ -218,10 +218,13 @@ function StudentDetail() {
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center gap-4 mb-2">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white flex items-center justify-center font-bold text-2xl shadow-md">AJ</div>
-        <div>
-          <h2 className="text-2xl font-bold font-display text-slate-900 dark:text-white">Alex Johnson</h2>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">B.Tech Computer Science • Semester 5</p>
+        <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden mb-6">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black mb-1">Alex Johnson</h2>
+          <p className="text-brand-100 text-sm max-w-xl">B.Tech Computer Science • Semester 5</p>
         </div>
+      </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

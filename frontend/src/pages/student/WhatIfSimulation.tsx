@@ -60,9 +60,12 @@ export default function WhatIfSimulation() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">What If I Improve?</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Adjust your metrics to simulate how your predicted grade changes.</p>
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden mb-6">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black mb-1">What If I Improve?</h2>
+          <p className="text-brand-100 text-sm max-w-xl">Adjust your metrics to simulate how your predicted grade changes.</p>
+        </div>
       </div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}

@@ -209,3 +209,44 @@ export const getRecoveryPlan = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ success: false, message: 'Failed to fetch recovery plan' });
   }
 };
+
+export const updateStudentSubject = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { currentScore, attendance } = req.body;
+
+    let updated = false;
+
+    // First try updating PreviousScore
+    try {
+      await prisma.previousScore.update({
+        where: { id },
+        data: { total: Number(currentScore) }
+      });
+      updated = true;
+    } catch {
+      // Not a previousScore, fallback to StudentSubject
+    }
+
+    if (!updated) {
+      try {
+        await prisma.studentSubject.update({
+          where: { id },
+          data: { 
+            currentScore: Number(currentScore), 
+            attendance: Number(attendance),
+            riskLevel: Number(currentScore) < 60 ? 'High' : (Number(currentScore) > 80 ? 'Low' : 'Medium')
+          }
+        });
+        updated = true;
+      } catch (e) {
+        return res.status(404).json({ success: false, message: 'Subject not found' });
+      }
+    }
+
+    return res.status(200).json({ success: true, message: 'Metrics updated successfully' });
+  } catch (error) {
+    console.error('Update subject error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update subject metrics' });
+  }
+};
