@@ -122,15 +122,29 @@ export default function RecoveryHub() {
                 <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
-            <div className="flex-1 bg-slate-100 dark:bg-black">
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/videoseries?list=UU${selectedChannel.channelId.substring(2)}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></iframe>
+            <div className="flex-1 bg-slate-100 dark:bg-black flex items-center justify-center">
+              {selectedChannel.channelId === 'SEARCH_QUERY' ? (
+                <div className="text-center p-8">
+                  <h3 className="text-xl font-bold mb-4 dark:text-white">Learn {selectedChannel.title.replace('Master ', '').replace(' | Full Course & Tutorials', '')}</h3>
+                  <p className="mb-6 text-slate-500">We've generated a curated YouTube search tailored to your weak subject.</p>
+                  <a href={selectedChannel.link} target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors inline-block">
+                    Open YouTube Search
+                  </a>
+                </div>
+              ) : (
+                <iframe
+                  className="w-full h-full"
+                  src={
+                    selectedChannel.link?.includes('watch?v=')
+                      ? `https://www.youtube.com/embed/${new URLSearchParams(selectedChannel.link.split('?')[1]).get('v')}`
+                      : `https://www.youtube.com/embed/videoseries?list=UU${selectedChannel.channelId?.substring(2)}`
+                  }
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                ></iframe>
+              )}
             </div>
             <div className="p-4 border-t dark:border-dark-border flex-shrink-0">
                 <button 

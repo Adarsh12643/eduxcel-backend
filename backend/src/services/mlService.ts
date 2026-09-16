@@ -95,20 +95,21 @@ export class MLService {
 
   private describeStep(step: string, weakSubjects: string[]): string {
     const subjectList = weakSubjects.join(', ') || 'your weak subjects';
-    switch (step) {
-      case 'focus_on_weak_subjects':
-        return `Your performance in ${subjectList} needs improvement. Dedicate extra study time to these subjects.`;
-      case 'practice_mock_tests':
-        return 'Attempting mock tests will help you get familiar with exam patterns and improve time management.';
-      case 'improve_attendance':
-        return 'Your attendance is low. Regular class attendance significantly improves understanding of concepts.';
-      case 'consult_with_professors':
-        return `Don't hesitate to ask for help. Your professors can provide personalised guidance on ${subjectList}.`;
-      case 'increase_study_hours':
-        return 'Try to study at least 4–6 hours a day. Consistent daily effort compounds over time.';
-      default:
-        return 'Follow the personalised steps to steadily improve your academic performance.';
+    
+    if (step.includes('Focus on')) {
+      return `Your performance in ${subjectList} needs improvement. Dedicate extra study time to these subjects. Finish lectures and move to the next module.`;
     }
+    if (step.includes('Practice Mock Tests')) {
+      return 'Attempting mock tests will help you get familiar with exam patterns and improve time management for ' + subjectList + '.';
+    }
+    if (step.includes('Improve Class Attendance')) {
+      return 'Your attendance is low. Regular class attendance significantly improves understanding of concepts.';
+    }
+    if (step.includes('Consult AI')) {
+      return 'Don\'t hesitate to ask Xcello for help. AI can provide personalized guidance on ' + subjectList + ' for further topics.';
+    }
+    
+    return 'Follow the personalized steps to steadily improve your academic performance in ' + subjectList + '.';
   }
 
   // ── Pure-JS grade prediction (no Python, no external service) ─────────────
@@ -133,10 +134,12 @@ export class MLService {
     else                  { predictedGrade = 'F'; riskLevel = 'High'; }
 
     const recs: string[] = [];
-    if (targets.length > 0)        recs.push('focus_on_weak_subjects');
-    if (attendance < 75)           recs.push('improve_attendance');
-    if (internalMarks < 60)        recs.push('practice_mock_tests');
-    recs.push('consult_with_professors');
+    if (targets.length > 0)        recs.push(`Focus on Weak Subjects: ${targets.join(', ')}`);
+    else                           recs.push('Focus on core subjects');
+    
+    if (attendance < 75)           recs.push('Improve Class Attendance');
+    if (internalMarks < 60)        recs.push('Practice Mock Tests');
+    recs.push('Consult AI for Further Topics');
 
     return { predictedGrade, riskLevel, confidence: 72, recommendations: recs };
   }
@@ -177,10 +180,19 @@ export class MLService {
         }
       }
     } catch {
-      console.warn('YouTube ML endpoint unavailable — using curated fallback channels.');
+      console.warn('YouTube ML endpoint unavailable — using dynamic content-based fallback.');
     }
 
-    return FALLBACK_CHANNELS;
+    // Dynamic content-based fallback using exact weak subjects
+    return subjects.map((sub, i) => ({
+      title: `Master ${sub} | Full Course & Tutorials`,
+      link: `https://www.youtube.com/results?search_query=${encodeURIComponent(sub + ' full course tutorial')}`,
+      channel: `${sub} Academy`,
+      channelId: 'SEARCH_QUERY',
+      thumbnail: `https://placehold.co/600x400/3567fb/ffffff?text=${encodeURIComponent(sub)}`,
+      videoCount: '10+ videos',
+      isTopPick: i === 0,
+    }));
   }
 
   // ── Recovery plan (NEVER throws — always returns a valid plan) ────────────

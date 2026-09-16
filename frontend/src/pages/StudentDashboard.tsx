@@ -184,12 +184,12 @@ function Overview({ userData }: { userData: any }) {
             <div className="p-2 bg-brand-100 dark:bg-brand-500/20 rounded-lg text-brand-600 dark:text-brand-300 shrink-0">
               <BrainCircuit className="w-5 h-5" />
             </div>
-            <div>
-              <h4 className="font-semibold text-brand-900 dark:text-brand-100 mb-1">AI Insight</h4>
-              <p className="text-sm text-brand-700/80 dark:text-brand-300/80 leading-relaxed">
-                Your performance is improving, but <span className="font-semibold">DBMS</span> and <span className="font-semibold">Mathematics</span> require additional attention to secure your target B+ grade.
-              </p>
-            </div>
+              <div>
+                <h4 className="font-semibold text-brand-900 dark:text-brand-100 mb-1">AI Insight</h4>
+                <p className="text-sm text-brand-700/80 dark:text-brand-300/80 leading-relaxed">
+                  Your performance is improving, but <span className="font-semibold">{dashboardData?.weakSubjects?.length > 0 ? dashboardData.weakSubjects.join(' and ') : 'your core subjects'}</span> require additional attention to secure your target {dashboardData?.targetSGPA ? `${dashboardData.targetSGPA} SGPA` : 'B+ grade'}.
+                </p>
+              </div>
           </div>
         </motion.div>
 
@@ -267,12 +267,18 @@ function Overview({ userData }: { userData: any }) {
 }
 
 function SchedulePage() {
+  const userStr = localStorage.getItem('eduxcel_user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const subjects = user?.weakSubjects?.length > 1 ? user.weakSubjects : ['Advanced Concepts', 'Core Algorithms'];
+  const sub1 = subjects[0] || 'Core Subject I';
+  const sub2 = subjects[1] || 'Core Subject II';
+
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const schedule: Record<string, { time: string; subject: string; room: string; type: string }[]> = {
-    Monday: [{ time: '9:00 AM', subject: 'DBMS', room: 'Lab 3', type: 'Lab' }, { time: '11:00 AM', subject: 'Mathematics III', room: 'Room 201', type: 'Lecture' }],
+    Monday: [{ time: '9:00 AM', subject: sub1, room: 'Lab 3', type: 'Lab' }, { time: '11:00 AM', subject: sub2, room: 'Room 201', type: 'Lecture' }],
     Tuesday: [{ time: '10:00 AM', subject: 'Operating Systems', room: 'Room 105', type: 'Lecture' }],
-    Wednesday: [{ time: '9:00 AM', subject: 'Computer Networks', room: 'Room 202', type: 'Lecture' }, { time: '2:00 PM', subject: 'DBMS', room: 'Room 201', type: 'Lecture' }],
-    Thursday: [{ time: '11:00 AM', subject: 'Mathematics III', room: 'Room 201', type: 'Lecture' }],
+    Wednesday: [{ time: '9:00 AM', subject: 'Computer Networks', room: 'Room 202', type: 'Lecture' }, { time: '2:00 PM', subject: sub1, room: 'Room 201', type: 'Lecture' }],
+    Thursday: [{ time: '11:00 AM', subject: sub2, room: 'Room 201', type: 'Lecture' }],
     Friday: [{ time: '9:00 AM', subject: 'Operating Systems', room: 'Lab 2', type: 'Lab' }, { time: '1:00 PM', subject: 'Computer Networks', room: 'Room 105', type: 'Lecture' }],
   };
   const typeColor: Record<string, string> = {
@@ -310,10 +316,16 @@ function SchedulePage() {
 }
 
 function AssignmentsPage() {
+  const userStr = localStorage.getItem('eduxcel_user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const subjects = user?.weakSubjects?.length > 1 ? user.weakSubjects : ['Advanced Concepts', 'Core Algorithms'];
+  const sub1 = subjects[0] || 'Core Subject I';
+  const sub2 = subjects[1] || 'Core Subject II';
+
   const assignments = [
-    { title: 'DBMS ER Diagram', subject: 'DBMS', due: '2 days', priority: 'High', status: 'pending' },
+    { title: `${sub1} Project Phase 1`, subject: sub1, due: '2 days', priority: 'High', status: 'pending' },
     { title: 'OS Process Scheduling Report', subject: 'Operating Systems', due: '5 days', priority: 'Medium', status: 'in_progress' },
-    { title: 'Math III Problem Set 4', subject: 'Mathematics III', due: '1 day', priority: 'High', status: 'pending' },
+    { title: `${sub2} Problem Set 4`, subject: sub2, due: '1 day', priority: 'High', status: 'pending' },
     { title: 'Networks Lab Report', subject: 'Computer Networks', due: '7 days', priority: 'Low', status: 'submitted' },
   ];
   const statusStyle: Record<string, string> = {
