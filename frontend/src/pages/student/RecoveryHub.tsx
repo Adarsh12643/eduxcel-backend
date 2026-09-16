@@ -71,30 +71,13 @@ export default function RecoveryHub() {
       return `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query)}&origin=${origin}`;
     }
     if (channel.link?.includes('watch?v=')) {
-      return `https://www.youtube.com/embed/${new URLSearchParams(channel.link.split('?')[1]).get('v')}?autoplay=1&origin=${origin}`;
+      return channel.link.replace('watch?v=', 'embed/');
     }
     return `https://www.youtube.com/embed/videoseries?list=UU${channel.channelId?.substring(2)}&autoplay=1&origin=${origin}`;
   };
 
   return (
     <div className="space-y-6">
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30 text-xs font-bold uppercase tracking-wider mb-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Recovery Mode Active
-          </div>
-          <h2 className="text-2xl font-black mb-1">You're not behind. You're being redirected.</h2>
-          <p className="text-brand-100 text-sm max-w-xl">Our AI has identified areas needing attention. Follow this personalized recovery path to get back on track.</p>
-          <div className="mt-4 flex items-center gap-3">
-            <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden max-w-xs">
-              <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1 }} className="h-full bg-white rounded-full" />
-            </div>
-            <span className="text-sm font-bold">{pct}% Complete</span>
-          </div>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="space-y-3">
           <h3 className="font-bold text-lg text-slate-900 dark:text-white">Your Recovery Plan</h3>

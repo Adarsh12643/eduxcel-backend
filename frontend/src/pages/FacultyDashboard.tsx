@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, NavLink, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, FileBarChart, Settings, LogOut, Search, Filter, ChevronRight, Play, Sparkles, Calendar, ClipboardList, BookOpen, Moon, Sun, X, Menu, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Logo from '@/components/shared/Logo';
@@ -218,13 +218,7 @@ function StudentDetail() {
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center gap-4 mb-2">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-white flex items-center justify-center font-bold text-2xl shadow-md">AJ</div>
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden mb-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="relative z-10">
-          <h2 className="text-2xl font-black mb-1">Alex Johnson</h2>
-          <p className="text-brand-100 text-sm max-w-xl">B.Tech Computer Science • Semester 5</p>
-        </div>
-      </div>
+        
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -366,6 +360,7 @@ function getGreeting() {
 
 export default function FacultyDashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [userData, setUserData] = useState<any>(null);
@@ -381,6 +376,22 @@ export default function FacultyDashboard() {
   const initials = userName.split(' ').filter(Boolean).map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'F';
   const sidebarW = collapsed ? 80 : 240;
   const sidebarPad = collapsed ? 10 : 16;
+
+  const getHeaderInfo = () => {
+    const p = location.pathname;
+    if (p.includes('schedule')) return { title: 'My Schedule', subtitle: 'Manage your classes and timetable.' };
+    if (p.includes('assignments')) return { title: 'Assignments', subtitle: 'Review and grade student assignments.' };
+    if (p.includes('students') || p.includes('student/')) return { title: 'Students Directory', subtitle: 'View and manage all students across your classes.' };
+    if (p.includes('analytics')) return { title: 'Class Analytics', subtitle: 'Deep dive into batch performance and predictive metrics.' };
+    if (p.includes('profile')) return { title: 'My Profile', subtitle: 'Manage your faculty profile and settings.' };
+    
+    return { 
+      title: `${getGreeting()}, ${userName.split(' ').filter(Boolean)[0] || 'Faculty'} 👋`, 
+      subtitle: "Monitor class performance and identify at-risk students." 
+    };
+  };
+
+  const headerInfo = getHeaderInfo();
 
   const handleLogout = () => {
     localStorage.removeItem('eduxcel_token');
@@ -450,10 +461,12 @@ export default function FacultyDashboard() {
             <button onClick={() => setCollapsed(!collapsed)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
               {collapsed ? <Menu style={{ width: 18, height: 18 }} /> : <ChevronLeft style={{ width: 18, height: 18 }} />}
             </button>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{`${getGreeting()}, ${userName.split(' ').filter(Boolean)[0] || 'Faculty'} 👋`}</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Monitor class performance and identify at-risk students.</p>
-            </div>
+            {headerInfo.title && (
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{headerInfo.title}</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">{headerInfo.subtitle}</p>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             {userData?.streak && (

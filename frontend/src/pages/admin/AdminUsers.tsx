@@ -60,13 +60,7 @@ export default function AdminUsers() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden mb-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="relative z-10">
-          <h2 className="text-2xl font-black mb-1">User Management</h2>
-          <p className="text-brand-100 text-sm max-w-xl">Manage platform users, roles, and permissions.</p>
-        </div>
-      </div>
+        
         <button className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-brand-500/20 hover:scale-105 active:scale-95">
           <UserPlus className="w-4 h-4" />
           Add User

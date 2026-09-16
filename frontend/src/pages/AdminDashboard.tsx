@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, NavLink, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, Settings, LogOut, Sparkles, Building, BarChart3, Database, Moon, Sun, X, Menu, ChevronLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 import Logo from '@/components/shared/Logo';
@@ -96,6 +96,7 @@ function getGreeting() {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [userData, setUserData] = useState<any>(null);
@@ -106,11 +107,25 @@ export default function AdminDashboard() {
     if (user) setUserData(JSON.parse(user));
   }, []);
 
-  const userName = userData?.name || 'System Admin';
+  const userName = userData?.name || 'Administrator';
   const userEmail = userData?.email || '';
-  const initials = userName.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
+  const initials = userName.split(' ').filter(Boolean).map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'A';
   const sidebarW = collapsed ? 80 : 240;
   const sidebarPad = collapsed ? 10 : 16;
+
+  const getHeaderInfo = () => {
+    const p = location.pathname;
+    if (p.includes('users')) return { title: 'User Management', subtitle: 'Manage students, faculty, and administrators.' };
+    if (p.includes('analytics')) return { title: 'Platform Analytics', subtitle: 'Global metrics and system performance.' };
+    if (p.includes('settings')) return { title: 'System Settings', subtitle: 'Configure platform parameters.' };
+    
+    return { 
+      title: `${getGreeting()}, ${userName.split(' ')[0]} 👋`, 
+      subtitle: "Platform-wide statistics and system health." 
+    };
+  };
+
+  const headerInfo = getHeaderInfo();
 
   const handleLogout = () => {
     localStorage.removeItem('eduxcel_token');
@@ -178,10 +193,12 @@ export default function AdminDashboard() {
             <button onClick={() => setCollapsed(!collapsed)} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
               {collapsed ? <Menu style={{ width: 18, height: 18 }} /> : <ChevronLeft style={{ width: 18, height: 18 }} />}
             </button>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{`${getGreeting()}, ${userName.split(' ')[0]} 👋`}</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Platform-wide statistics and system health.</p>
-            </div>
+            {headerInfo.title && (
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{headerInfo.title}</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">{headerInfo.subtitle}</p>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             {userData?.streak && (

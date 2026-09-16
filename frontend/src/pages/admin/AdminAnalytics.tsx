@@ -60,13 +60,7 @@ export default function AdminAnalytics() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-700 dark:to-indigo-700 text-white relative overflow-hidden mb-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="relative z-10">
-          <h2 className="text-2xl font-black mb-1">Global Analytics</h2>
-          <p className="text-brand-100 text-sm max-w-xl">Institution-wide performance and system metrics.</p>
-        </div>
-      </div>
+        
         <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-xs font-bold text-slate-600 dark:text-slate-300 tracking-wide">REAL-TIME</span>
