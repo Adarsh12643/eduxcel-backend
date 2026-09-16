@@ -22,7 +22,7 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.7, y: 20 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-1"
+            className="fixed bottom-4 right-4 z-50 flex flex-col items-end"
           >
             {/* Ribbon above the robot */}
             {!ribbonDismissed && (
@@ -30,24 +30,16 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
                 initial={{ opacity: 0, y: 8, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: 0.5, type: 'spring', stiffness: 220, damping: 18 }}
-                className="relative flex flex-col items-end"
+                className="relative flex flex-col items-end mb-0.5"
               >
                 {/* Ribbon box */}
-                <div className="flex items-center gap-2 bg-white border-2 border-brand-500 text-slate-800 text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-lg whitespace-nowrap pr-8 relative z-10">
-                  <span className="text-base">👋</span>
+                <div className="flex items-center gap-1.5 bg-white border-2 border-brand-500 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-2xl shadow-lg whitespace-nowrap relative z-10">
+                  <span className="text-sm">👋</span>
                   <span>Hi! I am <span className="text-brand-600 font-extrabold">Xcello</span>.</span>
                 </div>
-                {/* Dismiss button */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); setRibbonDismissed(true); }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors text-xs leading-none font-bold z-20"
-                  aria-label="Dismiss"
-                >
-                  ✕
-                </button>
                 {/* Thought bubbles pointing DOWN-right toward the robot */}
-                <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-brand-500 mr-[60px] mt-1 z-0 shadow-sm" />
-                <div className="w-2 h-2 rounded-full bg-white border-[1.5px] border-brand-500 mr-[54px] mt-0.5 z-0" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white border-2 border-brand-500 mr-[60px] mt-0.5 z-0 shadow-sm" />
+                <div className="w-1.5 h-1.5 rounded-full bg-white border-[1.5px] border-brand-500 mr-[54px] mt-0.5 z-0" />
               </motion.div>
             )}
 
@@ -57,7 +49,7 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
               aria-label="Open Xcelo AI assistant"
               whileHover={{ scale: 1.08, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-transparent border-0 p-0 cursor-pointer focus:outline-none drop-shadow-xl mt-1"
+              className="bg-transparent border-0 p-0 cursor-pointer focus:outline-none drop-shadow-xl"
               style={{ background: 'none' }}
             >
               <img
