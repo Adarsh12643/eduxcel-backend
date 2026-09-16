@@ -46,8 +46,8 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
                   ✕
                 </button>
                 {/* Thought bubbles pointing DOWN-right toward the robot */}
-                <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-brand-500 mr-8 mt-1 z-0 shadow-sm" />
-                <div className="w-2 h-2 rounded-full bg-white border-[1.5px] border-brand-500 mr-[26px] mt-0.5 z-0" />
+                <div className="w-3.5 h-3.5 rounded-full bg-white border-2 border-brand-500 mr-[60px] mt-1 z-0 shadow-sm" />
+                <div className="w-2 h-2 rounded-full bg-white border-[1.5px] border-brand-500 mr-[54px] mt-0.5 z-0" />
               </motion.div>
             )}
 
@@ -64,8 +64,8 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
                 src={XCELO_GIF}
                 alt="Xcello AI"
                 style={{
-                  width: 100,
-                  height: 100,
+                  width: 115,
+                  height: 115,
                   objectFit: 'contain',
                   display: 'block'
                 }}
@@ -75,7 +75,7 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
                   const parent = el.parentElement;
                   if (parent) {
                     parent.insertAdjacentHTML('beforeend',
-                      `<div style="width:100px;height:100px;display:flex;align-items:center;justify-content:center;font-size:56px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2))">🤖</div>`
+                      `<div style="width:115px;height:115px;display:flex;align-items:center;justify-content:center;font-size:56px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2))">🤖</div>`
                     );
                   }
                 }}
