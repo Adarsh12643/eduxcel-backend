@@ -171,8 +171,8 @@ export default function XceloChatbot({
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-dark-border bg-gradient-to-r from-brand-600 to-brand-700 dark:from-brand-700 dark:to-brand-800 flex items-center justify-between relative">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shadow-sm border border-white/30 z-10 relative">
-                <BrainCircuit className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shadow-sm border border-white/30 z-10 relative overflow-hidden">
+                <img src="/xcelo-avatar.jpg" alt="Xcello" className="w-full h-full object-cover" />
               </div>
               <div className="z-10 relative">
                 <h3 className="font-bold text-white">Xcelo AI</h3>
@@ -202,8 +202,8 @@ export default function XceloChatbot({
                 className={cn('flex max-w-[88%]', msg.role === 'user' ? 'ml-auto justify-end' : 'mr-auto')}
               >
                 {msg.role === 'ai' && (
-                  <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center mr-2 mt-1 flex-shrink-0">
-                    <Sparkles className="w-3.5 h-3.5" />
+                  <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center mr-2 mt-1 flex-shrink-0 overflow-hidden shadow-sm">
+                    <img src="/xcelo-avatar.jpg" alt="Xcello" className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div
@@ -221,8 +221,8 @@ export default function XceloChatbot({
 
             {isTyping && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 max-w-[88%]">
-                <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
+                  <img src="/xcelo-avatar.jpg" alt="Xcello" className="w-full h-full object-cover" />
                 </div>
                 <div className="bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1.5">
                   {[0, 1, 2].map(i => (

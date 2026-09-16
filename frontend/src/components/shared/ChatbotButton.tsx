@@ -82,14 +82,21 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
               <img
                 src={XCELO_GIF}
                 alt="Xcello AI"
-                style={{ width: 90, height: 90, objectFit: 'contain', display: 'block' }}
+                style={{
+                  width: 100,
+                  height: 100,
+                  objectFit: 'contain',
+                  display: 'block',
+                  background: 'url(/xcelo-avatar.jpg) center/cover no-repeat',
+                  borderRadius: '50%'
+                }}
                 onError={(e) => {
                   const el = e.currentTarget as HTMLImageElement;
                   el.style.display = 'none';
                   const parent = el.parentElement;
                   if (parent) {
                     parent.insertAdjacentHTML('beforeend',
-                      `<div style="width:90px;height:90px;display:flex;align-items:center;justify-content:center;font-size:56px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2))">🤖</div>`
+                      `<div style="width:100px;height:100px;display:flex;align-items:center;justify-content:center;font-size:56px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2))">🤖</div>`
                     );
                   }
                 }}
