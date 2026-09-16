@@ -49,14 +49,16 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
               </motion.div>
             )}
 
-            {/* Robot GIF — no circle, no clip, natural shape */}
+            {/* Robot GIF - no circle, no clip, natural shape with 120fps smooth float */}
             <motion.button
               onClick={() => { setIsAIOpen(true); setRibbonDismissed(true); }}
               aria-label="Open Xcello AI assistant"
-              whileHover={{ scale: 1.08, y: -4 }}
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+              whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
               className="bg-transparent border-0 p-0 cursor-pointer focus:outline-none drop-shadow-xl"
-              style={{ background: 'none' }}
+              style={{ background: 'none', willChange: 'transform' }}
             >
               <img
                 src={XCELO_GIF}
