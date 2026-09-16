@@ -183,18 +183,41 @@ export class MLService {
       console.warn('YouTube ML endpoint unavailable — using dynamic content-based fallback.');
     }
 
-    // Dynamic content-based fallback using exact weak subjects
-    return subjects.map((sub, i) => ({
-      title: `${sub} (Content-Based AI Recommendation)`,
-      link: `search:${sub} course`,
-      channel: `AI Curated for ${sub}`,
-      channelId: 'SEARCH_QUERY',
-      thumbnail: `https://placehold.co/600x400/1e293b/ffffff?text=${encodeURIComponent(sub)}`,
-      videoCount: 'Top Results',
-      isTopPick: i === 0,
-      searchQuery: `${sub} programming tutorial`,
-      isSearch: true
-    }));
+    // Dynamic content-based fallback using exact weak subjects mapping to reliable crash courses
+    const fallbackVideos: Record<string, string> = {
+      'web': 'QA0XpGHizU4',
+      'machine learning': 'GwIoAwNZlzM',
+      'ml': 'GwIoAwNZlzM',
+      'cloud': 'M988_fsOSWo',
+      'dbms': 'kBdlM6hNDAE',
+      'database': 'kBdlM6hNDAE',
+      'math': 'Tz7P0A2m8-s',
+      'operating system': 'vBURTt97EkA',
+      'network': 'qiQR5rCEvnI',
+      'data structure': 'RBSGKlAvoiM',
+      'algorithm': '8hly31xKli0',
+      'software': 'OqjJ7HbKQG0'
+    };
+
+    return subjects.map((sub, i) => {
+      let videoId = 'zOjov-2OZ0E'; // Default CS50 crash course
+      for (const key of Object.keys(fallbackVideos)) {
+        if (sub.toLowerCase().includes(key)) {
+          videoId = fallbackVideos[key];
+          break;
+        }
+      }
+
+      return {
+        title: sub, // User requested removing "(Content-Based...)"
+        link: `https://www.youtube.com/watch?v=${videoId}`,
+        channel: `AI Recommended`,
+        channelId: '',
+        thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        videoCount: '1 Video',
+        isTopPick: i === 0,
+      };
+    });
   }
 
   // ── Recovery plan (NEVER throws — always returns a valid plan) ────────────

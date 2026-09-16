@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'motion/react';
 import { Sparkles, BookOpen, Clock, CheckCircle2, Circle, PlayCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -123,7 +124,7 @@ export default function RecoveryHub() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-lg text-slate-900 dark:text-white">Personalized Learning Hub</h3>
             <span className="text-xs font-medium px-2.5 py-1 bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 rounded-full flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> Content-Based AI Recommendations
+              <Sparkles className="w-3 h-3" /> AI Recommended Content
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -162,8 +163,8 @@ export default function RecoveryHub() {
       </div>
       
       {/* Ultra-Immersive Video Modal */}
-      {selectedChannel && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-6 animate-in fade-in-0 duration-300">
+      {selectedChannel && createPortal(
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-2 sm:p-6 animate-in fade-in-0 duration-300">
           <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.4, type: 'spring' }} className="w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl rounded-2xl overflow-hidden bg-black border border-white/10 ring-1 ring-white/5">
             <div className="p-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start flex-shrink-0 absolute top-0 w-full z-10">
               <div className="drop-shadow-md">
@@ -211,7 +212,8 @@ export default function RecoveryHub() {
                 </div>
             </div>
           </motion.div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
