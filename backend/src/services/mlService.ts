@@ -185,13 +185,15 @@ export class MLService {
 
     // Dynamic content-based fallback using exact weak subjects
     return subjects.map((sub, i) => ({
-      title: `Master ${sub} | Full Course & Tutorials`,
-      link: `https://www.youtube.com/results?search_query=${encodeURIComponent(sub + ' full course tutorial')}`,
-      channel: `${sub} Academy`,
+      title: `${sub} (Content-Based AI Recommendation)`,
+      link: `search:${sub} course`,
+      channel: `AI Curated for ${sub}`,
       channelId: 'SEARCH_QUERY',
-      thumbnail: `https://placehold.co/600x400/3567fb/ffffff?text=${encodeURIComponent(sub)}`,
-      videoCount: '10+ videos',
+      thumbnail: `https://placehold.co/600x400/1e293b/ffffff?text=${encodeURIComponent(sub)}`,
+      videoCount: 'Top Results',
       isTopPick: i === 0,
+      searchQuery: `${sub} programming tutorial`,
+      isSearch: true
     }));
   }
 

@@ -15,9 +15,18 @@ export default function RecoveryHub() {
       try {
         setLoading(true);
         const res = await api.student.getRecoveryPlan();
-        console.log('Recovery plan response:', res);
         if (res.success && res.data) {
-          setTasks(res.data.recommendations || []);
+          // Normalize active status on load (ensure only one is active at a time)
+          let foundActive = false;
+          const normalizedTasks = (res.data.recommendations || []).map((t: any) => {
+            if (t.status === 'done') return t;
+            if (!foundActive) {
+              foundActive = true;
+              return { ...t, status: 'active' };
+            }
+            return { ...t, status: 'pending' };
+          });
+          setTasks(normalizedTasks);
           setResources(res.data.videoRecommendations || []);
         }
       } catch (err) {
@@ -29,8 +38,33 @@ export default function RecoveryHub() {
     fetchRecommendations();
   }, []);
 
+  const markNextStepComplete = () => {
+    setTasks(prev => {
+      const newTasks = [...prev];
+      const activeIdx = newTasks.findIndex(t => t.status === 'active' || t.status === 'in_progress');
+      if (activeIdx !== -1) {
+        newTasks[activeIdx].status = 'done';
+        if (activeIdx + 1 < newTasks.length) {
+          newTasks[activeIdx + 1].status = 'active';
+        }
+      }
+      return newTasks;
+    });
+  };
+
   const done = tasks.filter(t => t.status === 'done').length;
   const pct = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
+
+  const getIframeSrc = (channel: any) => {
+    if (channel.isSearch || channel.channelId === 'SEARCH_QUERY') {
+      const query = channel.searchQuery || channel.title.replace(' (Content-Based AI Recommendation)', '');
+      return `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query)}`;
+    }
+    if (channel.link?.includes('watch?v=')) {
+      return `https://www.youtube.com/embed/${new URLSearchParams(channel.link.split('?')[1]).get('v')}?autoplay=1`;
+    }
+    return `https://www.youtube.com/embed/videoseries?list=UU${channel.channelId?.substring(2)}&autoplay=1`;
+  };
 
   return (
     <div className="space-y-6">
@@ -54,53 +88,69 @@ export default function RecoveryHub() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="space-y-3">
           <h3 className="font-bold text-lg text-slate-900 dark:text-white">Your Recovery Plan</h3>
-          {tasks.map((task, i) => (
-            <motion.div key={i} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-              className={cn('p-4 rounded-2xl border transition-all flex gap-3',
-                task.status === 'active' || task.status === 'in_progress' ? 'bg-white dark:bg-dark-surface border-brand-200 dark:border-brand-500/30 shadow-md ring-1 ring-brand-500/20' :
-                task.status === 'done' ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/50' :
-                'bg-slate-50/50 dark:bg-dark-elevated/50 border-slate-200 dark:border-dark-border')}>
-              <div className="mt-0.5 flex-shrink-0">
-                {task.status === 'done' ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> :
-                 (task.status === 'active' || task.status === 'in_progress') ? <div className="w-5 h-5 rounded-full border-2 border-brand-500 flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-brand-500" /></div> :
-                 <Circle className="w-5 h-5 text-slate-300 dark:text-slate-600" />}
-              </div>
-              <div>
-                <h4 className={cn('font-semibold text-sm', (task.status === 'active' || task.status === 'in_progress') ? 'text-brand-900 dark:text-brand-100' : task.status === 'done' ? 'text-emerald-700 dark:text-emerald-400 line-through' : 'text-slate-700 dark:text-slate-300')}>{task.step || task.title}</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{task.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+          {tasks.map((task, i) => {
+            const isActive = task.status === 'active' || task.status === 'in_progress';
+            return (
+              <motion.div key={i} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
+                className={cn('p-4 rounded-2xl border transition-all flex gap-3',
+                  isActive ? 'bg-white dark:bg-dark-surface border-brand-200 dark:border-brand-500/30 shadow-md ring-2 ring-brand-500/20' :
+                  task.status === 'done' ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/50' :
+                  'bg-slate-50/50 dark:bg-dark-elevated/50 border-slate-200 dark:border-dark-border opacity-70')}>
+                <div className="mt-0.5 flex-shrink-0">
+                  {task.status === 'done' ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> :
+                   isActive ? <div className="w-5 h-5 rounded-full border-2 border-brand-500 flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" /></div> :
+                   <Circle className="w-5 h-5 text-slate-300 dark:text-slate-600" />}
+                </div>
+                <div className="flex-1">
+                  <h4 className={cn('font-semibold text-sm', isActive ? 'text-brand-900 dark:text-brand-100' : task.status === 'done' ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300')}>{task.step || task.title}</h4>
+                  <p className={cn("text-xs mt-0.5", task.status === 'done' ? 'text-emerald-600/80 dark:text-emerald-500/80 line-through' : 'text-slate-500 dark:text-slate-400')}>{task.desc}</p>
+                  
+                  {isActive && (
+                    <button 
+                      onClick={markNextStepComplete}
+                      className="mt-3 px-3 py-1.5 bg-brand-50 hover:bg-brand-100 dark:bg-brand-500/20 dark:hover:bg-brand-500/30 text-brand-600 dark:text-brand-300 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5"
+                    >
+                      Mark Step Complete <CheckCircle2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-lg text-slate-900 dark:text-white">Personalized Learning Hub</h3>
             <span className="text-xs font-medium px-2.5 py-1 bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 rounded-full flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> AI Picked YouTube Channels
+              <Sparkles className="w-3 h-3" /> Content-Based AI Recommendations
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {loading ? (
-              <div className="col-span-2 text-center text-slate-500 py-10 animate-pulse">Loading AI video recommendations...</div>
+              <div className="col-span-2 text-center text-slate-500 py-10 animate-pulse">Loading highly targeted recommendations...</div>
             ) : resources.length > 0 ? resources.map((res, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }}
                 onClick={() => setSelectedChannel(res)}
-                className={cn("relative bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-hidden hover:shadow-lg transition-all group cursor-pointer flex flex-col", { "border-brand-500 ring-2 ring-brand-500/50": res.isTopPick })}>
+                className={cn("relative bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-hidden hover:shadow-xl transition-all group cursor-pointer flex flex-col", { "border-brand-500 ring-2 ring-brand-500/50": res.isTopPick })}>
                 {res.isTopPick && (
                   <div className="absolute top-2 right-2 bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
                     Top Pick
                   </div>
                 )}
-                <div className="h-32 w-full bg-slate-200 dark:bg-slate-800 relative overflow-hidden">
-                   <img src={res.thumbnail} alt={res.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="h-40 w-full bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                   <img src={res.thumbnail} alt={res.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-60" />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                   <div className="absolute z-10 flex flex-col items-center justify-center">
+                     <PlayCircle className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all drop-shadow-lg" />
+                     <span className="text-white text-xs font-bold mt-2 tracking-wide opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">START LEARNING</span>
+                   </div>
                 </div>
-                <div className="p-4 flex-1 flex flex-col">
+                <div className="p-4 flex-1 flex flex-col bg-white dark:bg-dark-surface z-20">
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors text-sm line-clamp-2 flex-1">{res.title}</h4>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="text-[10px] text-slate-500 font-medium">{res.videoCount} videos</span>
-                    <button className="text-[10px] font-bold text-brand-600 bg-brand-50 dark:bg-brand-500/20 px-2 py-1 rounded-md hover:bg-brand-100 dark:hover:bg-brand-500/30 transition-colors">Explore</button>
+                    <span className="text-[10px] text-slate-500 font-medium">{res.channel || 'Curated Videos'}</span>
+                    <button className="text-[10px] font-bold text-white bg-brand-600 px-3 py-1 rounded-md group-hover:bg-brand-700 transition-colors shadow-sm">Play</button>
                   </div>
                 </div>
               </motion.div>
@@ -110,52 +160,55 @@ export default function RecoveryHub() {
           </div>
         </div>
       </div>
+      
+      {/* Ultra-Immersive Video Modal */}
       {selectedChannel && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in-50">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }} className="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl">
-            <div className="p-4 border-b dark:border-dark-border flex justify-between items-center flex-shrink-0">
-              <div>
-                <h3 className="font-bold text-lg text-slate-900 dark:text-white">{selectedChannel.title}</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Playing videos from this channel</p>
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-2 sm:p-6 animate-in fade-in-0 duration-300">
+          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.4, type: 'spring' }} className="w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl rounded-2xl overflow-hidden bg-black border border-white/10 ring-1 ring-white/5">
+            <div className="p-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start flex-shrink-0 absolute top-0 w-full z-10">
+              <div className="drop-shadow-md">
+                <h3 className="font-bold text-xl text-white line-clamp-1">{selectedChannel.title}</h3>
+                <p className="text-sm text-white/70 flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+                  AI Recommended Content for your Weak Subjects
+                </p>
               </div>
-              <button onClick={() => setSelectedChannel(null)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <X className="w-5 h-5 text-slate-500" />
+              <button onClick={() => setSelectedChannel(null)} className="p-2 rounded-full bg-black/40 hover:bg-white/20 text-white backdrop-blur-md transition-all">
+                <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="flex-1 bg-slate-100 dark:bg-black flex items-center justify-center">
-              {selectedChannel.channelId === 'SEARCH_QUERY' ? (
-                <div className="text-center p-8">
-                  <h3 className="text-xl font-bold mb-4 dark:text-white">Learn {selectedChannel.title.replace('Master ', '').replace(' | Full Course & Tutorials', '')}</h3>
-                  <p className="mb-6 text-slate-500">We've generated a curated YouTube search tailored to your weak subject.</p>
-                  <a href={selectedChannel.link} target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors inline-block">
-                    Open YouTube Search
-                  </a>
-                </div>
-              ) : (
-                <iframe
-                  className="w-full h-full"
-                  src={
-                    selectedChannel.link?.includes('watch?v=')
-                      ? `https://www.youtube.com/embed/${new URLSearchParams(selectedChannel.link.split('?')[1]).get('v')}`
-                      : `https://www.youtube.com/embed/videoseries?list=UU${selectedChannel.channelId?.substring(2)}`
-                  }
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
-              )}
+            
+            <div className="flex-1 w-full h-full bg-black mt-16">
+              <iframe
+                className="w-full h-full"
+                src={getIframeSrc(selectedChannel)}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
             </div>
-            <div className="p-4 border-t dark:border-dark-border flex-shrink-0">
-                <button 
-                  onClick={() => {
-                    // Logic to mark as complete will go here
-                    setSelectedChannel(null);
-                  }}
-                  className="px-4 py-2 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors"
-                >
-                  Mark as Watched & Close
-                </button>
+            
+            <div className="p-4 bg-slate-900 border-t border-white/10 flex-shrink-0 flex items-center justify-between">
+                <p className="text-sm text-slate-400">Did this help clarify your doubts?</p>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setSelectedChannel(null)}
+                    className="px-4 py-2 text-white font-medium hover:text-slate-300 transition-colors text-sm"
+                  >
+                    Close Player
+                  </button>
+                  <button 
+                    onClick={() => {
+                      markNextStepComplete();
+                      setSelectedChannel(null);
+                    }}
+                    className="px-5 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 transition-all shadow-[0_0_15px_rgba(5,150,105,0.4)] flex items-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Mark as Watched & Advance Step
+                  </button>
+                </div>
             </div>
           </motion.div>
         </div>
