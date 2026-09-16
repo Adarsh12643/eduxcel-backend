@@ -109,6 +109,8 @@ export const getStudentDashboard = async (req: AuthRequest, res: Response) => {
       riskData = { level: latestPrediction.riskLevel, score: latestPrediction.confidence / 100 };
     }
 
+    const dynamicWeakSubjects = formattedSubjects.filter((s) => s.currentScore < 60).map((s) => s.name);
+
     return res.status(200).json({
       success: true,
       data: {
@@ -123,7 +125,7 @@ export const getStudentDashboard = async (req: AuthRequest, res: Response) => {
         internalMarks: profile?.internalMarks || 0,
         studyHours: user?.studyHours || 0,
         learningStyle: user?.learningStyle || 'visual',
-        weakSubjects: profile?.weakSubjects.map((w) => w.subject.name) || user?.weakSubjects || [],
+        weakSubjects: dynamicWeakSubjects.length > 0 ? dynamicWeakSubjects : (user?.weakSubjects || []),
         recommendations: predictionData?.recommendations || [],
         factors: predictionData?.factors || [],
         confidence: predictionData?.confidence || 0,

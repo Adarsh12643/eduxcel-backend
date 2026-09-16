@@ -274,17 +274,20 @@ export class MLService {
     }
 
     const mongooseUser = await User.findById(userId);
-    const weakSubjects = mongooseUser?.weakSubjects && mongooseUser.weakSubjects.length > 0
-      ? mongooseUser.weakSubjects
-      : (studentProfile?.weakSubjects.map((ws) => ws.subject.name) || []);
+    const onboardingWeakSubjects = mongooseUser?.weakSubjects || [];
 
-    for (const ws of weakSubjects) {
-      if (!(ws in subjectPerformance)) subjectPerformance[ws] = 40;
+    // Dynamically calculate weak subjects from actual real-time scores
+    let dynamicWeakSubjects = Object.keys(subjectPerformance).filter((k) => subjectPerformance[k] < 60 && !k.startsWith('_'));
+
+    // If there are absolutely no scores yet, fallback to onboarding choices
+    if (Object.keys(subjectPerformance).length === 0 && onboardingWeakSubjects.length > 0) {
+      dynamicWeakSubjects = onboardingWeakSubjects;
+      for (const ws of dynamicWeakSubjects) {
+        subjectPerformance[ws] = 40; // mock poor performance for onboarding choices if no db scores exist
+      }
     }
 
-    const targets = weakSubjects.length > 0
-      ? weakSubjects
-      : Object.keys(subjectPerformance).filter((k) => subjectPerformance[k] < 60 && !k.startsWith('_'));
+    const targets = dynamicWeakSubjects;
 
     // 3. Try ML service first (with a 25-second timeout for Render cold-start)
     try {
