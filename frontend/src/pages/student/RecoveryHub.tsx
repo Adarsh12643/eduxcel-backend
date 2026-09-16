@@ -44,7 +44,15 @@ export default function RecoveryHub() {
       const newTasks = [...prev];
       const activeIdx = newTasks.findIndex(t => t.status === 'active' || t.status === 'in_progress');
       if (activeIdx !== -1) {
+        const completedTask = newTasks[activeIdx];
         newTasks[activeIdx].status = 'done';
+        
+        // Trigger chatbot if they completed specific steps (like Improve Class Attendance or the final step)
+        if (completedTask.step?.includes('Improve Class Attendance') || completedTask.title?.includes('Improve Class Attendance') || activeIdx === newTasks.length - 1) {
+           localStorage.setItem('pending_xcello_msg', "You've completed your learning path! Feel free to ask your doubts, or we can move towards a small quiz for your learning test.");
+           window.dispatchEvent(new Event('open-xcello'));
+        }
+
         if (activeIdx + 1 < newTasks.length) {
           newTasks[activeIdx + 1].status = 'active';
         }
@@ -163,25 +171,27 @@ export default function RecoveryHub() {
       </div>
       
       {/* Ultra-Immersive Video Modal */}
-      {selectedChannel && createPortal(
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-2 sm:p-6 animate-in fade-in-0 duration-300">
-          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.4, type: 'spring' }} className="w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl rounded-2xl overflow-hidden bg-black border border-white/10 ring-1 ring-white/5">
-            <div className="p-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start flex-shrink-0 absolute top-0 w-full z-10">
-              <div className="drop-shadow-md">
-                <h3 className="font-bold text-xl text-white line-clamp-1">{selectedChannel.title}</h3>
-                <p className="text-sm text-white/70 flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+      {selectedChannel && (
+        <div className="fixed inset-0 bg-slate-100/90 dark:bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 lg:p-8 animate-in fade-in-0 duration-300">
+          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.4, type: 'spring' }} className="w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-dark-surface border border-slate-200 dark:border-dark-border">
+            
+            {/* Header INSIDE the modal card */}
+            <div className="p-4 bg-slate-50 dark:bg-dark-elevated border-b border-slate-200 dark:border-dark-border flex justify-between items-start flex-shrink-0">
+              <div>
+                <h3 className="font-bold text-xl text-slate-900 dark:text-white line-clamp-1">{selectedChannel.title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1">
+                  <Sparkles className="w-3.5 h-3.5 text-brand-500" />
                   AI Recommended Content for your Weak Subjects
                 </p>
               </div>
-              <button onClick={() => setSelectedChannel(null)} className="p-2 rounded-full bg-black/40 hover:bg-white/20 text-white backdrop-blur-md transition-all">
+              <button onClick={() => setSelectedChannel(null)} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 transition-all">
                 <X className="w-6 h-6" />
               </button>
             </div>
             
-            <div className="flex-1 w-full h-full bg-black mt-16">
+            <div className="flex-1 w-full bg-black relative">
               <iframe
-                className="w-full h-full"
+                className="w-full h-full absolute inset-0"
                 src={getIframeSrc(selectedChannel)}
                 title="YouTube video player"
                 frameBorder="0"
@@ -190,30 +200,23 @@ export default function RecoveryHub() {
               ></iframe>
             </div>
             
-            <div className="p-4 bg-slate-900 border-t border-white/10 flex-shrink-0 flex items-center justify-between">
-                <p className="text-sm text-slate-400">Did this help clarify your doubts?</p>
+            <div className="p-4 bg-slate-50 dark:bg-dark-elevated border-t border-slate-200 dark:border-dark-border flex-shrink-0 flex items-center justify-between">
+                <p className="text-sm text-slate-600 dark:text-slate-400">Did this help clarify your doubts?</p>
                 <div className="flex gap-3">
-                  <button 
-                    onClick={() => setSelectedChannel(null)}
-                    className="px-4 py-2 text-white font-medium hover:text-slate-300 transition-colors text-sm"
-                  >
-                    Close Player
-                  </button>
                   <button 
                     onClick={() => {
                       markNextStepComplete();
                       setSelectedChannel(null);
                     }}
-                    className="px-5 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 transition-all shadow-[0_0_15px_rgba(5,150,105,0.4)] flex items-center gap-2"
+                    className="px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all shadow-[0_0_15px_rgba(5,150,105,0.2)] flex items-center gap-2"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-5 h-5" />
                     Mark as Watched & Advance Step
                   </button>
                 </div>
             </div>
           </motion.div>
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   );

@@ -13,6 +13,12 @@ const XCELO_GIF = '/xcelo.gif';
 export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: ChatbotButtonProps) {
   const [ribbonDismissed, setRibbonDismissed] = useState(false);
 
+  React.useEffect(() => {
+    const handleOpen = () => setIsAIOpen(true);
+    window.addEventListener('open-xcello', handleOpen);
+    return () => window.removeEventListener('open-xcello', handleOpen);
+  }, [setIsAIOpen]);
+
   return (
     <>
       <AnimatePresence>

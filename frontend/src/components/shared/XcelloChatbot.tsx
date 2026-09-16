@@ -135,6 +135,14 @@ export default function XcelloChatbot({
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const pendingMsg = localStorage.getItem('pending_xcello_msg');
+    if (pendingMsg) {
+      localStorage.removeItem('pending_xcello_msg');
+      setMessages(prev => [...prev, { role: 'ai', content: pendingMsg }]);
+    }
+  }, []);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
