@@ -1,4 +1,6 @@
+import fetch from 'node-fetch';
 import { IUser } from '../models/User';
+import User from '../models/User';
 import prisma from '../config/database';
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
@@ -158,8 +160,11 @@ export class MLService {
 
       if (response.ok) {
         const data: any = await response.json();
-        const channels = data.videos || data.channels;
+        let channels = data.videos || data.channels;
         if (channels && Array.isArray(channels) && channels.length > 0) {
+          // Shuffle to ensure varied recommendations each time
+          channels = channels.sort(() => Math.random() - 0.5);
+
           return channels.map((c: any, i: number) => ({
             title: c.channel_name || c.channel || c.title || 'Recommended Channel',
             link: c.link || `https://www.youtube.com/channel/${c.channel_id || c.channelId}`,
@@ -167,7 +172,7 @@ export class MLService {
             channelId: c.channel_id || c.channelId || '',
             thumbnail: c.thumbnail || '',
             videoCount: c.video_count || c.videoCount || 'N/A',
-            isTopPick: c.is_top_pick || c.isTopPick || i === 0,
+            isTopPick: i === 0, // Ensure the newly shuffled first item is the top pick
           }));
         }
       }
@@ -231,7 +236,11 @@ export class MLService {
       }
     }
 
-    const weakSubjects = studentProfile?.weakSubjects.map((ws) => ws.subject.name) || [];
+    const mongooseUser = await User.findById(userId);
+    const weakSubjects = mongooseUser?.weakSubjects && mongooseUser.weakSubjects.length > 0
+      ? mongooseUser.weakSubjects
+      : (studentProfile?.weakSubjects.map((ws) => ws.subject.name) || []);
+
     for (const ws of weakSubjects) {
       if (!(ws in subjectPerformance)) subjectPerformance[ws] = 40;
     }
