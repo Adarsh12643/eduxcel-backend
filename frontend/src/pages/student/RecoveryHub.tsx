@@ -65,14 +65,15 @@ export default function RecoveryHub() {
   const pct = tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0;
 
   const getIframeSrc = (channel: any) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://eduxcel-frontend.web.app';
     if (channel.isSearch || channel.channelId === 'SEARCH_QUERY') {
       const query = channel.searchQuery || channel.title.replace(' (Content-Based AI Recommendation)', '');
-      return `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query)}`;
+      return `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query)}&origin=${origin}`;
     }
     if (channel.link?.includes('watch?v=')) {
-      return `https://www.youtube.com/embed/${new URLSearchParams(channel.link.split('?')[1]).get('v')}?autoplay=1`;
+      return `https://www.youtube.com/embed/${new URLSearchParams(channel.link.split('?')[1]).get('v')}?autoplay=1&origin=${origin}`;
     }
-    return `https://www.youtube.com/embed/videoseries?list=UU${channel.channelId?.substring(2)}&autoplay=1`;
+    return `https://www.youtube.com/embed/videoseries?list=UU${channel.channelId?.substring(2)}&autoplay=1&origin=${origin}`;
   };
 
   return (
@@ -172,7 +173,7 @@ export default function RecoveryHub() {
       
       {/* Ultra-Immersive Video Modal */}
       {selectedChannel && (
-        <div className="fixed inset-0 bg-slate-100/90 dark:bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 lg:p-8 animate-in fade-in-0 duration-300">
+        <div className="fixed inset-0 bg-slate-100/90 dark:bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 lg:p-8 md:pl-[276px] animate-in fade-in-0 duration-300">
           <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.4, type: 'spring' }} className="w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-dark-surface border border-slate-200 dark:border-dark-border">
             
             {/* Header INSIDE the modal card */}
@@ -200,9 +201,7 @@ export default function RecoveryHub() {
               ></iframe>
             </div>
             
-            <div className="p-4 bg-slate-50 dark:bg-dark-elevated border-t border-slate-200 dark:border-dark-border flex-shrink-0 flex items-center justify-between">
-                <p className="text-sm text-slate-600 dark:text-slate-400">Did this help clarify your doubts?</p>
-                <div className="flex gap-3">
+            <div className="p-4 bg-slate-50 dark:bg-dark-elevated border-t border-slate-200 dark:border-dark-border flex-shrink-0 flex items-center justify-end">
                   <button 
                     onClick={() => {
                       markNextStepComplete();
@@ -211,9 +210,8 @@ export default function RecoveryHub() {
                     className="px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all shadow-[0_0_15px_rgba(5,150,105,0.2)] flex items-center gap-2"
                   >
                     <CheckCircle2 className="w-5 h-5" />
-                    Mark as Watched & Advance Step
+                    Mark as Complete
                   </button>
-                </div>
             </div>
           </motion.div>
         </div>

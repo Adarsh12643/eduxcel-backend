@@ -185,18 +185,18 @@ export class MLService {
 
     // Dynamic content-based fallback using exact weak subjects mapping to reliable crash courses
     const fallbackVideos: Record<string, string> = {
-      'web': 'mU6anWqZJcc', // freeCodeCamp HTML/CSS
-      'machine learning': 'i_LwzRmA_08', // freeCodeCamp ML
-      'ml': 'i_LwzRmA_08',
-      'cloud': '2mRlEnARtO0', // freeCodeCamp Cloud
-      'dbms': 'HXV3zeJZ1EQ', // freeCodeCamp SQL
-      'database': 'HXV3zeJZ1EQ',
-      'math': '8mveoKqs4us', // freeCodeCamp Math
-      'operating system': 'RoZc7Gla68A', // freeCodeCamp OS
-      'network': 'qiQR5rCEvnI', // freeCodeCamp Networking
-      'data structure': 'RBSGKlAvoiM', // freeCodeCamp DSA
-      'algorithm': '8hly31xKli0', // freeCodeCamp Algorithms
-      'software': 'OqjJ7HbKQG0' // freeCodeCamp SWE
+      'web': 'PkZNo7MFOUg', // FreeCodeCamp JS
+      'machine learning': '7eh4d6sabA0', // Edureka ML
+      'ml': '7eh4d6sabA0',
+      'cloud': 'EN4fEbcFZ_E', // Simplilearn Cloud
+      'dbms': 'kBdlM6hNDAE', // DBMS
+      'database': 'kBdlM6hNDAE',
+      'math': 'Tz7P0A2m8-s', // Math
+      'operating system': 'vBURTt97EkA', // Neso OS
+      'network': 'qiQR5rCEvnI', // Network
+      'data structure': 'RBSGKlAvoiM', // DSA
+      'algorithm': '8hly31xKli0', // Algorithms
+      'software': 'OqjJ7HbKQG0' // SWE
     };
 
     return subjects.map((sub, i) => {
