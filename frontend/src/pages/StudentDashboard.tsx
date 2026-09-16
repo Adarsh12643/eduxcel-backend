@@ -504,14 +504,10 @@ export default function StudentDashboard() {
               </motion.div>
             )}
             {userData?.streak > 0 && (
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm"
-              >
-                <span className="text-lg animate-pulse">🔥</span>
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm">
+                <img src="https://assets-v2.lottiefiles.com/a/2e8b88ac-bc78-11ee-9553-b368dc375ecb/dcGzDVCY9u.gif" alt="Streak Fire" className="w-6 h-6 mix-blend-multiply dark:mix-blend-screen object-contain" />
                 <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} Day Streak!</span>
-              </motion.div>
+              </div>
             )}
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
