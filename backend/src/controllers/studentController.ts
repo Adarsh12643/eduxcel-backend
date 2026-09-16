@@ -230,7 +230,7 @@ export const updateStudentSubject = async (req: AuthRequest, res: Response) => {
 
     if (!updated) {
       try {
-        await prisma.studentSubject.update({
+        await prisma.subjectEnrollment.update({
           where: { id },
           data: { 
             currentScore: Number(currentScore), 
