@@ -183,24 +183,24 @@ export class MLService {
       console.warn('YouTube ML endpoint unavailable — using dynamic content-based fallback.');
     }
 
-    // Dynamic content-based fallback using exact weak subjects mapping to reliable crash courses
+    // Dynamic content-based fallback using extremely reliable short videos (Fireship, etc.)
     const fallbackVideos: Record<string, string> = {
-      'web': 'PkZNo7MFOUg', // FreeCodeCamp JS
-      'machine learning': '7eh4d6sabA0', // Edureka ML
-      'ml': '7eh4d6sabA0',
-      'cloud': 'EN4fEbcFZ_E', // Simplilearn Cloud
-      'dbms': 'kBdlM6hNDAE', // DBMS
-      'database': 'kBdlM6hNDAE',
-      'math': 'Tz7P0A2m8-s', // Math
-      'operating system': 'vBURTt97EkA', // Neso OS
-      'network': 'qiQR5rCEvnI', // Network
-      'data structure': 'RBSGKlAvoiM', // DSA
-      'algorithm': '8hly31xKli0', // Algorithms
-      'software': 'OqjJ7HbKQG0' // SWE
+      'web': 'erEgovG9WBs', // HTML in 100 Seconds
+      'machine learning': 'HcqpanDadyQ', // ML in 100 Seconds
+      'ml': 'HcqpanDadyQ', // ML in 100 Seconds
+      'cloud': '27xE-L-A210', // Cloud in 100 Seconds
+      'dbms': 'z2IGcE_Z1hQ', // SQL in 100 Seconds
+      'database': 'z2IGcE_Z1hQ',
+      'math': '8mveoKqs4us',
+      'operating system': 'RoZc7Gla68A',
+      'network': 'qiQR5rCEvnI',
+      'data structure': 'RBSGKlAvoiM',
+      'algorithm': '8hly31xKli0',
+      'software': 'OqjJ7HbKQG0'
     };
 
     return subjects.map((sub, i) => {
-      let videoId = 'zOjov-2OZ0E'; // Default CS50 crash course
+      let videoId = 'zOjov-2OZ0E'; // Default CS50 crash course (very safe)
       for (const key of Object.keys(fallbackVideos)) {
         if (sub.toLowerCase().includes(key)) {
           videoId = fallbackVideos[key];

@@ -173,7 +173,7 @@ export default function RecoveryHub() {
       
       {/* Ultra-Immersive Video Modal */}
       {selectedChannel && (
-        <div className="fixed inset-0 bg-slate-100/90 dark:bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 lg:p-8 md:pl-[276px] animate-in fade-in-0 duration-300">
+        <div className="fixed top-0 bottom-0 right-0 left-0 md:left-[270px] bg-slate-100/90 dark:bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6 lg:p-16 animate-in fade-in-0 duration-300">
           <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.4, type: 'spring' }} className="w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-dark-surface border border-slate-200 dark:border-dark-border">
             
             {/* Header INSIDE the modal card */}
