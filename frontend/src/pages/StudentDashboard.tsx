@@ -202,35 +202,61 @@ function Overview({ userData }: { userData: any }) {
           <div className="flex flex-col items-center justify-center mb-8 relative">
             <div className="w-48 h-24 relative overflow-hidden flex justify-center">
               <div className="w-48 h-48 rounded-full border-[16px] border-slate-100 dark:border-slate-700 absolute top-0" />
-              <div className="w-48 h-48 rounded-full border-[16px] border-transparent border-t-red-500 border-r-red-500 absolute top-0 rotate-45 transition-all duration-1000" />
+              <div className={cn(
+                "w-48 h-48 rounded-full border-[16px] border-transparent absolute top-0 rotate-45 transition-all duration-1000",
+                dashboardData?.academicRisk === 'High' ? 'border-t-red-500 border-r-red-500' :
+                dashboardData?.academicRisk === 'Medium' ? 'border-t-amber-500 border-r-amber-500' : 'border-t-emerald-500 border-r-emerald-500'
+              )} />
               <div className="absolute bottom-0 flex flex-col items-center">
-                <span className="text-3xl font-bold text-red-600 dark:text-red-400 font-display">HIGH</span>
+                <span className={cn(
+                  "text-3xl font-bold font-display uppercase",
+                  dashboardData?.academicRisk === 'High' ? 'text-red-600 dark:text-red-400' :
+                  dashboardData?.academicRisk === 'Medium' ? 'text-amber-500 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
+                )}>{dashboardData?.academicRisk || 'LOW'}</span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Current Risk</span>
               </div>
             </div>
           </div>
 
-          <h4 className="font-semibold text-slate-900 dark:text-white mb-4 text-sm">Why is my risk level high?</h4>
+          <h4 className="font-semibold text-slate-900 dark:text-white mb-4 text-sm">Why is my risk level {dashboardData?.academicRisk?.toLowerCase() || 'low'}?</h4>
           <div className="space-y-4 flex-1">
-            <div className="p-3 rounded-xl border border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-red-900 dark:text-red-300">Attendance — 68%</p>
-                <p className="text-xs text-red-700/80 dark:text-red-400/80 mt-0.5">Impact: Critical</p>
-              </div>
-              <TrendingUp className="w-4 h-4 text-red-500 rotate-180" />
-            </div>
-            <div className="p-3 rounded-xl border border-amber-100 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">Internal Marks — 54%</p>
-                <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mt-0.5">Impact: High</p>
-              </div>
-              <TrendingUp className="w-4 h-4 text-amber-500 rotate-180" />
-            </div>
+            {dashboardData?.academicRisk !== 'Low' ? (
+              <>
+                {dashboardData?.attendance < 75 && (
+                  <div className="p-3 rounded-xl border border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-red-900 dark:text-red-300">Attendance — {dashboardData?.attendance}%</p>
+                      <p className="text-xs text-red-700/80 dark:text-red-400/80 mt-0.5">Impact: Critical</p>
+                    </div>
+                    <TrendingUp className="w-4 h-4 text-red-500 rotate-180" />
+                  </div>
+                )}
+                {dashboardData?.overallPerformance < 65 && (
+                  <div className="p-3 rounded-xl border border-amber-100 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">Overall Performance — {dashboardData?.overallPerformance}%</p>
+                      <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mt-0.5">Impact: High</p>
+                    </div>
+                    <TrendingUp className="w-4 h-4 text-amber-500 rotate-180" />
+                  </div>
+                )}
+                {dashboardData?.attendance >= 75 && dashboardData?.overallPerformance >= 65 && (
+                  <div className="text-sm text-slate-500 text-center py-4">Analyzed from recent module quizzes.</div>
+                )}
+              </>
+            ) : (
+              <div className="text-sm text-emerald-600 text-center py-4">You're doing great! Keep it up.</div>
+            )}
           </div>
 
           <button
             onClick={() => navigate('/student/recovery')}
-            className="mt-6 w-full py-2.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 font-semibold rounded-xl transition-colors border border-red-200 dark:border-red-800"
+            className={cn(
+              "mt-6 w-full py-2.5 font-semibold rounded-xl transition-colors border",
+              dashboardData?.academicRisk === 'Low'
+                ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border-emerald-200 dark:border-emerald-800"
+                : "bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/50 border-brand-200 dark:border-brand-800"
+            )}
           >
             View Recovery Plan
           </button>

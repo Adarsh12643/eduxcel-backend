@@ -4,15 +4,8 @@ import { Sparkles, BookOpen, Clock, CheckCircle2, Circle, PlayCircle, X } from '
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 
-const tasks = [
-  { title: 'Improve Attendance', desc: 'Attend next 5 DBMS classes', status: 'done' },
-  { title: 'Complete DBMS Module 3', desc: 'Normalization Practice', status: 'active' },
-  { title: 'Watch Recommended Lecture', desc: 'Math III — Laplace Transforms', status: 'pending' },
-  { title: 'Complete Practice Quiz', desc: 'DBMS Normal Forms Quiz', status: 'pending' },
-  { title: 'Ask AI Assistant', desc: 'Clarify doubts on 3NF', status: 'pending' },
-];
-
 export default function RecoveryHub() {
+  const [tasks, setTasks] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedChannel, setSelectedChannel] = useState<any | null>(null);
@@ -24,7 +17,7 @@ export default function RecoveryHub() {
         const res = await api.student.getRecoveryPlan();
         console.log('Recovery plan response:', res);
         if (res.success && res.data) {
-          // If the recovery plan returns videoRecommendations, set them
+          setTasks(res.data.recommendations || []);
           setResources(res.data.videoRecommendations || []);
         }
       } catch (err) {
@@ -64,16 +57,16 @@ export default function RecoveryHub() {
           {tasks.map((task, i) => (
             <motion.div key={i} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
               className={cn('p-4 rounded-2xl border transition-all flex gap-3',
-                task.status === 'active' ? 'bg-white dark:bg-dark-surface border-brand-200 dark:border-brand-500/30 shadow-md ring-1 ring-brand-500/20' :
+                task.status === 'active' || task.status === 'in_progress' ? 'bg-white dark:bg-dark-surface border-brand-200 dark:border-brand-500/30 shadow-md ring-1 ring-brand-500/20' :
                 task.status === 'done' ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/50' :
                 'bg-slate-50/50 dark:bg-dark-elevated/50 border-slate-200 dark:border-dark-border')}>
               <div className="mt-0.5 flex-shrink-0">
                 {task.status === 'done' ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> :
-                 task.status === 'active' ? <div className="w-5 h-5 rounded-full border-2 border-brand-500 flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-brand-500" /></div> :
+                 (task.status === 'active' || task.status === 'in_progress') ? <div className="w-5 h-5 rounded-full border-2 border-brand-500 flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-brand-500" /></div> :
                  <Circle className="w-5 h-5 text-slate-300 dark:text-slate-600" />}
               </div>
               <div>
-                <h4 className={cn('font-semibold text-sm', task.status === 'active' ? 'text-brand-900 dark:text-brand-100' : task.status === 'done' ? 'text-emerald-700 dark:text-emerald-400 line-through' : 'text-slate-700 dark:text-slate-300')}>{task.title}</h4>
+                <h4 className={cn('font-semibold text-sm', (task.status === 'active' || task.status === 'in_progress') ? 'text-brand-900 dark:text-brand-100' : task.status === 'done' ? 'text-emerald-700 dark:text-emerald-400 line-through' : 'text-slate-700 dark:text-slate-300')}>{task.step || task.title}</h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{task.desc}</p>
               </div>
             </motion.div>
@@ -93,9 +86,9 @@ export default function RecoveryHub() {
             ) : resources.length > 0 ? resources.map((res, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }}
                 onClick={() => setSelectedChannel(res)}
-                className={cn("bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-hidden hover:shadow-lg transition-all group cursor-pointer flex flex-col", { "border-brand-500 ring-2 ring-brand-500/50": res.isTopPick })}>
+                className={cn("relative bg-white dark:bg-dark-surface rounded-2xl border dark:border-dark-border overflow-hidden hover:shadow-lg transition-all group cursor-pointer flex flex-col", { "border-brand-500 ring-2 ring-brand-500/50": res.isTopPick })}>
                 {res.isTopPick && (
-                  <div className="absolute top-2 right-2 bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
+                  <div className="absolute top-2 right-2 bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
                     Top Pick
                   </div>
                 )}
