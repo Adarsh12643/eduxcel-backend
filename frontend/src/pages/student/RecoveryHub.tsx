@@ -78,6 +78,22 @@ export default function RecoveryHub() {
 
   return (
     <div className="space-y-6">
+      {/* Progress Bar */}
+      <div className="bg-white dark:bg-dark-surface p-5 rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-brand-50 dark:bg-brand-500/20 border border-brand-100 dark:border-brand-500/30 text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" /> Recovery Mode Active
+          </div>
+          <h3 className="font-bold text-slate-900 dark:text-white">Plan Progress</h3>
+        </div>
+        <div className="flex-1 max-w-md w-full flex items-center gap-3">
+          <div className="flex-1 h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1, ease: 'easeOut' }} className="h-full bg-brand-500 rounded-full" />
+          </div>
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-300 min-w-[3rem]">{pct}%</span>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="space-y-3">
           <h3 className="font-bold text-lg text-slate-900 dark:text-white">Your Recovery Plan</h3>
