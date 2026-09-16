@@ -375,7 +375,7 @@ export default function FacultyDashboard() {
 
   const userName = userData?.name || 'Faculty';
   const userEmail = userData?.email || '';
-  const initials = userName.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
+  const initials = userName.split(' ').filter(Boolean).map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'F';
   const sidebarW = collapsed ? 80 : 240;
   const sidebarPad = collapsed ? 10 : 16;
 
@@ -448,7 +448,7 @@ export default function FacultyDashboard() {
               {collapsed ? <Menu style={{ width: 18, height: 18 }} /> : <ChevronLeft style={{ width: 18, height: 18 }} />}
             </button>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{`${getGreeting()}, ${userName.split(' ')[0]} 👋`}</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{`${getGreeting()}, ${userName.split(' ').filter(Boolean)[0] || 'Faculty'} 👋`}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Monitor class performance and identify at-risk students.</p>
             </div>
           </div>

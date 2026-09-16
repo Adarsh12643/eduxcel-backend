@@ -41,6 +41,7 @@ export default function Onboarding() {
   const [weakSubjects, setWeakSubjects] = useState<string[]>([]);
   const [department, setDepartment] = useState('');
   const [subjectsTaught, setSubjectsTaught] = useState<string[]>([]);
+  const [institution, setInstitution] = useState('');
 
   useEffect(() => {
     const u = localStorage.getItem('eduxcel_user');
@@ -110,6 +111,7 @@ export default function Onboarding() {
 
       if (user?.role === 'faculty') {
         payload.subjectsTaught = subjectsTaught;
+        payload.institution = institution;
       }
 
       const res = await api.auth.onboard(payload);
@@ -365,6 +367,10 @@ export default function Onboarding() {
                       <option>Mathematics</option>
                       <option>Physics</option>
                     </select>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-semibold mb-2 dark:text-slate-300">Institution / College Name</label>
+                    <input type="text" value={institution} onChange={e => setInstitution(e.target.value)} placeholder="e.g. Indian Institute of Technology" className="w-full bg-slate-50 dark:bg-[#0d1117] border border-slate-200 dark:border-[#30363d] rounded-xl px-4 py-3 outline-none focus:border-brand-500 dark:text-white" />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2 dark:text-slate-300">Employee ID</label>
