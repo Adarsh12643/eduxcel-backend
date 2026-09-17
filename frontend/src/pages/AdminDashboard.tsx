@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import {
   LayoutDashboard,
+  BookOpen,
   Users,
   User,
   Settings,
@@ -280,18 +281,15 @@ export default function AdminDashboard() {
           collapsed ? "w-20 p-3" : "w-60 p-5",
         )}
       >
-        <div
-          className={cn(
-            "mb-8 flex",
-            collapsed ? "justify-center" : "items-center",
-          )}
-        >
-          {!collapsed && <Logo size="md" showText={true} />}
-          {collapsed && <Logo size="sm" showText={false} />}
+        <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
+          <div className="flex items-center">
+            <Logo size={collapsed ? "sm" : "md"} showText={!collapsed} />
+            {!collapsed && <span className="ml-2 text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/20 px-2 py-0.5 rounded-md mt-1">ADMIN</span>}
+          </div>
           {!collapsed && (
-            <span className="ml-2 text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/20 px-2 py-0.5 rounded-md mt-1">
-              ADMIN
-            </span>
+            <p className="mt-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider text-center w-full">
+              Learn &bull; Excel &bull; Succeed
+            </p>
           )}
         </div>
 
