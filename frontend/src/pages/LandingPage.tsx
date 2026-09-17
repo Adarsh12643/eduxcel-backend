@@ -217,6 +217,13 @@ export default function LandingPage() {
                 <Brain style={{ color: 'white', width: 44, height: 44 }} />
               </motion.div>
 
+              {/* Static Concentric Rings */}
+              <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : 'rgba(0,71,186,0.15)'}`, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.2)' : 'rgba(0,71,186,0.1)'}`, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.1)' : 'rgba(0,71,186,0.05)'}`, pointerEvents: 'none' }} />
+
+
+
               
 
               {/* Floating Data Nodes (Students) */}
