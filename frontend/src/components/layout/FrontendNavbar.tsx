@@ -111,36 +111,59 @@ export default function FrontendNavbar() {
           <button
             onClick={toggleTheme}
             style={{
-              background: 'none',
-              border: 'none',
+              background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
               cursor: 'pointer',
               padding: 8,
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: text,
-              transition: 'color 0.2s',
+              transition: 'all 0.2s',
             }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'; }}
             aria-label="Toggle theme"
           >
             {isDark ? <Sun style={{ width: 18, height: 18, color: '#fbbf24' }} /> : <Moon style={{ width: 18, height: 18, color: '#475569' }} />}
           </button>
-          <button
-            onClick={() => navigate('/auth')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: text,
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontSize: 14,
-              padding: '8px 4px',
-              transition: 'color 0.2s',
-            }}
+          
+          {/* Animated Sign In Link */}
+          <div
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setActiveIndex(-1)}
+            onMouseLeave={() => setActiveIndex(null)}
           >
-            Sign In
-          </button>
+            <button
+              onClick={() => navigate('/auth')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: activeIndex === -1 ? activeText : text,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontSize: 14,
+                padding: '8px 4px',
+                transition: 'color 0.3s',
+              }}
+            >
+              Sign In
+            </button>
+            <motion.div
+              initial={false}
+              animate={{ width: activeIndex === -1 ? '100%' : '0%' }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                height: 2.5,
+                borderRadius: 999,
+                background: 'linear-gradient(90deg, #0047BA, #00A3E0)',
+              }}
+            />
+          </div>
+
           <button
             onClick={() => navigate('/auth?mode=register')}
             style={{
@@ -156,8 +179,10 @@ export default function FrontendNavbar() {
               alignItems: 'center',
               gap: 8,
               boxShadow: '0 4px 16px rgba(0,71,186,0.3)',
-              transition: 'background 0.2s',
+              transition: 'all 0.2s',
             }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
           >
             Register
           </button>
