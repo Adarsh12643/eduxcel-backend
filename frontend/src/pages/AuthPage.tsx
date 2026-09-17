@@ -136,30 +136,72 @@ export default function AuthPage() {
       </button>
 
       {/* Left branding panel */}
-      <div style={{ display: 'none', width: '50%', background: '#0B1E4A', flexDirection: 'column', justifyContent: 'center', gap: 48, padding: 48, position: 'relative', overflow: 'hidden' }} className="lg-flex">
-        <style>{`.lg-flex { display: none; } @media(min-width:1024px){ .lg-flex { display: flex !important; } }`}</style>
-        <div style={{ position: 'absolute', top: '20%', left: '-20%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(53,103,251,0.4) 0%, transparent 70%)' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', right: '-20%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,163,224,0.3) 0%, transparent 70%)' }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <Logo size="lg" showText={false} />
-          <div style={{ fontSize: 36, fontWeight: 900, color: '#fff', marginTop: 16, letterSpacing: '-0.03em' }}>EduXcel</div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 12, padding: '6px 14px', borderRadius: 999, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#00A3E0', fontSize: 12, fontWeight: 700 }}>
-            <Brain style={{ width: 14, height: 14 }} /> AI Student Performance Catalyst
+        <div style={{ display: 'none', width: '50%', position: 'relative', overflow: 'hidden', background: '#070f22' }} className="lg-flex items-center justify-center">
+          <style>{ `
+            .lg-flex { display: none; }
+            @media(min-width:1024px){ .lg-flex { display: flex !important; } }
+            @keyframes pulseGlow {
+              0% { box-shadow: 0 0 20px 0px rgba(53, 103, 251, 0.4); transform: scale(1); }
+              50% { box-shadow: 0 0 40px 10px rgba(0, 163, 224, 0.6); transform: scale(1.02); }
+              100% { box-shadow: 0 0 20px 0px rgba(53, 103, 251, 0.4); transform: scale(1); }
+            }
+            @keyframes floatGradient {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+            @keyframes auraRotate {
+              0% { transform: rotate(0deg) scale(1); }
+              50% { transform: rotate(180deg) scale(1.1); }
+              100% { transform: rotate(360deg) scale(1); }
+            }
+          ` }</style>
+          
+          {/* Animated Mesh Background */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(-45deg, #070f22, #0d276b, #330b65, #001233)', backgroundSize: '400% 400%', animation: 'floatGradient 15s ease infinite', opacity: 0.8 }} />
+          
+          {/* Rotating Aura Orbs */}
+          <div style={{ position: 'absolute', top: '10%', left: '-10%', width: '600px', height: '600px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,43,226,0.3) 0%, transparent 60%)', animation: 'auraRotate 25s linear infinite', mixBlendMode: 'screen' }} />
+          <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,163,224,0.3) 0%, transparent 60%)', animation: 'auraRotate 20s linear infinite reverse', mixBlendMode: 'screen' }} />
+          
+          <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', padding: '0 48px', maxWidth: '600px', width: '100%', gap: '48px' }}>
+            
+            <div>
+              {/* Dynamic Shiny Logo Container */}
+              <div style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                padding: '16px',
+                borderRadius: '30%',
+                background: 'rgba(255,255,255,0.03)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                animation: 'pulseGlow 4s ease-in-out infinite',
+                marginBottom: '16px'
+              }}>
+                <Logo size="xl" showText={false} />
+              </div>
+              <div style={{ fontSize: '46px', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em', textShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>EduXcel</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 12, padding: '8px 16px', borderRadius: 999, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#6ee7b7', fontSize: 13, fontWeight: 700, backdropFilter: 'blur(8px)', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                <Brain style={{ width: 16, height: 16 }} /> AI Student Performance Catalyst
+              </div>
+            </div>
+
+            <div>
+              <h2 style={{ fontSize: 44, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: 20, textShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                Predict. Explain.<br />
+                <span style={{ background: 'linear-gradient(135deg, #00A3E0, #a855f7, #60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>Recover.</span>
+              </h2>
+              <p style={{ color: '#e2e8f0', fontSize: 18, lineHeight: 1.6, marginBottom: 32, maxWidth: '480px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                An intelligent education operating system that identifies academic risk early and provides personalized pathways to success.
+              </p>
+              <div style={{ display: 'flex', gap: 14, color: '#93c5fd', fontSize: 13, fontWeight: 800, letterSpacing: '0.15em', textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                <span>Learn Today</span><span style={{ color: '#a855f7' }}>&bull;</span><span>Excel Tomorrow</span><span style={{ color: '#a855f7' }}>&bull;</span><span>Succeed Forever</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <h2 style={{ fontSize: 40, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.2, marginBottom: 20 }}>
-            Predict. Explain.<br />
-            <span style={{ background: 'linear-gradient(135deg, #00A3E0, #8aaaff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Recover.</span>
-          </h2>
-          <p style={{ color: '#93c5fd', fontSize: 16, lineHeight: 1.7, marginBottom: 32 }}>
-            An intelligent education operating system that identifies academic risk early and provides personalized pathways to success.
-          </p>
-          <div style={{ display: 'flex', gap: 12, color: '#93c5fd', fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            <span>Learn Today</span><span>•</span><span>Excel Tomorrow</span><span>•</span><span>Succeed Forever</span>
-          </div>
-        </div>
-      </div>
 
       {/* Right form panel */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative' }}>
