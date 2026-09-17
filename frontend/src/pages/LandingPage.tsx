@@ -178,67 +178,84 @@ export default function LandingPage() {
         </section>
 
         {/* Faculty CTA */}
-        <section id="faculty-console" style={{ background: '#0B1E4A', borderRadius: 32, padding: '60px 40px', margin: '24px 0', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(53,103,251,0.3) 0%, transparent 70%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: 0, left: 0, width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,140,0,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <section id="faculty-console" style={{ background: elevated, border: `1px solid ${border}`, borderRadius: 32, padding: '60px 40px', margin: '24px 0', position: 'relative', overflow: 'hidden', boxShadow: isDark ? '0 24px 64px rgba(0,0,0,0.3)' : '0 24px 64px rgba(11,30,74,0.05)' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 400, height: 400, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(53,103,251,0.15) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(53,103,251,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, width: 300, height: 300, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(255,140,0,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          
           <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', maxWidth: 1000, margin: '0 auto' }}>
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#00A3E0', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 24 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: isDark ? 'rgba(53,103,251,0.15)' : '#eef3ff', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : '#c6d6ff'}`, color: '#0047BA', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 24 }}>
                 <Users style={{ width: 14, height: 14 }} /> Faculty Console
               </div>
-              <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 20 }}>Command Your Classroom.</h2>
-              <p style={{ color: '#93c5fd', fontSize: 16, lineHeight: 1.7, marginBottom: 32 }}>
+              <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', fontWeight: 900, color: text, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 20 }}>Command Your Classroom.</h2>
+              <p style={{ color: muted, fontSize: 16, lineHeight: 1.7, marginBottom: 32 }}>
                 Professors shouldn't wait for final exams to know who is struggling. EduXcel gives faculty a real-time command center.
               </p>
               {['Automated cohort performance telemetry', 'One-click algorithmic risk profiling', 'Integrated recovery workflows'].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(0,163,224,0.15)', border: '1px solid rgba(0,163,224,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <CheckCircle2 style={{ width: 14, height: 14, color: '#00A3E0' }} />
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: isDark ? 'rgba(53,103,251,0.15)' : '#eef3ff', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : '#c6d6ff'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <CheckCircle2 style={{ width: 14, height: 14, color: '#0047BA' }} />
                   </div>
-                  <span style={{ color: '#e0f2fe', fontWeight: 500 }}>{item}</span>
+                  <span style={{ color: text, fontWeight: 500 }}>{item}</span>
                 </div>
               ))}
               <button onClick={() => navigate('/auth?role=faculty')}
-                style={{ marginTop: 16, background: '#fff', color: '#0B1E4A', border: 'none', padding: '14px 28px', borderRadius: 999, fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'transform 0.2s' }}
+                style={{ marginTop: 16, background: '#0047BA', color: '#fff', border: 'none', padding: '14px 28px', borderRadius: 999, fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'transform 0.2s', boxShadow: '0 4px 16px rgba(0,71,186,0.3)' }}
                 onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
                 onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}>
                 Launch Console <ArrowRight style={{ width: 18, height: 18 }} />
               </button>
             </div>
-            <motion.div 
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: 24, backdropFilter: 'blur(10px)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}
+            
+            <div style={{ position: 'relative', height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {/* Central Glowing AI Core */}
+              <motion.div
+                animate={{ boxShadow: ['0 0 20px #0047BA', '0 0 60px #00A3E0', '0 0 20px #0047BA'] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ width: 90, height: 90, borderRadius: '50%', background: 'linear-gradient(135deg, #0047BA, #00A3E0)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 10 }}
               >
-                {[1,2,3].map(i => (
-                  <motion.div key={i} 
-                    animate={{ x: [0, i % 2 === 0 ? 5 : -5, 0] }}
-                    transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, background: 'rgba(255,255,255,0.08)', borderRadius: 12, marginBottom: i < 3 ? 12 : 0, border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                  >
-                    <motion.div 
-                      animate={{ scale: [1, 1.1, 1] }} 
-                      transition={{ duration: 2, repeat: Infinity, delay: i }}
-                      style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} 
-                    />
-                    <div style={{ flex: 1 }}>
-                      <motion.div 
-                        animate={{ width: ['40%', '60%', '40%'] }} 
-                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{ height: 10, background: 'rgba(255,255,255,0.3)', borderRadius: 5, marginBottom: 8 }} 
-                      />
-                      <div style={{ height: 8, width: '80%', background: 'rgba(255,255,255,0.15)', borderRadius: 5 }} />
-                    </div>
-                    <motion.div 
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
-                      style={{ height: 24, width: 60, background: i === 1 ? 'rgba(239,68,68,0.5)' : i === 2 ? 'rgba(245,158,11,0.5)' : 'rgba(16,185,129,0.5)', borderRadius: 999, border: `1px solid ${i === 1 ? 'rgba(239,68,68,0.8)' : i === 2 ? 'rgba(245,158,11,0.8)' : 'rgba(16,185,129,0.8)'}` }} 
-                    />
-                  </motion.div>
-                ))}
+                <Brain style={{ color: 'white', width: 44, height: 44 }} />
               </motion.div>
+
+              {/* Pulsing Concentric Radar Rings */}
+              {[1, 2, 3].map(i => (
+                <motion.div
+                  key={i}
+                  animate={{ scale: [1, 3.5], opacity: [0.6, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, delay: i * 1.3, ease: 'easeOut' }}
+                  style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', border: `2px solid ${isDark ? '#3567fb' : '#0047BA'}` }}
+                />
+              ))}
+
+              {/* Floating Data Nodes (Students) */}
+              {[
+                { top: '15%', left: '15%', size: 48, delay: 0, color: '#10b981', icon: <CheckCircle2 size={20} color="#10b981" /> },
+                { top: '75%', left: '10%', size: 40, delay: 1, color: '#f59e0b', icon: <AlertTriangle size={16} color="#f59e0b" /> },
+                { top: '10%', left: '75%', size: 56, delay: 2, color: '#ef4444', icon: <Target size={24} color="#ef4444" /> },
+                { top: '85%', left: '70%', size: 44, delay: 0.5, color: '#3b82f6', icon: <BarChart3 size={18} color="#3b82f6" /> }
+              ].map((node, i) => (
+                <motion.div
+                  key={`node-${i}`}
+                  animate={{ y: [0, -20, 0] }}
+                  transition={{ duration: 3 + i, repeat: Infinity, delay: node.delay, ease: 'easeInOut' }}
+                  style={{ position: 'absolute', top: node.top, left: node.left, width: node.size, height: node.size, borderRadius: 16, background: surface, border: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 8px 24px ${node.color}20` }}
+                >
+                  <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 2, repeat: Infinity, delay: node.delay }}>
+                    {node.icon}
+                  </motion.div>
+                </motion.div>
+              ))}
+
+              {/* Connecting SVG Lines */}
+              <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
+                <motion.line x1="50%" y1="50%" x2="25%" y2="25%" stroke={isDark ? "rgba(53,103,251,0.2)" : "rgba(0,71,186,0.1)"} strokeWidth="2" strokeDasharray="4" animate={{ opacity: [0.2, 0.8, 0.2] }} transition={{ duration: 2, repeat: Infinity }} />
+                <motion.line x1="50%" y1="50%" x2="20%" y2="80%" stroke={isDark ? "rgba(245,158,11,0.2)" : "rgba(245,158,11,0.1)"} strokeWidth="2" strokeDasharray="4" animate={{ opacity: [0.2, 0.8, 0.2] }} transition={{ duration: 2.5, repeat: Infinity, delay: 1 }} />
+                <motion.line x1="50%" y1="50%" x2="80%" y2="20%" stroke={isDark ? "rgba(239,68,68,0.2)" : "rgba(239,68,68,0.1)"} strokeWidth="2" strokeDasharray="4" animate={{ opacity: [0.2, 0.8, 0.2] }} transition={{ duration: 3, repeat: Infinity, delay: 2 }} />
+                <motion.line x1="50%" y1="50%" x2="75%" y2="85%" stroke={isDark ? "rgba(59,130,246,0.2)" : "rgba(59,130,246,0.1)"} strokeWidth="2" strokeDasharray="4" animate={{ opacity: [0.2, 0.8, 0.2] }} transition={{ duration: 2.2, repeat: Infinity, delay: 0.5 }} />
+              </svg>
             </div>
-          </section>
+          </div>
+        </section>
       
         {/* Contact Us */}
         <section id="contact" style={{ padding: '60px 0', borderTop: `1px solid ${border}` }}>
