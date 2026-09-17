@@ -222,9 +222,13 @@ export default function LandingPage() {
               <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.2)' : 'rgba(0,71,186,0.1)'}`, pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.1)' : 'rgba(0,71,186,0.05)'}`, pointerEvents: 'none' }} />
 
+              {/* Radar Ping Emission */}
+              <motion.div
+                animate={{ scale: [1, 4.5], opacity: [0.4, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeOut' }}
+                style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', background: isDark ? 'rgba(53,103,251,0.1)' : 'rgba(0,163,224,0.05)', border: `2px solid ${isDark ? 'rgba(53,103,251,0.4)' : 'rgba(0,163,224,0.3)'}`, pointerEvents: 'none', zIndex: 5 }}
+              />
 
-
-              
 
               {/* Floating Data Nodes (Students) */}
               {[
