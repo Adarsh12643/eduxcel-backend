@@ -86,50 +86,46 @@ export default function LandingPage() {
         </div>
 
         {/* Hero Dashboard Preview */}
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4 }}
-          style={{ marginTop: 80, maxWidth: 960, margin: '80px auto 0' }}>
-          <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 24, overflow: 'hidden', boxShadow: isDark ? '0 24px 64px rgba(0,0,0,0.5)' : '0 24px 64px rgba(11,30,74,0.12)' }}>
-            {/* Top bar */}
-            <div style={{ height: 4, background: 'linear-gradient(90deg, #0047BA, #3567fb, #00A3E0)' }} />
-            <div style={{ display: 'flex' }}>
-              {/* Fake sidebar */}
-              <div style={{ width: 200, background: elevated, borderRight: `1px solid ${border}`, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div style={{ height: 28, width: 120, background: isDark ? '#30363d' : '#e2e8f0', borderRadius: 8 }} />
-                {[1,2,3,4,5].map(i => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isDark ? '#30363d' : '#e2e8f0' }} />
-                    <div style={{ height: 12, width: 80, background: isDark ? '#30363d' : '#e2e8f0', borderRadius: 6 }} />
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: [0, -15, 0] }} transition={{ opacity: { duration: 0.7, delay: 0.4 }, y: { duration: 6, repeat: Infinity, ease: 'easeInOut' } }}
+            style={{ marginTop: 80, maxWidth: 960, margin: '80px auto 0', padding: '0 24px' }}>
+            <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 24, overflow: 'hidden', boxShadow: isDark ? '0 24px 64px rgba(0,0,0,0.5)' : '0 24px 64px rgba(11,30,74,0.12)' }}>
+              {/* Top bar */}
+              <div style={{ height: 4, background: 'linear-gradient(90deg, #0047BA, #3567fb, #00A3E0)' }} />
+              <div style={{ display: 'flex' }}>
+                {/* Dashboard full content */}
+                <div style={{ flex: 1, padding: 32, background: elevated }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+                    {[
+                      { val: '8.4', label: 'Predicted GPA', color: '#0047BA' },
+                      { val: 'Low', label: 'Risk Level', color: '#10b981' },
+                      { val: '85%', label: 'Attendance', color: '#3b82f6' },
+                      { val: 'DBMS', label: 'Focus Area', color: '#f59e0b' },
+                    ].map((stat, i) => (
+                      <motion.div key={i} 
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
+                        style={{ background: surface, border: `1px solid ${border}`, borderRadius: 12, padding: 16, textAlign: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                        <div style={{ fontSize: 26, fontWeight: 900, color: stat.color, marginBottom: 4 }}>{stat.val}</div>
+                        <div style={{ fontSize: 12, color: muted, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{stat.label}</div>
+                      </motion.div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              {/* Fake content */}
-              <div style={{ flex: 1, padding: 32, background: elevated }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-                  {[
-                    { val: '8.4', label: 'Predicted GPA', color: '#0047BA' },
-                    { val: 'Low', label: 'Risk Level', color: '#10b981' },
-                    { val: '85%', label: 'Attendance', color: '#3b82f6' },
-                    { val: 'DBMS', label: 'Focus Area', color: '#f59e0b' },
-                  ].map((stat, i) => (
-                    <div key={i} style={{ background: surface, border: `1px solid ${border}`, borderRadius: 12, padding: 16, textAlign: 'center' }}>
-                      <div style={{ fontSize: 22, fontWeight: 900, color: stat.color, marginBottom: 4 }}>{stat.val}</div>
-                      <div style={{ fontSize: 11, color: muted, fontWeight: 600 }}>{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-                {/* Fake chart bars */}
-                <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 12, padding: 20, height: 160, display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                  {[40,55,45,60,75,65,80,85].map((h, i) => (
-                    <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ duration: 0.8, delay: 0.6 + i * 0.08 }}
-                      style={{ flex: 1, background: i % 2 === 0 ? '#0047BA' : (isDark ? '#30363d' : '#e2e8f0'), borderRadius: '4px 4px 0 0', minWidth: 0 }} />
-                  ))}
+                  {/* Dynamic moving chart bars */}
+                  <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 12, padding: 20, height: 200, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+                    {[40,55,45,60,75,65,80,85].map((h, i) => (
+                      <motion.div key={i} 
+                        initial={{ height: 0 }} 
+                        animate={{ height: [`${h}%`, `${h + 15}%`, `${h - 10}%`, `${h}%`] }} 
+                        transition={{ duration: 4 + i % 3, repeat: Infinity, ease: 'easeInOut', delay: i * 0.2 }}
+                        style={{ flex: 1, background: i % 2 === 0 ? '#0047BA' : (isDark ? '#30363d' : '#e2e8f0'), borderRadius: '6px 6px 0 0', minWidth: 0, boxShadow: '0 0 10px rgba(0,71,186,0.1)' }} />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Features */}
+          {/* Features */}
         <section id="features" style={{ padding: '80px 0 60px' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: text, marginBottom: 16 }}>Core Architecture</h2>
@@ -209,23 +205,43 @@ export default function LandingPage() {
                 Launch Console <ArrowRight style={{ width: 18, height: 18 }} />
               </button>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: 24 }}>
-              {[1,2,3].map(i => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, background: 'rgba(255,255,255,0.05)', borderRadius: 12, marginBottom: i < 3 ? 12 : 0, border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ height: 10, width: 100, background: 'rgba(255,255,255,0.2)', borderRadius: 5, marginBottom: 8 }} />
-                    <div style={{ height: 8, width: 140, background: 'rgba(255,255,255,0.1)', borderRadius: 5 }} />
-                  </div>
-                  <div style={{ height: 24, width: 60, background: i === 1 ? 'rgba(239,68,68,0.4)' : i === 2 ? 'rgba(245,158,11,0.4)' : 'rgba(16,185,129,0.4)', borderRadius: 999, border: `1px solid ${i === 1 ? 'rgba(239,68,68,0.5)' : i === 2 ? 'rgba(245,158,11,0.5)' : 'rgba(16,185,129,0.5)'}` }} />
-                </div>
-              ))}
+            <motion.div 
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: 24, backdropFilter: 'blur(10px)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}
+              >
+                {[1,2,3].map(i => (
+                  <motion.div key={i} 
+                    animate={{ x: [0, i % 2 === 0 ? 5 : -5, 0] }}
+                    transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, background: 'rgba(255,255,255,0.08)', borderRadius: 12, marginBottom: i < 3 ? 12 : 0, border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                  >
+                    <motion.div 
+                      animate={{ scale: [1, 1.1, 1] }} 
+                      transition={{ duration: 2, repeat: Infinity, delay: i }}
+                      style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} 
+                    />
+                    <div style={{ flex: 1 }}>
+                      <motion.div 
+                        animate={{ width: ['40%', '60%', '40%'] }} 
+                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{ height: 10, background: 'rgba(255,255,255,0.3)', borderRadius: 5, marginBottom: 8 }} 
+                      />
+                      <div style={{ height: 8, width: '80%', background: 'rgba(255,255,255,0.15)', borderRadius: 5 }} />
+                    </div>
+                    <motion.div 
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+                      style={{ height: 24, width: 60, background: i === 1 ? 'rgba(239,68,68,0.5)' : i === 2 ? 'rgba(245,158,11,0.5)' : 'rgba(16,185,129,0.5)', borderRadius: 999, border: `1px solid ${i === 1 ? 'rgba(239,68,68,0.8)' : i === 2 ? 'rgba(245,158,11,0.8)' : 'rgba(16,185,129,0.8)'}` }} 
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
             </div>
-          </div>
-        </section>
+          </section>
       
         {/* Contact Us */}
-        <section id="contact" style={{ padding: '100px 0', borderTop: `1px solid ${border}` }}>
+        <section id="contact" style={{ padding: '60px 0', borderTop: `1px solid ${border}` }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <h2 style={{ fontSize: 32, fontWeight: 900, marginBottom: 16 }}>Get in Touch</h2>
             <p style={{ color: muted, fontSize: 18, maxWidth: 600, margin: '0 auto' }}>
@@ -237,6 +253,8 @@ export default function LandingPage() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
               viewport={{ once: true }}
               style={{ background: surface, border: `1px solid ${border}`, borderRadius: 24, padding: 40, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.2)' : '0 10px 40px rgba(53,103,251,0.05)' }}
             >
@@ -264,7 +282,7 @@ export default function LandingPage() {
             </motion.div>
 
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 32 }}>
-              <div style={{ display: 'flex', gap: 16 }}>
+              <motion.div whileHover={{ x: 5, scale: 1.01 }} transition={{ duration: 0.2 }} style={{ display: 'flex', gap: 16 }}>
                 <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? 'rgba(53,103,251,0.1)' : '#eef3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0047BA' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                 </div>
@@ -273,8 +291,8 @@ export default function LandingPage() {
                   <p style={{ color: muted, fontSize: 14 }}>Mon-Fri from 8am to 5pm.</p>
                   <a href="tel:+11234567890" style={{ color: '#0047BA', fontWeight: 600, textDecoration: 'none', fontSize: 15, display: 'block', marginTop: 4 }}>+1 (123) 456-7890</a>
                 </div>
-              </div>
-              <div style={{ display: 'flex', gap: 16 }}>
+              </motion.div>
+              <motion.div whileHover={{ x: 5, scale: 1.01 }} transition={{ duration: 0.2 }} style={{ display: 'flex', gap: 16 }}>
                 <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? 'rgba(53,103,251,0.1)' : '#eef3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0047BA' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
                 </div>
@@ -283,7 +301,7 @@ export default function LandingPage() {
                   <p style={{ color: muted, fontSize: 14 }}>Our friendly team is here to help.</p>
                   <a href="mailto:hello@eduxcel.com" style={{ color: '#0047BA', fontWeight: 600, textDecoration: 'none', fontSize: 15, display: 'block', marginTop: 4 }}>hello@eduxcel.com</a>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
