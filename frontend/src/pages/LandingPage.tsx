@@ -217,15 +217,7 @@ export default function LandingPage() {
                 <Brain style={{ color: 'white', width: 44, height: 44 }} />
               </motion.div>
 
-              {/* Pulsing Concentric Radar Rings */}
-              {[1, 2, 3].map(i => (
-                <motion.div
-                  key={i}
-                  animate={{ scale: [1, 3.5], opacity: [0.6, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, delay: i * 1.3, ease: 'easeOut' }}
-                  style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', border: `2px solid ${isDark ? '#3567fb' : '#0047BA'}` }}
-                />
-              ))}
+              
 
               {/* Floating Data Nodes (Students) */}
               {[
