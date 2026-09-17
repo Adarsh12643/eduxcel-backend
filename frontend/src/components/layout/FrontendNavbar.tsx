@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { label: 'Features', href: '#features', sectionId: 'features' },
   { label: 'Architecture', href: '#architecture', sectionId: 'architecture' },
   { label: 'Faculty Console', href: '#faculty-console', sectionId: 'faculty-console' },
+  { label: 'Contact Us', href: '#contact', sectionId: 'contact' },
 ];
 
 export default function FrontendNavbar() {
@@ -88,21 +89,20 @@ export default function FrontendNavbar() {
               }}
             >
               {item.label}
-              {activeIndex === i && (
-                <motion.div
-                  layoutId="navbar-underline"
-                  style={{
-                    position: 'absolute',
-                    bottom: -4,
-                    left: 0,
-                    right: 0,
-                    height: 2.5,
-                    borderRadius: 999,
-                    background: 'linear-gradient(90deg, #0047BA, #00A3E0)',
-                  }}
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                />
-              )}
+              
+              <motion.div
+                initial={false}
+                animate={{ width: activeIndex === i ? '100%' : '0%' }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                style={{
+                  position: 'absolute',
+                  bottom: -4,
+                  left: 0,
+                  height: 2.5,
+                  borderRadius: 999,
+                  background: 'linear-gradient(90deg, #0047BA, #00A3E0)',
+                }}
+              />
             </a>
           ))}
         </div>

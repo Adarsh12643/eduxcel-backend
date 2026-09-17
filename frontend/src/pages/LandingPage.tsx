@@ -223,6 +223,71 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+      
+        {/* Contact Us */}
+        <section id="contact" style={{ padding: '100px 0', borderTop: `1px solid ${border}` }}>
+          <div style={{ textAlign: 'center', marginBottom: 60 }}>
+            <h2 style={{ fontSize: 32, fontWeight: 900, marginBottom: 16 }}>Get in Touch</h2>
+            <p style={{ color: muted, fontSize: 18, maxWidth: 600, margin: '0 auto' }}>
+              Have questions about EduXcel? Our team is here to help you transform your academic institution.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, maxWidth: 900, margin: '0 auto' }}>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              style={{ background: surface, border: `1px solid ${border}`, borderRadius: 24, padding: 40, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.2)' : '0 10px 40px rgba(53,103,251,0.05)' }}
+            >
+              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24 }}>Send us a message</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: muted, marginBottom: 8 }}>Name</label>
+                  <input type="text" placeholder="John Doe" style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: bg, color: text, outline: 'none' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: muted, marginBottom: 8 }}>Email</label>
+                  <input type="email" placeholder="john@university.edu" style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: bg, color: text, outline: 'none' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: muted, marginBottom: 8 }}>Message</label>
+                  <textarea rows={4} placeholder="How can we help?" style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: `1px solid ${border}`, background: bg, color: text, outline: 'none', resize: 'vertical' }} />
+                </div>
+                <button 
+                  onClick={() => alert("Message sent! We'll get back to you shortly.")}
+                  style={{ width: '100%', padding: 14, marginTop: 8, background: '#0047BA', color: '#fff', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 16px rgba(0,71,186,0.3)' }}
+                >
+                  Send Message <ArrowRight style={{ width: 16, height: 16 }} />
+                </button>
+              </div>
+            </motion.div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 32 }}>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? 'rgba(53,103,251,0.1)' : '#eef3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0047BA' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Call Us</h4>
+                  <p style={{ color: muted, fontSize: 14 }}>Mon-Fri from 8am to 5pm.</p>
+                  <a href="tel:+11234567890" style={{ color: '#0047BA', fontWeight: 600, textDecoration: 'none', fontSize: 15, display: 'block', marginTop: 4 }}>+1 (123) 456-7890</a>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? 'rgba(53,103,251,0.1)' : '#eef3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0047BA' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Email Us</h4>
+                  <p style={{ color: muted, fontSize: 14 }}>Our friendly team is here to help.</p>
+                  <a href="mailto:hello@eduxcel.com" style={{ color: '#0047BA', fontWeight: 600, textDecoration: 'none', fontSize: 15, display: 'block', marginTop: 4 }}>hello@eduxcel.com</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
 
       {/* Footer */}

@@ -4,6 +4,47 @@ import Logo from '../shared/Logo';
 import { Brain, GraduationCap, Users, Sparkles } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
+
+function AnimatedFooterLink({ label, action, muted, text }: { label: string, action: () => void, muted: string, text: string }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <button
+      onClick={action}
+      style={{
+        background: 'none',
+        border: 'none',
+        color: hover ? '#0047BA' : muted,
+        textDecoration: 'none',
+        fontSize: 14,
+        textAlign: 'left',
+        cursor: 'pointer',
+        padding: '0 0 4px 0',
+        transition: 'color 0.2s',
+        fontWeight: 500,
+        position: 'relative',
+        display: 'inline-block',
+        width: 'fit-content'
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {label}
+      <div 
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          height: 2,
+          borderRadius: 999,
+          background: 'linear-gradient(90deg, #0047BA, #00A3E0)',
+          width: hover ? '100%' : '0%',
+          transition: 'width 0.3s ease-out'
+        }}
+      />
+    </button>
+  );
+}
+
 export default function FrontendFooter() {
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -19,6 +60,7 @@ export default function FrontendFooter() {
     { label: 'Student Portal', action: () => navigate('/auth?role=student') },
     { label: 'Faculty Portal', action: () => navigate('/auth?role=faculty') },
     { label: 'AI Intelligence', action: () => navigate('/auth?role=student') },
+    { label: 'Contact Us', action: () => { const el = document.getElementById('contact'); if(el) el.scrollIntoView({ behavior: 'smooth' }); } },
   ];
 
   const legalLinks = [
@@ -96,26 +138,7 @@ export default function FrontendFooter() {
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {platformLinks.map((link, i) => (
-              <button
-                key={i}
-                onClick={link.action}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: muted,
-                  textDecoration: 'none',
-                  fontSize: 14,
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  padding: 0,
-                  transition: 'color 0.2s',
-                  fontWeight: 500,
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#0047BA')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = muted)}
-              >
-                {link.label}
-              </button>
+              <AnimatedFooterLink key={i} label={link.label} action={link.action} muted={muted} text={text} />
             ))}
           </div>
         </div>
@@ -135,26 +158,7 @@ export default function FrontendFooter() {
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {legalLinks.map((link, i) => (
-              <button
-                key={i}
-                onClick={link.action}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: muted,
-                  textDecoration: 'none',
-                  fontSize: 14,
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  padding: 0,
-                  transition: 'color 0.2s',
-                  fontWeight: 500,
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#0047BA')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = muted)}
-              >
-                {link.label}
-              </button>
+              <AnimatedFooterLink key={i} label={link.label} action={link.action} muted={muted} text={text} />
             ))}
           </div>
         </div>
