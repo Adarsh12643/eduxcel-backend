@@ -12,6 +12,7 @@ const XCELO_GIF = '/xcelo.gif';
 
 export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: ChatbotButtonProps) {
   const [ribbonDismissed, setRibbonDismissed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   React.useEffect(() => {
     const handleOpen = () => setIsAIOpen(true);
@@ -31,7 +32,7 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
             className="fixed bottom-4 right-4 z-50 flex flex-col items-end"
           >
             {/* Ribbon above the robot */}
-            {!ribbonDismissed && (
+            {(!ribbonDismissed || isHovered) && (
               <motion.div
                 initial={{ opacity: 0, y: 8, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -51,6 +52,8 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
 
             {/* Robot GIF — no circle, no clip, natural shape */}
             <motion.button
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
               onClick={() => { setIsAIOpen(true); setRibbonDismissed(true); }}
               aria-label="Open Xcello AI assistant"
               whileHover={{ scale: 1.08, y: -4 }}
