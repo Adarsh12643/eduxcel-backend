@@ -26,6 +26,8 @@ export default function AuthPage() {
   const muted   = isDark ? '#8b949e' : '#64748b';
   const inputBg = isDark ? '#21262d' : '#f8fafc';
 
+  const [serverState, setServerState] = useState<'checking' | 'waking' | 'awake'>('checking');
+
   useEffect(() => {
     const urlError = searchParams.get('error');
     if (urlError) {
@@ -38,6 +40,41 @@ export default function AuthPage() {
       setError(msg);
     }
   }, [searchParams]);
+
+  // Proactively wake up the free tier server on mount
+  useEffect(() => {
+    let mounted = true;
+    const checkServer = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/health`);
+        if (res.ok && mounted) {
+          setServerState('awake');
+        }
+      } catch (e) {
+        if (mounted) setTimeout(checkServer, 3000);
+      }
+    };
+    checkServer();
+    return () => { mounted = false; };
+  }, []);
+
+  const waitForServer = async () => {
+    if (serverState === 'awake') return true;
+    setServerState('waking');
+    // Poll until awake to bypass Render's terminal cold start screen
+    while (true) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/health`);
+        if (res.ok) {
+          setServerState('awake');
+          return true;
+        }
+      } catch (e) {
+        // still waking up
+      }
+      await new Promise(resolve => setTimeout(resolve, 2500));
+    }
+  };
 
   const handleAuthSuccess = (user: any) => {
     if (user.isOnboarded) {
@@ -77,6 +114,8 @@ export default function AuthPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    await waitForServer();
+    
     const form = e.target as HTMLFormElement;
     const email = (form.querySelector('#email') as HTMLInputElement).value;
     const password = (form.querySelector('#password') as HTMLInputElement).value;
@@ -102,7 +141,10 @@ export default function AuthPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    await waitForServer();
+    
     const hasClientId = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
     if (hasClientId) {
       googleLogin();
@@ -275,8 +317,8 @@ export default function AuthPage() {
                 onMouseLeave={(e) => (e.currentTarget.style.background = '#0047BA')}
               >
                 {loading
-                  ? <div style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                  : <>{isLogin ? 'Sign In to Dashboard' : 'Create Account'} <ArrowRight style={{ width: 16, height: 16 }} /></>
+                  ? <><div style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> {serverState === 'waking' ? 'Waking up server... (~50s)' : 'Authenticating...'}</>
+                  : serverState === 'waking' ? 'Waking up server... (~50s)' : <>{isLogin ? 'Sign In to Dashboard' : 'Create Account'} <ArrowRight style={{ width: 16, height: 16 }} /></>
                 }
               </button>
 
@@ -293,7 +335,7 @@ export default function AuthPage() {
                 onMouseLeave={(e) => (e.currentTarget.style.background = surface)}
               >
                 {googleLoading
-                  ? <div style={{ width: 18, height: 18, border: `2px solid ${border}`, borderTopColor: '#0047BA', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  ? <><div style={{ width: 18, height: 18, border: `2px solid ${border}`, borderTopColor: '#0047BA', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> {serverState === 'waking' ? 'Waking up server... (~50s)' : 'Loading...'}</>
                   : <>
                     <svg width="20" height="20" viewBox="0 0 24 24">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -301,7 +343,7 @@ export default function AuthPage() {
                       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                     </svg>
-                    Continue with Google
+                    {serverState === 'waking' ? 'Waking up server... (~50s)' : 'Continue with Google'}
                   </>
                 }
               </button>
