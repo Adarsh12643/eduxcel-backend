@@ -60,10 +60,7 @@ export default function FrontendNavbar() {
       >
         <Logo />
 
-        <div
-          ref={navRef}
-          style={{ display: 'flex', alignItems: 'center', gap: 36, position: 'relative' }}
-        >
+        <div ref={navRef} className="hidden md:flex items-center gap-9 relative">
           {navItems.map((item, i) => (
             <a
               key={i}

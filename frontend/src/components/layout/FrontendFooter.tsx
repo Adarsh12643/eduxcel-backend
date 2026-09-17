@@ -106,17 +106,8 @@ export default function FrontendFooter() {
         zIndex: 1,
       }}
     >
-      <div
-        style={{
-          maxWidth: 1280,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 48,
-          marginBottom: 48,
-        }}
-      >
-        <div style={{ gridColumn: 'span 2' }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 max-w-7xl mx-auto mb-12">
+        <div className="md:col-span-2 lg:col-span-2">
           <Logo size="sm" showText />
           <p style={{ marginTop: 16, color: muted, fontSize: 14, maxWidth: 320, lineHeight: 1.6 }}>
             EduXcel uses AI-powered performance prediction to identify students at risk early and guide them toward the right learning path.

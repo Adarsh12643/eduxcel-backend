@@ -368,6 +368,7 @@ function AssignmentsPage() {
 export default function StudentDashboard() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
     useEffect(() => {
       const handleResize = () => {
@@ -438,7 +439,7 @@ export default function StudentDashboard() {
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel border-r transition-all duration-300 flex flex-col z-20 fixed top-3 left-3 bottom-3 rounded-2xl overflow-hidden",
+          "glass-panel border-r transition-all duration-300 flex flex-col z-30 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
           collapsed ? "w-20 p-3" : "w-60 p-5"
         )}>
         <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
@@ -497,7 +498,7 @@ export default function StudentDashboard() {
       {/* Main Content — offset by sidebar width with proper gap */}
       <main
         className="relative z-10"
-        style={{ marginLeft: sidebarW + sidebarPad, transition: 'margin-left 0.3s', padding: '12px 24px 12px 4px' }}
+        style={{ marginLeft: isMobile ? 0 : (sidebarW + sidebarPad), transition: 'margin-left 0.3s', padding: isMobile ? '12px 12px' : '12px 24px 12px 4px' }}
       >
         {/* Header — sticky */}
         <header className="glass-panel h-16 flex items-center justify-between px-6 z-10 flex-shrink-0 rounded-2xl mb-5 sticky top-3">

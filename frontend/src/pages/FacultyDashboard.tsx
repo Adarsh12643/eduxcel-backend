@@ -363,6 +363,7 @@ export default function FacultyDashboard() {
   const location = useLocation();
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
     useEffect(() => {
       const handleResize = () => {
@@ -417,15 +418,19 @@ export default function FacultyDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7F9] dark:bg-dark-bg flex font-sans text-brand-900 dark:text-slate-100 overflow-hidden relative transition-colors duration-500">
+    <div className="min-h-screen bg-[#F4F7F9] dark:bg-dark-bg flex font-sans text-brand-900 dark:text-slate-100 overflow-x-hidden relative flex-col md:flex-row transition-colors duration-500">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-200/30 dark:bg-brand-500/10 blur-[120px] rounded-full pointer-events-none z-0" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent-orange/10 dark:bg-accent-orange/5 blur-[120px] rounded-full pointer-events-none z-0" />
 
-      {/* Sidebar */}
+      {/* Mobile overlay */}
+        {isMobile && !collapsed && (
+          <div onClick={() => setCollapsed(true)} className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10" />
+        )}
+        {/* Sidebar */}
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-20 fixed top-3 left-3 bottom-3 rounded-2xl overflow-hidden",
+          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-30 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
           collapsed ? "w-20 p-3" : "w-60 p-5"
         )}>
         <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
