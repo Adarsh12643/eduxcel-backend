@@ -217,25 +217,15 @@ export default function LandingPage() {
                 <Brain style={{ color: 'white', width: 44, height: 44 }} />
               </motion.div>
 
-              {/* Blinking Concentric Rings */}
-              {[160, 260, 360].map((size, i) => (
+              {/* Continuous Expanding Radar Rings */}
+              {[0, 1, 2].map(i => (
                 <motion.div
-                  key={`static-ring-${i}`}
-                  animate={{ opacity: [0.1, 0.5, 0.1] }}
-                  transition={{ duration: 3, repeat: Infinity, delay: i * 0.5, ease: 'easeInOut' }}
-                  style={{ position: 'absolute', width: size, height: size, borderRadius: '50%', border: `2px solid ${isDark ? 'rgba(53,103,251,0.4)' : 'rgba(0,163,224,0.3)'}`, pointerEvents: 'none' }}
+                  key={`radar-ping-${i}`}
+                  animate={{ scale: [1, 4.5], opacity: [0.4, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, delay: i * 1, ease: 'easeOut' }}
+                  style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', background: isDark ? 'rgba(53,103,251,0.1)' : 'rgba(0,163,224,0.05)', border: `2px solid ${isDark ? 'rgba(53,103,251,0.4)' : 'rgba(0,163,224,0.3)'}`, pointerEvents: 'none', zIndex: 5 }}
                 />
               ))}
-              <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.2)' : 'rgba(0,71,186,0.1)'}`, pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.1)' : 'rgba(0,71,186,0.05)'}`, pointerEvents: 'none' }} />
-
-              {/* Radar Ping Emission */}
-              <motion.div
-                animate={{ scale: [1, 4.5], opacity: [0.4, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeOut' }}
-                style={{ position: 'absolute', width: 90, height: 90, borderRadius: '50%', background: isDark ? 'rgba(53,103,251,0.1)' : 'rgba(0,163,224,0.05)', border: `2px solid ${isDark ? 'rgba(53,103,251,0.4)' : 'rgba(0,163,224,0.3)'}`, pointerEvents: 'none', zIndex: 5 }}
-              />
-
 
               {/* Floating Data Nodes (Students) */}
               {[
