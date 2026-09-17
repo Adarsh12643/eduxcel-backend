@@ -41,7 +41,7 @@ export default function ChatbotButton({ isAIOpen, setIsAIOpen, roleContext }: Ch
               >
                 {/* Ribbon box */}
                 <div className="flex items-center gap-1.5 bg-white border-2 border-brand-500 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-2xl shadow-lg whitespace-nowrap relative z-10">
-                  <img src="https://media.tenor.com/0CpFOKGVaeMAAAAi/hand-waving-hand.gif" alt="Waving Hand" className="w-5 h-5 object-contain" />
+                  <img src="https://media.tenor.com/0CpFOKGVaeMAAAAi/hand-waving-hand.gif" alt="Waving Hand" className="w-[17px] h-[17px] object-contain mb-[2px]" />
                   <span>Hi! I am <span className="text-brand-600 font-extrabold">Xcello</span>.</span>
                 </div>
                 {/* Thought bubbles pointing DOWN-right toward the robot */}
