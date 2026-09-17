@@ -217,8 +217,15 @@ export default function LandingPage() {
                 <Brain style={{ color: 'white', width: 44, height: 44 }} />
               </motion.div>
 
-              {/* Static Concentric Rings */}
-              <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : 'rgba(0,71,186,0.15)'}`, pointerEvents: 'none' }} />
+              {/* Blinking Concentric Rings */}
+              {[160, 260, 360].map((size, i) => (
+                <motion.div
+                  key={`static-ring-${i}`}
+                  animate={{ opacity: [0.1, 0.5, 0.1] }}
+                  transition={{ duration: 3, repeat: Infinity, delay: i * 0.5, ease: 'easeInOut' }}
+                  style={{ position: 'absolute', width: size, height: size, borderRadius: '50%', border: `2px solid ${isDark ? 'rgba(53,103,251,0.4)' : 'rgba(0,163,224,0.3)'}`, pointerEvents: 'none' }}
+                />
+              ))}
               <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.2)' : 'rgba(0,71,186,0.1)'}`, pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', border: `1px solid ${isDark ? 'rgba(53,103,251,0.1)' : 'rgba(0,71,186,0.05)'}`, pointerEvents: 'none' }} />
 
