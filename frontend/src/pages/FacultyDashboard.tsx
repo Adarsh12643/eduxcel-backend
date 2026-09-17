@@ -428,10 +428,16 @@ export default function FacultyDashboard() {
           "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-20 fixed top-3 left-3 bottom-3 rounded-2xl overflow-hidden",
           collapsed ? "w-20 p-3" : "w-60 p-5"
         )}>
-        <div className={cn("mb-8 flex", collapsed ? "justify-center" : "items-center")}>
-          {!collapsed && <Logo size="md" showText={true} />}
-          {collapsed && <Logo size="sm" showText={false} />}
-          {!collapsed && <span className="ml-2 text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/20 px-2 py-0.5 rounded-md mt-1">FACULTY</span>}
+        <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
+          <div className="flex items-center">
+            <Logo size={collapsed ? "sm" : "md"} showText={!collapsed} />
+            {!collapsed && <span className="ml-2 text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/20 px-2 py-0.5 rounded-md mt-1">FACULTY</span>}
+          </div>
+          {!collapsed && (
+            <p className="mt-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider text-center w-full">
+              Learn &bull; Excel &bull; Succeed
+            </p>
+          )}
         </div>
 
         <div className="flex-1 space-y-1.5 overflow-y-auto pr-2 scrollbar-hide">
@@ -457,11 +463,9 @@ export default function FacultyDashboard() {
               )}
             </div>
             <div className={cn("flex items-center gap-1", collapsed ? "flex-col" : "flex-row")}>
-              {!collapsed && (
-                <button onClick={toggleTheme} className="text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/20" title="Toggle theme">
+              <button onClick={toggleTheme} className="text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/20" title="Toggle theme">
                   {theme === 'light' ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
                 </button>
-              )}
               <button onClick={handleLogout} className="text-slate-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Logout">
                 <LogOut className="w-3.5 h-3.5" />
               </button>

@@ -355,19 +355,7 @@ export default function AdminDashboard() {
                 collapsed ? "flex-col" : "flex-row",
               )}
             >
-              {!collapsed && (
-                <button
-                  onClick={toggleTheme}
-                  className="text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/20"
-                  title="Toggle theme"
-                >
-                  {theme === "light" ? (
-                    <Moon className="w-3.5 h-3.5" />
-                  ) : (
-                    <Sun className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              )}
+              <button onClick={toggleTheme} className="text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/20" title="Toggle theme">{theme === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}</button>
               <button
                 onClick={handleLogout}
                 className="text-slate-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"

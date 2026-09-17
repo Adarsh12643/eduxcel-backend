@@ -441,8 +441,13 @@ export default function StudentDashboard() {
           "glass-panel border-r transition-all duration-300 flex flex-col z-20 fixed top-3 left-3 bottom-3 rounded-2xl overflow-hidden",
           collapsed ? "w-20 p-3" : "w-60 p-5"
         )}>
-        <div className={cn("mb-8 flex", collapsed ? "justify-center" : "items-center")}>
+        <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
           <Logo size="md" showText={!collapsed} />
+          {!collapsed && (
+            <p className="mt-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider text-center w-full">
+              Learn &bull; Excel &bull; Succeed
+            </p>
+          )}
         </div>
 
         <nav className="flex-1 space-y-1.5 pr-2 overflow-y-auto scrollbar-hide">
@@ -478,11 +483,9 @@ export default function StudentDashboard() {
               )}
             </div>
             <div className={cn("flex items-center gap-1", collapsed ? "flex-col" : "flex-row")}>
-              {!collapsed && (
-                <button onClick={toggleTheme} className="text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/20" title="Toggle theme">
+              <button onClick={toggleTheme} className="text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/20" title="Toggle theme">
                   {theme === 'light' ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
                 </button>
-              )}
               <button onClick={handleLogout} className="text-slate-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Logout">
                 <LogOut className="w-3.5 h-3.5" />
               </button>
