@@ -362,7 +362,19 @@ export default function FacultyDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isAIOpen, setIsAIOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+    
+    useEffect(() => {
+      const handleResize = () => {
+        if (window.innerWidth < 768) {
+          setCollapsed(true);
+        } else {
+          setCollapsed(false);
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
   const [userData, setUserData] = useState<any>(null);
   const { theme, toggleTheme } = useTheme();
 
@@ -389,7 +401,7 @@ export default function FacultyDashboard() {
       title: (
         <span className="flex items-center gap-1.5">
           {getGreeting()}, {userName.split(' ')[0] || 'Faculty'} 
-          <img src="https://media.tenor.com/InfbZnZgATIAAAAi/hand-gif.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
+          <img src="https://media.tenor.com/0CpFOKGVaeMAAAAi/hand-waving-hand.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
         </span>
       ), 
       subtitle: "Monitor class performance and identify at-risk students." 

@@ -367,7 +367,19 @@ function AssignmentsPage() {
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+    
+    useEffect(() => {
+      const handleResize = () => {
+        if (window.innerWidth < 768) {
+          setCollapsed(true);
+        } else {
+          setCollapsed(false);
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const location = useLocation();
@@ -393,7 +405,7 @@ export default function StudentDashboard() {
       title: (
         <span className="flex items-center gap-1.5">
           {getGreeting()}, {(userData?.name || '').split(' ')[0] || 'Student'} 
-          <img src="https://media.tenor.com/InfbZnZgATIAAAAi/hand-gif.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
+          <img src="https://media.tenor.com/0CpFOKGVaeMAAAAi/hand-waving-hand.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
         </span>
       ), 
       subtitle: "Here's how your academic journey is progressing." 

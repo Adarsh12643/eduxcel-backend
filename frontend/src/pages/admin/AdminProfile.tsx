@@ -1,9 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { User, Mail, BookOpen, Calendar, Award, Edit3, Save, Building2, Phone, Loader2 } from 'lucide-react';
+import { User, Mail, Shield, Building2, Phone, Edit3, Save, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-export default function FacultyProfile() {
+export default function AdminProfile() {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [stored, setStored] = useState<any>(null);
@@ -25,7 +25,7 @@ export default function FacultyProfile() {
       setStored(formData);
       setEditing(false);
       setLoading(false);
-      toast.success('Faculty profile updated successfully');
+      toast.success('Admin profile updated successfully');
     }, 600);
   };
 
@@ -34,8 +34,8 @@ export default function FacultyProfile() {
   };
 
   const profile = editing ? formData : (stored || {});
-  const name = profile.name || 'Prof. Smith';
-  const email = profile.email || 'prof.smith@eduxcel.com';
+  const name = profile.name || 'System Admin';
+  const email = profile.email || 'admin@eduxcel.com';
   const initials = name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
 
   return (
@@ -43,13 +43,13 @@ export default function FacultyProfile() {
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
         className="bg-white dark:bg-dark-surface rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden"
       >
-        <div className="h-32 bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 dark:from-brand-700 dark:via-brand-600 dark:to-indigo-700 relative">
+        <div className="h-32 bg-gradient-to-r from-slate-800 via-brand-800 to-indigo-900 dark:from-slate-900 dark:via-brand-900 dark:to-indigo-950 relative">
           <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
         </div>
         <div className="px-6 pb-6 pt-14 relative">
           <div className="absolute -top-10 left-6">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 border-4 border-white dark:border-dark-surface shadow-lg flex items-center justify-center text-white text-2xl font-black">
-              {initials || 'F'}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 border-4 border-white dark:border-dark-surface shadow-lg flex items-center justify-center text-white text-2xl font-black">
+              {initials || 'A'}
             </div>
           </div>
           <div className="flex items-start justify-between mb-4">
@@ -58,13 +58,13 @@ export default function FacultyProfile() {
                 <div className="space-y-2">
                   <input type="text" name="name" value={formData.name || ''} onChange={handleChange} className="text-2xl font-black text-slate-900 dark:text-white bg-transparent border-b-2 border-brand-500 focus:outline-none w-full max-w-xs" placeholder="Full Name" />
                   <div>
-                    <input type="text" name="department" value={formData.department || ''} onChange={handleChange} className="text-brand-600 dark:text-brand-400 font-semibold text-sm bg-transparent border-b border-brand-300 dark:border-brand-700 focus:outline-none w-full max-w-xs" placeholder="Department (e.g. Computer Science)" />
+                    <input type="text" name="role" value={formData.role || ''} onChange={handleChange} className="text-brand-600 dark:text-brand-400 font-semibold text-sm bg-transparent border-b border-brand-300 dark:border-brand-700 focus:outline-none w-full max-w-xs" placeholder="Role / Title" />
                   </div>
                 </div>
               ) : (
                 <>
                   <h2 className="text-2xl font-black text-slate-900 dark:text-white">{name}</h2>
-                  <p className="text-brand-600 dark:text-brand-400 font-semibold text-sm mt-0.5">{profile.department || 'Computer Science Department'}</p>
+                  <p className="text-brand-600 dark:text-brand-400 font-semibold text-sm mt-0.5">{profile.role || 'Super Administrator'}</p>
                 </>
               )}
             </div>
@@ -83,15 +83,14 @@ export default function FacultyProfile() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
-          { icon: Mail, label: 'Email', name: 'email', value: profile.email || 'prof@eduxcel.com' },
-          { icon: Building2, label: 'Employee ID', name: 'empId', value: profile.empId || 'FAC-2024-001' },
-          { icon: Calendar, label: 'Experience', name: 'experience', value: profile.experience || '8 Years' },
-          { icon: Award, label: 'Qualification', name: 'qualification', value: profile.qualification || 'Ph.D. Computer Science' },
-          { icon: Phone, label: 'Office', name: 'office', value: profile.office || 'Room 301, Block B' },
+          { icon: Mail, label: 'Email', name: 'email', value: profile.email || 'admin@eduxcel.com' },
+          { icon: Shield, label: 'Access Level', name: 'accessLevel', value: profile.accessLevel || 'Level 1 (Full)' },
+          { icon: Building2, label: 'Institution', name: 'institution', value: profile.institution || 'EduXcel University' },
+          { icon: Phone, label: 'Emergency Contact', name: 'phone', value: profile.phone || '+1 (555) 000-0000' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="bg-white dark:bg-dark-surface p-4 rounded-xl border border-slate-100 dark:border-dark-border shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div className="p-2.5 bg-brand-50 dark:bg-brand-500/20 rounded-xl text-brand-600 dark:text-brand-400 flex-shrink-0">
+            <div className="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-700 dark:text-slate-300 flex-shrink-0">
               <item.icon className="w-5 h-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -105,27 +104,6 @@ export default function FacultyProfile() {
           </motion.div>
         ))}
       </div>
-
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-        className="bg-gradient-to-r from-brand-50 to-indigo-50 dark:from-brand-500/10 dark:to-indigo-500/10 rounded-2xl border border-brand-100 dark:border-brand-500/30 p-6">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Teaching Statistics</h3>
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            { label: 'Classes', value: profile.classesCount || '5' },
-            { label: 'Students', value: profile.studentsCount || '240' },
-            { label: 'Avg Rating', value: profile.rating || '4.8' },
-          ].map((stat, i) => (
-            <div key={i} className="text-center p-4 bg-white dark:bg-dark-surface rounded-xl border border-slate-100 dark:border-dark-border">
-              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">{stat.label}</p>
-              {editing && false ? (
-                 <input type="text" value={stat.value} className="..." />
-              ) : (
-                 <p className="text-2xl font-black text-brand-600 dark:text-brand-400">{stat.value}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </motion.div>
     </div>
   );
 }

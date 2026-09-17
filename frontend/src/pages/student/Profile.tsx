@@ -1,33 +1,47 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { User, Mail, BookOpen, Calendar, Award, Edit3, Save, Camera, Target, Building } from 'lucide-react';
+import { User, Mail, BookOpen, Calendar, Award, Edit3, Save, Camera, Target, Building, Loader2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function Profile({ userData }: { userData: any }) {
   const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [stored, setStored] = useState<any>(null);
+  const [formData, setFormData] = useState<any>({});
 
   useEffect(() => {
     const u = localStorage.getItem('eduxcel_user');
-    if (u) setStored(JSON.parse(u));
-  }, []);
+    if (u) {
+      const parsed = JSON.parse(u);
+      setStored(parsed);
+      setFormData(parsed);
+    } else if (userData) {
+      setFormData(userData);
+    }
+  }, [userData]);
 
-  const profile = userData || stored || {};
+  const profile = editing ? formData : (userData || stored || {});
   const name = profile.name || 'Student';
   const email = profile.email || '';
   const initials = name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
 
-  const stream = profile.stream || 'B.Tech';
-  const course = profile.course || 'Computer Science';
-  const semester = profile.semester || 1;
-  const rollNumber = profile.rollNumber || 'Not Set';
-  const section = profile.section || 'N/A';
-  const college = profile.college || 'Institute';
-  const targetSGPA = profile.targetSGPA || '8.5';
+  const handleSave = () => {
+    setLoading(true);
+    setTimeout(() => {
+      localStorage.setItem('eduxcel_user', JSON.stringify(formData));
+      setStored(formData);
+      setEditing(false);
+      setLoading(false);
+      toast.success('Profile updated successfully');
+    }, 600);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   return (
     <div className="space-y-6 max-w-3xl">
-      
-
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
         className="bg-white dark:bg-dark-surface rounded-2xl border border-slate-100 dark:border-dark-border shadow-sm overflow-hidden">
         <div className="h-32 bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 dark:from-brand-700 dark:via-brand-600 dark:to-indigo-700 relative">
@@ -40,26 +54,44 @@ export default function Profile({ userData }: { userData: any }) {
             </div>
           </div>
           <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white">{name}</h2>
-              <p className="text-brand-600 dark:text-brand-400 font-semibold text-sm mt-0.5">{stream} {course} • Semester {semester}</p>
+            <div className="flex-1 mr-4">
+              {editing ? (
+                <div className="space-y-2">
+                  <input type="text" name="name" value={formData.name || ''} onChange={handleChange} className="text-2xl font-black text-slate-900 dark:text-white bg-transparent border-b-2 border-brand-500 focus:outline-none w-full max-w-xs" placeholder="Full Name" />
+                  <div className="flex gap-2">
+                    <input type="text" name="stream" value={formData.stream || ''} onChange={handleChange} className="text-brand-600 dark:text-brand-400 font-semibold text-sm bg-transparent border-b border-brand-300 dark:border-brand-700 focus:outline-none w-20" placeholder="Stream" />
+                    <input type="text" name="course" value={formData.course || ''} onChange={handleChange} className="text-brand-600 dark:text-brand-400 font-semibold text-sm bg-transparent border-b border-brand-300 dark:border-brand-700 focus:outline-none w-32" placeholder="Course" />
+                    <input type="number" name="semester" value={formData.semester || ''} onChange={handleChange} className="text-brand-600 dark:text-brand-400 font-semibold text-sm bg-transparent border-b border-brand-300 dark:border-brand-700 focus:outline-none w-16" placeholder="Sem" />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white">{name}</h2>
+                  <p className="text-brand-600 dark:text-brand-400 font-semibold text-sm mt-0.5">{profile.stream || 'B.Tech'} {profile.course || 'Computer Science'} • Semester {profile.semester || 1}</p>
+                </>
+              )}
             </div>
-            <button onClick={() => setEditing(!editing)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-dark-border text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-dark-elevated transition-colors">
-              {editing ? <><Save className="w-4 h-4" /> Save</> : <><Edit3 className="w-4 h-4" /> Edit</>}
-            </button>
+            {editing ? (
+              <button onClick={handleSave} disabled={loading} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-transparent bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-colors">
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4" /> Save</>}
+              </button>
+            ) : (
+              <button onClick={() => setEditing(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-dark-border text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-dark-elevated transition-colors">
+                <Edit3 className="w-4 h-4" /> Edit
+              </button>
+            )}
           </div>
         </div>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
-          { icon: Mail, label: 'Email', value: email },
-          { icon: BookOpen, label: 'Roll Number', value: rollNumber },
-          { icon: Building, label: 'College', value: college },
-          { icon: User, label: 'Section', value: section },
-          { icon: Target, label: 'Target SGPA', value: `${targetSGPA} / 10` },
-          { icon: Award, label: 'Study Hours', value: `${profile.studyHours || 3} hrs/day` },
+          { icon: Mail, label: 'Email', name: 'email', value: profile.email || '' },
+          { icon: BookOpen, label: 'Roll Number', name: 'rollNumber', value: profile.rollNumber || 'Not Set' },
+          { icon: Building, label: 'College', name: 'college', value: profile.college || 'Institute' },
+          { icon: User, label: 'Section', name: 'section', value: profile.section || 'N/A' },
+          { icon: Target, label: 'Target SGPA', name: 'targetSGPA', value: profile.targetSGPA || '8.5' },
+          { icon: Award, label: 'Study Hours (hrs/day)', name: 'studyHours', value: profile.studyHours || '3' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="bg-white dark:bg-dark-surface p-4 rounded-xl border border-slate-100 dark:border-dark-border shadow-sm flex items-center gap-4">
@@ -68,7 +100,11 @@ export default function Profile({ userData }: { userData: any }) {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{item.label}</p>
-              <p className="font-semibold text-slate-900 dark:text-white mt-0.5 truncate">{item.value}</p>
+              {editing ? (
+                <input type={item.name === 'studyHours' || item.name === 'targetSGPA' ? 'number' : 'text'} name={item.name} value={formData[item.name] || ''} onChange={handleChange} className="font-semibold text-slate-900 dark:text-white mt-0.5 bg-slate-50 dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded px-2 py-1 w-full text-sm outline-none focus:border-brand-500" />
+              ) : (
+                <p className="font-semibold text-slate-900 dark:text-white mt-0.5 truncate">{item.value}{item.name === 'targetSGPA' && !editing ? ' / 10' : ''}</p>
+              )}
             </div>
           </motion.div>
         ))}
@@ -100,7 +136,7 @@ export default function Profile({ userData }: { userData: any }) {
           <div className="flex flex-wrap gap-3">
             {profile.badges?.length > 0 ? profile.badges.map((b: string, i: number) => (
               <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 rounded-lg text-yellow-700 dark:text-yellow-500 font-bold text-sm">
-                ⭐ {b}
+                🏆 {b}
               </div>
             )) : (
               <p className="text-sm text-slate-400">Keep learning to earn your first badge!</p>
