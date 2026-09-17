@@ -140,10 +140,10 @@ export default function AuthPage() {
           <style>{ `
             .lg-flex { display: none; }
             @media(min-width:1024px){ .lg-flex { display: flex !important; } }
-            @keyframes pulseGlow {
-              0% { box-shadow: 0 0 20px 0px rgba(53, 103, 251, 0.4); transform: scale(1); }
-              50% { box-shadow: 0 0 40px 10px rgba(0, 163, 224, 0.6); transform: scale(1.02); }
-              100% { box-shadow: 0 0 20px 0px rgba(53, 103, 251, 0.4); transform: scale(1); }
+            @keyframes logoGlow {
+              0% { filter: drop-shadow(0 0 10px rgba(53, 103, 251, 0.5)); transform: scale(1); }
+              50% { filter: drop-shadow(0 0 35px rgba(0, 163, 224, 0.9)); transform: scale(1.05); }
+              100% { filter: drop-shadow(0 0 10px rgba(53, 103, 251, 0.5)); transform: scale(1); }
             }
             @keyframes floatGradient {
               0% { background-position: 0% 50%; }
@@ -172,12 +172,7 @@ export default function AuthPage() {
                 display: 'inline-flex', 
                 alignItems: 'center', 
                 justifyContent: 'center', 
-                padding: '16px',
-                borderRadius: '30%',
-                background: 'rgba(255,255,255,0.03)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                animation: 'pulseGlow 4s ease-in-out infinite',
+                animation: 'logoGlow 4s ease-in-out infinite',
                 marginBottom: '16px'
               }}>
                 <Logo size="xl" showText={false} />

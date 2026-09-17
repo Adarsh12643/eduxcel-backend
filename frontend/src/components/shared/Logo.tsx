@@ -27,7 +27,7 @@ export default function Logo({ className, size = 'md', showText = true }: LogoPr
   };
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center gap-4", className)}>
       <div className={cn("relative flex items-center justify-center shrink-0 drop-shadow-xl", sizeClasses[size])}>
         <img src="/logo.png" alt="EduXcel Logo" className="w-full h-full object-contain scale-[1.8] origin-center" />
       </div>
