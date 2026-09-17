@@ -136,7 +136,7 @@ export default function AuthPage() {
       </button>
 
       {/* Left branding panel */}
-        <div style={{ display: 'none', width: '50%', position: 'relative', overflow: 'hidden', background: '#070f22' }} className="lg-flex items-center justify-center">
+        <div style={{ display: 'none', width: '50%', position: 'relative', overflow: 'hidden', background: '#070f22' }} className="lg-flex items-center">
           <style>{ `
             .lg-flex { display: none; }
             @media(min-width:1024px){ .lg-flex { display: flex !important; } }
@@ -164,7 +164,7 @@ export default function AuthPage() {
           <div style={{ position: 'absolute', top: '10%', left: '-10%', width: '600px', height: '600px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,43,226,0.3) 0%, transparent 60%)', animation: 'auraRotate 25s linear infinite', mixBlendMode: 'screen' }} />
           <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,163,224,0.3) 0%, transparent 60%)', animation: 'auraRotate 20s linear infinite reverse', mixBlendMode: 'screen' }} />
           
-          <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', padding: '0 48px', maxWidth: '600px', width: '100%', gap: '48px' }}>
+          <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', paddingLeft: '12%', paddingRight: '48px', maxWidth: '750px', width: '100%', gap: '48px' }}>
             
             <div>
               {/* Dynamic Shiny Logo Container */}
