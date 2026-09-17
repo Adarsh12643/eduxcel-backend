@@ -160,29 +160,38 @@ export default function LandingPage() {
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: text, marginBottom: 16 }}>Data Pipeline</h2>
             <p style={{ color: muted, fontSize: 18, maxWidth: 600, margin: '0 auto' }}>A seamless flow from raw data to actionable student success.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 48, maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-            {[
-              { step: '01', title: 'Data Aggregation', desc: 'Syncs attendance, internal marks, and engagement data continuously.' },
-              { step: '02', title: 'AI Analysis', desc: 'Models identify patterns, predict final grades and flag anomalies.' },
-              { step: '03', title: 'Proactive Action', desc: 'Triggers recovery workflows and alerts for faculty intervention.' },
-            ].map((s, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}>
-                <div style={{ width: 80, height: 80, borderRadius: 20, background: isDark ? 'rgba(53,103,251,0.12)' : '#eef3ff', border: `2px solid ${isDark ? 'rgba(53,103,251,0.3)' : '#c6d6ff'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: 28, fontWeight: 900, color: '#0047BA', fontFamily: 'JetBrains Mono, monospace' }}>
-                  {s.step}
-                </div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: text, marginBottom: 10 }}>{s.title}</h3>
-                <p style={{ color: muted, lineHeight: 1.6 }}>{s.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 32, maxWidth: 1000, margin: '0 auto' }}>
+              {[
+                { step: '01', title: 'Data Aggregation', desc: 'Syncs attendance, internal marks, and engagement data continuously.' },
+                { step: '02', title: 'AI Analysis', desc: 'Models identify patterns, predict final grades and flag anomalies.' },
+                { step: '03', title: 'Proactive Action', desc: 'Triggers recovery workflows and alerts for faculty intervention.' },
+              ].map((s, i) => (
+                <React.Fragment key={i}>
+                  <motion.div style={{ flex: '1 1 240px', maxWidth: 300, textAlign: 'center', cursor: 'pointer' }} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }} whileHover={{ y: -10 }}>
+                    <div style={{ width: 80, height: 80, borderRadius: 20, background: isDark ? 'rgba(53,103,251,0.12)' : '#eef3ff', border: `2px solid ${isDark ? 'rgba(53,103,251,0.3)' : '#c6d6ff'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: 28, fontWeight: 900, color: '#0047BA', fontFamily: 'JetBrains Mono, monospace', transition: 'all 0.3s' }}>
+                      {s.step}
+                    </div>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, color: text, marginBottom: 10 }}>{s.title}</h3>
+                    <p style={{ color: muted, lineHeight: 1.6 }}>{s.desc}</p>
+                  </motion.div>
+                  {i < 2 && (
+                     <div className="hidden md:flex" style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 20, width: 40 }}>
+                        <motion.div animate={{ x: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                           <ArrowRight style={{ width: 32, height: 32, color: isDark ? 'rgba(53,103,251,0.5)' : 'rgba(0,71,186,0.3)' }} />
+                        </motion.div>
+                     </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </section>
 
         {/* Faculty CTA */}
         <section id="faculty-console" style={{ background: elevated, border: `1px solid ${border}`, borderRadius: 32, padding: '60px 40px', margin: '24px 0', position: 'relative', overflow: 'hidden', boxShadow: isDark ? '0 24px 64px rgba(0,0,0,0.3)' : '0 24px 64px rgba(11,30,74,0.05)' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: 400, height: 400, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(53,103,251,0.15) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(53,103,251,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: 300, height: 300, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(255,140,0,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
           
-          <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 64, alignItems: 'center', maxWidth: 1000, margin: '0 auto' }}>
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: isDark ? 'rgba(53,103,251,0.15)' : '#eef3ff', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : '#c6d6ff'}`, color: '#0047BA', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 24 }}>
                 <Users style={{ width: 14, height: 14 }} /> Faculty Console
@@ -266,7 +275,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, maxWidth: 900, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 64, maxWidth: 1000, margin: '0 auto' }}>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

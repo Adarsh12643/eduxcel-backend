@@ -1,9 +1,36 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../shared/Logo';
-import { Brain, GraduationCap, Users, Sparkles } from 'lucide-react';
+import { Brain, GraduationCap, Users, Sparkles, Facebook, Instagram, Twitter } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
+
+
+function AnimatedSocialIcon({ Icon, muted, text }: { Icon: any, muted: string, text: string }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <a
+      href="#"
+      style={{
+        width: 36,
+        height: 36,
+        borderRadius: '50%',
+        background: hover ? '#0047BA' : 'transparent',
+        border: `1px solid ${hover ? '#0047BA' : muted}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: hover ? '#fff' : muted,
+        transition: 'all 0.2s',
+        textDecoration: 'none'
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <Icon style={{ width: 16, height: 16 }} />
+    </a>
+  );
+}
 
 function AnimatedFooterLink({ label, action, muted, text }: { label: string, action: () => void, muted: string, text: string }) {
   const [hover, setHover] = React.useState(false);
@@ -156,10 +183,28 @@ export default function FrontendFooter() {
           >
             Legal
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
             {legalLinks.map((link, i) => (
               <AnimatedFooterLink key={i} label={link.label} action={link.action} muted={muted} text={text} />
             ))}
+          </div>
+
+          <h4
+            style={{
+              fontWeight: 800,
+              color: text,
+              marginBottom: 16,
+              fontSize: 13,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Social Media
+          </h4>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <AnimatedSocialIcon Icon={Facebook} muted={muted} text={text} />
+            <AnimatedSocialIcon Icon={Instagram} muted={muted} text={text} />
+            <AnimatedSocialIcon Icon={Twitter} muted={muted} text={text} />
           </div>
         </div>
       </div>
