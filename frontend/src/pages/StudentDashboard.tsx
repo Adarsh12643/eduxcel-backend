@@ -390,7 +390,12 @@ export default function StudentDashboard() {
     if (p.includes('profile')) return { title: 'My Profile', subtitle: 'Manage your personal details and academic settings.' };
     
     return { 
-      title: `${getGreeting()}, ${(userData?.name || '').split(' ')[0] || 'Student'} 👋`, 
+      title: (
+        <span className="flex items-center gap-1.5">
+          {getGreeting()}, {(userData?.name || '').split(' ')[0] || 'Student'} 
+          <img src="https://media.tenor.com/InfbZnZgATIAAAAi/hand-gif.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
+        </span>
+      ), 
       subtitle: "Here's how your academic journey is progressing." 
     };
   };

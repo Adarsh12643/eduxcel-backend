@@ -120,7 +120,12 @@ export default function AdminDashboard() {
     if (p.includes('settings')) return { title: 'System Settings', subtitle: 'Configure platform parameters.' };
     
     return { 
-      title: `${getGreeting()}, ${userName.split(' ')[0]} 👋`, 
+      title: (
+        <span className="flex items-center gap-1.5">
+          {getGreeting()}, {userName.split(' ')[0] || 'Administrator'} 
+          <img src="https://media.tenor.com/InfbZnZgATIAAAAi/hand-gif.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
+        </span>
+      ), 
       subtitle: "Platform-wide statistics and system health." 
     };
   };
@@ -201,12 +206,7 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="flex items-center gap-3">
-            {userData?.streak && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm">
-                <img src="https://assets-v2.lottiefiles.com/a/2e8b88ac-bc78-11ee-9553-b368dc375ecb/dcGzDVCY9u.gif" alt="Streak Fire" className="w-8 h-8 scale-[1.3] mix-blend-multiply dark:mix-blend-screen object-contain drop-shadow-sm" />
-                <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} Day Streak!</span>
-              </div>
-            )}
+            
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

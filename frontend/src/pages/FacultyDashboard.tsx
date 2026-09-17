@@ -386,7 +386,12 @@ export default function FacultyDashboard() {
     if (p.includes('profile')) return { title: 'My Profile', subtitle: 'Manage your faculty profile and settings.' };
     
     return { 
-      title: `${getGreeting()}, ${userName.split(' ').filter(Boolean)[0] || 'Faculty'} 👋`, 
+      title: (
+        <span className="flex items-center gap-1.5">
+          {getGreeting()}, {userName.split(' ')[0] || 'Faculty'} 
+          <img src="https://media.tenor.com/InfbZnZgATIAAAAi/hand-gif.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
+        </span>
+      ), 
       subtitle: "Monitor class performance and identify at-risk students." 
     };
   };
