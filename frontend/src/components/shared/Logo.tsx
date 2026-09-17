@@ -13,10 +13,10 @@ export default function Logo({ className, size = 'md', showText = true }: LogoPr
   const isDark = theme === 'dark';
 
   const sizeClasses = {
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-24 h-24',
-    xl: 'w-36 h-36'
+    sm: 'w-8 h-8',
+    md: 'w-10 h-10',
+    lg: 'w-16 h-16',
+    xl: 'w-24 h-24'
   };
   
   const textClasses = {
@@ -29,7 +29,7 @@ export default function Logo({ className, size = 'md', showText = true }: LogoPr
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <div className={cn("relative flex items-center justify-center shrink-0 drop-shadow-xl", sizeClasses[size])}>
-        <img src="/logo.png" alt="EduXcel Logo" className="w-full h-full object-contain scale-[1.35] origin-center" />
+        <img src="/logo.png" alt="EduXcel Logo" className="w-full h-full object-contain scale-[1.8] origin-center" />
       </div>
 
       {showText && (

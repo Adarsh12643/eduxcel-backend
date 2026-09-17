@@ -51,7 +51,7 @@ export default function FrontendNavbar() {
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         borderBottom: `1px solid ${border}`,
-        padding: scrolled ? '12px 0' : '20px 0',
+        padding: scrolled ? '8px 0' : '12px 0',
         transition: 'all 0.3s',
       }}
     >
