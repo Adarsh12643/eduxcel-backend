@@ -6,7 +6,7 @@ import { useTheme } from '@/context/ThemeContext';
 
 
 
-function AnimatedSocialIcon({ Icon, muted, text }: { Icon: any, muted: string, text: string }) {
+function AnimatedSocialIcon({ Icon, muted, hoverColor }: { Icon: any, muted: string, hoverColor: string }) {
   const [hover, setHover] = React.useState(false);
   return (
     <a
@@ -15,8 +15,8 @@ function AnimatedSocialIcon({ Icon, muted, text }: { Icon: any, muted: string, t
         width: 36,
         height: 36,
         borderRadius: '50%',
-        background: hover ? '#0047BA' : 'transparent',
-        border: `1px solid ${hover ? '#0047BA' : muted}`,
+        background: hover ? hoverColor : 'transparent',
+        border: `1px solid ${hover ? hoverColor : muted}`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -202,9 +202,9 @@ export default function FrontendFooter() {
             Social Media
           </h4>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <AnimatedSocialIcon Icon={Facebook} muted={muted} text={text} />
-            <AnimatedSocialIcon Icon={Instagram} muted={muted} text={text} />
-            <AnimatedSocialIcon Icon={Twitter} muted={muted} text={text} />
+            <AnimatedSocialIcon Icon={Facebook} muted={muted} hoverColor="#1877F2" />
+            <AnimatedSocialIcon Icon={Instagram} muted={muted} hoverColor="#E1306C" />
+            <AnimatedSocialIcon Icon={Twitter} muted={muted} hoverColor="#1DA1F2" />
           </div>
         </div>
       </div>
