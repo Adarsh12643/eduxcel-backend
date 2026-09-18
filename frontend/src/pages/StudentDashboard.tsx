@@ -421,8 +421,8 @@ export default function StudentDashboard() {
     navigate('/auth');
   };
 
-  const sidebarW = collapsed ? 0 : 240;
-  const sidebarPad = collapsed ? 0 : 20;
+  const sidebarW = collapsed ? (isMobile ? 0 : 80) : 240;
+  const sidebarPad = collapsed ? (isMobile ? 0 : 20) : 20;
   const userName = userData?.name || 'Loading...';
   const userEmail = userData?.email || '';
   const initials = userName.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
@@ -443,7 +443,7 @@ export default function StudentDashboard() {
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel border-r flex flex-col z-50 fixed top-3 bottom-3 left-0 lg:left-3 w-60 p-5 rounded-2xl overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] shadow-2xl", collapsed ? "-translate-x-[120%] opacity-0 pointer-events-none" : "translate-x-0 opacity-100"
+          "glass-panel border-r flex flex-col z-50 fixed top-3 bottom-3 left-0 lg:left-3 rounded-2xl overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] shadow-2xl", collapsed ? "-translate-x-[120%] lg:translate-x-0 lg:w-20 lg:p-3 opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto" : "translate-x-0 w-60 p-5 opacity-100"
         )}>
         <div className="mb-6 flex items-start justify-between">
             <div className="flex flex-col items-center w-full relative">

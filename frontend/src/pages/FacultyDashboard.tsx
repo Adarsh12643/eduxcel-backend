@@ -387,7 +387,7 @@ export default function FacultyDashboard() {
   const userName = userData?.name || 'Faculty';
   const userEmail = userData?.email || '';
   const initials = userName.split(' ').filter(Boolean).map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'F';
-  const sidebarW = collapsed ? 0 : 240;
+  const sidebarW = collapsed ? (isMobile ? 0 : 80) : 240;
   const sidebarPad = collapsed ? 10 : 16;
 
   const getHeaderInfo = () => {

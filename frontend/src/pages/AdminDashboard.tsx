@@ -215,7 +215,7 @@ export default function AdminDashboard() {
       .slice(0, 2)
       .join("")
       .toUpperCase() || "A";
-  const sidebarW = collapsed ? 0 : 240;
+  const sidebarW = collapsed ? (isMobile ? 0 : 80) : 240;
   const sidebarPad = collapsed ? 10 : 16;
 
   const getHeaderInfo = () => {
