@@ -443,24 +443,23 @@ export default function StudentDashboard() {
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 left-0 lg:left-3 rounded-2xl overflow-hidden",
-          collapsed ? "w-0 p-0 opacity-0 pointer-events-none overflow-hidden" : "w-60 p-5"
+          "glass-panel border-r flex flex-col z-50 fixed top-3 bottom-3 left-0 lg:left-3 w-60 p-5 rounded-2xl overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] shadow-2xl", collapsed ? "-translate-x-[120%] opacity-0 pointer-events-none" : "translate-x-0 opacity-100"
         )}>
-        <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
-          {!collapsed && isMobile && (
-              <button 
-                onClick={() => setCollapsed(true)} 
-                className="absolute top-4 right-4 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg z-50"
-              >
-                <X style={{ width: 20, height: 20 }} />
-              </button>
-            )}
+        <div className="mb-6 flex items-start justify-between">
+            <div className="flex flex-col items-center w-full relative">
+              {isMobile && (
+                <button onClick={() => setCollapsed(true)} className="absolute -top-2 -right-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg z-50 transition-colors">
+                  <X style={{ width: 20, height: 20 }} />
+                </button>
+              )}
+          
             <Logo size="md" showText={!collapsed} />
           {!collapsed && (
             <p className="mt-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider text-center w-full">
               Learn &bull; Excel &bull; Succeed
             </p>
           )}
+            </div>
         </div>
 
         <nav className="flex-1 space-y-1.5 pr-2 overflow-y-auto scrollbar-hide">
@@ -530,19 +529,19 @@ export default function StudentDashboard() {
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-full shadow-sm"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 rounded-full shadow-sm"
               >
                 <span className="text-lg">⭐</span>
                 <span className="text-sm font-black text-blue-600 dark:text-blue-400">Lvl {userData.level} ({userData.xp} XP)</span>
               </motion.div>
             )}
             {userData?.streak > 0 && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm">
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm">
                 <img src="https://assets-v2.lottiefiles.com/a/2e8b88ac-bc78-11ee-9553-b368dc375ecb/dcGzDVCY9u.gif" alt="Streak Fire" className="w-8 h-8 scale-[1.3] mix-blend-multiply dark:mix-blend-screen object-contain drop-shadow-sm" />
-                <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} Day Streak!</span>
+                <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} <span className="hidden sm:inline">Day Streak!</span></span>
               </div>
             )}
-            <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
+            <div className="flex items-center gap-1.5 px-2 sm:px-4 py-1.5 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
