@@ -264,7 +264,7 @@ function StudentDetail() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/20 rounded-full blur-3xl" />
 
           {isRunning && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-sm z-10">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-sm z-40">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
@@ -424,17 +424,25 @@ export default function FacultyDashboard() {
 
       {/* Mobile overlay */}
         {isMobile && !collapsed && (
-          <div onClick={() => setCollapsed(true)} className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10" />
+          <div onClick={() => setCollapsed(true)} className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40" />
         )}
         {/* Sidebar */}
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-30 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
+          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
           collapsed ? "w-20 p-3" : "w-60 p-5"
         )}>
         <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
           <div className="flex items-center">
+            {!collapsed && isMobile && (
+              <button 
+                onClick={() => setCollapsed(true)} 
+                className="absolute top-4 right-4 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg z-50"
+              >
+                <X style={{ width: 20, height: 20 }} />
+              </button>
+            )}
             <Logo size={collapsed ? "sm" : "md"} showText={!collapsed} />
             {!collapsed && <span className="ml-2 text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/20 px-2 py-0.5 rounded-md mt-1">FACULTY</span>}
           </div>

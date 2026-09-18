@@ -41,8 +41,8 @@ export default function LandingPage() {
       <FrontendNavbar />
 
       {/* Hero */}
-      <main style={{ flex: 1, padding: '120px 24px 60px', maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <div style={{ textAlign: 'center', maxWidth: 900, margin: '0 auto' }}>
+      <main style={{ flex: 1, padding: '120px 16px 60px', maxWidth: '100%', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ textAlign: 'center', maxWidth: '100%', margin: '0 auto' }}>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: isDark ? 'rgba(53,103,251,0.15)' : 'rgba(53,103,251,0.08)', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : 'rgba(53,103,251,0.2)'}`, color: isDark ? '#8aaaff' : '#0047BA', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 40 }}>
@@ -51,7 +51,7 @@ export default function LandingPage() {
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-            style={{ fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 32, color: text }}>
+            style={{ fontSize: 'clamp(1.75rem, 8vw, 5.5rem)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: 32, color: text }}>
             Turn Academic Risk Into<br />
             <span style={{ background: 'linear-gradient(135deg, #0047BA, #3567fb, #00A3E0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Academic Recovery.
@@ -87,14 +87,14 @@ export default function LandingPage() {
 
         {/* Hero Dashboard Preview */}
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: [0, -15, 0] }} transition={{ opacity: { duration: 0.7, delay: 0.4 }, y: { duration: 6, repeat: Infinity, ease: 'easeInOut' } }}
-            style={{ marginTop: 80, maxWidth: 960, margin: '80px auto 0', padding: '0 24px' }}>
+            style={{ marginTop: 80, maxWidth: 960, margin: '80px auto 0', padding: '0 16px' }}>
             <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 24, overflow: 'hidden', boxShadow: isDark ? '0 24px 64px rgba(0,0,0,0.5)' : '0 24px 64px rgba(11,30,74,0.12)' }}>
               {/* Top bar */}
               <div style={{ height: 4, background: 'linear-gradient(90deg, #0047BA, #3567fb, #00A3E0)' }} />
               <div style={{ display: 'flex' }}>
                 {/* Dashboard full content */}
-                <div style={{ flex: 1, padding: 32, background: elevated }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+                <div style={{ flex: 1, padding: 20, background: elevated }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 16, marginBottom: 24 }}>
                     {[
                       { val: '8.4', label: 'Predicted GPA', color: '#0047BA' },
                       { val: 'Low', label: 'Risk Level', color: '#10b981' },
@@ -117,7 +117,7 @@ export default function LandingPage() {
                         initial={{ height: 0 }} 
                         animate={{ height: [`${h}%`, `${h + 15}%`, `${h - 10}%`, `${h}%`] }} 
                         transition={{ duration: 4 + i % 3, repeat: Infinity, ease: 'easeInOut', delay: i * 0.2 }}
-                        style={{ flex: 1, background: i % 2 === 0 ? '#0047BA' : (isDark ? '#30363d' : '#e2e8f0'), borderRadius: '6px 6px 0 0', minWidth: 0, boxShadow: '0 0 10px rgba(0,71,186,0.1)' }} />
+                        style={{ flex: 1, background: i % 2 === 0 ? '#0047BA' : (isDark ? '#30363d' : '#e2e8f0'), borderRadius: '6px 6px 0 0', width: "100%", height: "auto", boxShadow: '0 0 10px rgba(0,71,186,0.1)' }} />
                     ))}
                   </div>
                 </div>
@@ -131,7 +131,7 @@ export default function LandingPage() {
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: text, marginBottom: 16 }}>Core Architecture</h2>
             <p style={{ color: muted, fontSize: 18, maxWidth: 600, margin: '0 auto' }}>Sophisticated modules designed to support students and empower faculty.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, maxWidth: '100%', margin: '0 auto' }}>
             {[
               { title: 'Predictive Modeling', icon: Brain, desc: 'Advanced models map academic trajectories before risk thresholds are breached.' },
               { title: 'Real-Time Telemetry', icon: AlertTriangle, desc: 'Automated signal detection highlights struggling cohorts for immediate intervention.' },
@@ -141,7 +141,7 @@ export default function LandingPage() {
               { title: 'Faculty Command', icon: Users, desc: 'High-level view for professors to monitor class health and streamline grading.' },
             ].map((f, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }}
-                style={{ background: surface, border: `1px solid ${border}`, borderRadius: 20, padding: 32, cursor: 'default', transition: 'box-shadow 0.2s, transform 0.2s' }}
+                style={{ background: surface, border: `1px solid ${border}`, borderRadius: 20, padding: 20, cursor: 'default', transition: 'box-shadow 0.2s, transform 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,71,186,0.15)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                 <div style={{ width: 48, height: 48, borderRadius: 14, background: isDark ? 'rgba(53,103,251,0.15)' : '#eef3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
@@ -160,7 +160,7 @@ export default function LandingPage() {
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: text, marginBottom: 16 }}>Data Pipeline</h2>
             <p style={{ color: muted, fontSize: 18, maxWidth: 600, margin: '0 auto' }}>A seamless flow from raw data to actionable student success.</p>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 32, maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 32, maxWidth: '100%', margin: '0 auto' }}>
               {[
                 { step: '01', title: 'Data Aggregation', desc: 'Syncs attendance, internal marks, and engagement data continuously.' },
                 { step: '02', title: 'AI Analysis', desc: 'Models identify patterns, predict final grades and flag anomalies.' },
@@ -187,11 +187,11 @@ export default function LandingPage() {
           </section>
 
         {/* Faculty CTA */}
-        <section id="faculty-console" style={{ background: elevated, border: `1px solid ${border}`, borderRadius: 32, padding: '60px 40px', margin: '24px 0', position: 'relative', overflow: 'hidden', boxShadow: isDark ? '0 24px 64px rgba(0,0,0,0.3)' : '0 24px 64px rgba(11,30,74,0.05)' }}>
+        <section id="faculty-console" style={{ background: elevated, border: `1px solid ${border}`, borderRadius: 32, padding: '40px 20px', margin: '24px 0', position: 'relative', overflow: 'hidden', boxShadow: isDark ? '0 24px 64px rgba(0,0,0,0.3)' : '0 24px 64px rgba(11,30,74,0.05)' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: 400, height: 400, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(53,103,251,0.15) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(53,103,251,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: 300, height: 300, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(255,140,0,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
           
-          <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 64, alignItems: 'center', maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 64, alignItems: 'center', maxWidth: '100%', margin: '0 auto' }}>
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: isDark ? 'rgba(53,103,251,0.15)' : '#eef3ff', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : '#c6d6ff'}`, color: '#0047BA', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 24 }}>
                 <Users style={{ width: 14, height: 14 }} /> Faculty Console
@@ -275,14 +275,14 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 64, maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 64, maxWidth: '100%', margin: '0 auto' }}>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
               viewport={{ once: true }}
-              style={{ background: surface, border: `1px solid ${border}`, borderRadius: 24, padding: 40, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.2)' : '0 10px 40px rgba(53,103,251,0.05)' }}
+              style={{ background: surface, border: `1px solid ${border}`, borderRadius: 24, padding: 24, boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.2)' : '0 10px 40px rgba(53,103,251,0.05)' }}
             >
               <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24 }}>Send us a message</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

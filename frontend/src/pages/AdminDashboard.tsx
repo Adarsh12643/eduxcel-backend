@@ -271,7 +271,7 @@ export default function AdminDashboard() {
 
       {/* Mobile overlay */}
         {isMobile && !collapsed && (
-          <div onClick={() => setCollapsed(true)} className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-10" />
+          <div onClick={() => setCollapsed(true)} className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40" />
         )}
         {/* Sidebar */}
       <aside
@@ -282,12 +282,20 @@ export default function AdminDashboard() {
           } as React.CSSProperties
         }
         className={cn(
-          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-30 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
+          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
           collapsed ? (isMobile ? "w-0 p-0 opacity-0 pointer-events-none" : "w-20 p-3") : "w-60 p-5 left-3 shadow-2xl md:shadow-none",
         )}
       >
         <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
           <div className="flex items-center">
+            {!collapsed && isMobile && (
+              <button 
+                onClick={() => setCollapsed(true)} 
+                className="absolute top-4 right-4 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg z-50"
+              >
+                <X style={{ width: 20, height: 20 }} />
+              </button>
+            )}
             <Logo size={collapsed ? "sm" : "md"} showText={!collapsed} />
             {!collapsed && <span className="ml-2 text-[10px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/20 px-2 py-0.5 rounded-md mt-1">ADMIN</span>}
           </div>

@@ -439,11 +439,19 @@ export default function StudentDashboard() {
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel border-r transition-all duration-300 flex flex-col z-30 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
+          "glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
           collapsed ? "w-20 p-3" : "w-60 p-5"
         )}>
         <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
-          <Logo size="md" showText={!collapsed} />
+          {!collapsed && isMobile && (
+              <button 
+                onClick={() => setCollapsed(true)} 
+                className="absolute top-4 right-4 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg z-50"
+              >
+                <X style={{ width: 20, height: 20 }} />
+              </button>
+            )}
+            <Logo size="md" showText={!collapsed} />
           {!collapsed && (
             <p className="mt-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider text-center w-full">
               Learn &bull; Excel &bull; Succeed
