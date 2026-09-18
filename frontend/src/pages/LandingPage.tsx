@@ -41,7 +41,7 @@ export default function LandingPage() {
       <FrontendNavbar />
 
       {/* Hero */}
-      <main style={{ flex: 1, padding: '120px 16px 60px', maxWidth: '100%', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <main style={{ flex: 1, padding: '120px 16px 60px', maxWidth: 1200, width: '100%', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', maxWidth: '100%', margin: '0 auto' }}>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
@@ -131,7 +131,7 @@ export default function LandingPage() {
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: text, marginBottom: 16 }}>Core Architecture</h2>
             <p style={{ color: muted, fontSize: 18, maxWidth: 600, margin: '0 auto' }}>Sophisticated modules designed to support students and empower faculty.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-full mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {[
               { title: 'Predictive Modeling', icon: Brain, desc: 'Advanced models map academic trajectories before risk thresholds are breached.' },
               { title: 'Real-Time Telemetry', icon: AlertTriangle, desc: 'Automated signal detection highlights struggling cohorts for immediate intervention.' },
@@ -196,7 +196,7 @@ export default function LandingPage() {
           <div style={{ position: 'absolute', top: 0, right: 0, width: 400, height: 400, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(53,103,251,0.15) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(53,103,251,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, width: 300, height: 300, borderRadius: '50%', background: isDark ? 'radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%)' : 'radial-gradient(circle, rgba(255,140,0,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-full mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto relative z-10">
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 999, background: isDark ? 'rgba(53,103,251,0.15)' : '#eef3ff', border: `1px solid ${isDark ? 'rgba(53,103,251,0.3)' : '#c6d6ff'}`, color: '#0047BA', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 24 }}>
                 <Users style={{ width: 14, height: 14 }} /> Faculty Console
@@ -280,7 +280,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-full mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
