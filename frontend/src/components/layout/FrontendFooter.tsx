@@ -106,7 +106,7 @@ export default function FrontendFooter() {
         zIndex: 1,
       }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 max-w-7xl mx-auto mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:gap-16 gap-12 max-w-[1400px] mx-auto mb-12">
         <div className="md:col-span-2 lg:col-span-2">
           <Logo size="sm" showText />
           <p style={{ marginTop: 16, color: muted, fontSize: 14, maxWidth: 320, lineHeight: 1.6 }}>
@@ -202,7 +202,7 @@ export default function FrontendFooter() {
 
       <div
         style={{
-          maxWidth: 1280,
+          maxWidth: 1400,
           margin: '0 auto',
           borderTop: `1px solid ${border}`,
           paddingTop: 24,

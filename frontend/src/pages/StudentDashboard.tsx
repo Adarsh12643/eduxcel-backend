@@ -405,8 +405,8 @@ export default function StudentDashboard() {
     return { 
       title: (
         <span className="flex items-center gap-1.5">
-          {getGreeting()}, {(userData?.name || '').split(' ')[0] || 'Student'} 
-          <img src="https://media.tenor.com/0CpFOKGVaeMAAAAi/hand-waving-hand.gif" alt="Waving Hand" className="w-6 h-6 object-contain" />
+          {isMobile ? "Hi" : getGreeting()}, {(userData?.name || '').split(' ')[0] || 'Student'} 
+          <img src="https://media.tenor.com/0CpFOKGVaeMAAAAi/hand-waving-hand.gif" alt="Waving Hand" className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" />
         </span>
       ), 
       subtitle: "Here's how your academic journey is progressing." 
@@ -519,7 +519,7 @@ export default function StudentDashboard() {
             </button>
             {headerInfo.title && (
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{headerInfo.title}</h2>
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate max-w-[130px] sm:max-w-[300px] md:max-w-none">{headerInfo.title}</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">{headerInfo.subtitle}</p>
               </div>
             )}

@@ -244,11 +244,11 @@ export default function AdminDashboard() {
     return {
       title: (
         <span className="flex items-center gap-1.5">
-          {getGreeting()}, {userName.split(" ")[0] || "Administrator"}
+          {isMobile ? "Hi" : getGreeting()}, {userName.split(" ")[0] || "Administrator"}
           <img
             src="https://media.tenor.com/0CpFOKGVaeMAAAAi/hand-waving-hand.gif"
             alt="Waving Hand"
-            className="w-6 h-6 object-contain"
+            className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0"
           />
         </span>
       ),
