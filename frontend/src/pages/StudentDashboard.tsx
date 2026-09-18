@@ -367,12 +367,12 @@ function AssignmentsPage() {
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [collapsed, setCollapsed] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
     
     useEffect(() => {
       const handleResize = () => {
-        if (window.innerWidth < 768) {
+        if (window.innerWidth < 1024) {
           setCollapsed(true);
         } else {
           setCollapsed(false);
@@ -421,8 +421,8 @@ export default function StudentDashboard() {
     navigate('/auth');
   };
 
-  const sidebarW = collapsed ? 80 : 240;
-  const sidebarPad = collapsed ? 12 : 20;
+  const sidebarW = collapsed ? 0 : 240;
+  const sidebarPad = collapsed ? 0 : 20;
   const userName = userData?.name || 'Loading...';
   const userEmail = userData?.email || '';
   const initials = userName.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
@@ -435,12 +435,16 @@ export default function StudentDashboard() {
         <div className="absolute bottom-[-10%] left-[-5%] w-[40vw] h-[40vw] rounded-full opacity-30" style={{ background: 'radial-gradient(circle, rgba(255,140,0,0.06) 0%, transparent 70%)' }} />
       </div>
 
-      {/* Sidebar — fixed */}
+      {/* Mobile overlay */}
+        {isMobile && !collapsed && (
+          <div onClick={() => setCollapsed(true)} className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40" />
+        )}
+        {/* Sidebar — fixed */}
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
-          collapsed ? "w-20 p-3" : "w-60 p-5"
+          "glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 left-0 lg:left-3 rounded-2xl overflow-hidden",
+          collapsed ? "w-0 p-0 opacity-0 pointer-events-none overflow-hidden" : "w-60 p-5"
         )}>
         <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
           {!collapsed && isMobile && (

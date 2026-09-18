@@ -183,12 +183,12 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isAIOpen, setIsAIOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [collapsed, setCollapsed] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
     
     useEffect(() => {
       const handleResize = () => {
-        if (window.innerWidth < 768) {
+        if (window.innerWidth < 1024) {
           setCollapsed(true);
         } else {
           setCollapsed(false);
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
       .slice(0, 2)
       .join("")
       .toUpperCase() || "A";
-  const sidebarW = collapsed ? 80 : 240;
+  const sidebarW = collapsed ? 0 : 240;
   const sidebarPad = collapsed ? 10 : 16;
 
   const getHeaderInfo = () => {
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
           } as React.CSSProperties
         }
         className={cn(
-          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
+          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 left-0 lg:left-3 rounded-2xl overflow-hidden",
           collapsed ? (isMobile ? "w-0 p-0 opacity-0 pointer-events-none" : "w-20 p-3") : "w-60 p-5 left-3 shadow-2xl md:shadow-none",
         )}
       >

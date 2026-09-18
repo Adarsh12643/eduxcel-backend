@@ -362,12 +362,12 @@ export default function FacultyDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isAIOpen, setIsAIOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [collapsed, setCollapsed] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
     
     useEffect(() => {
       const handleResize = () => {
-        if (window.innerWidth < 768) {
+        if (window.innerWidth < 1024) {
           setCollapsed(true);
         } else {
           setCollapsed(false);
@@ -387,7 +387,7 @@ export default function FacultyDashboard() {
   const userName = userData?.name || 'Faculty';
   const userEmail = userData?.email || '';
   const initials = userName.split(' ').filter(Boolean).map((n: string) => n[0]).slice(0, 2).join('').toUpperCase() || 'F';
-  const sidebarW = collapsed ? 80 : 240;
+  const sidebarW = collapsed ? 0 : 240;
   const sidebarPad = collapsed ? 10 : 16;
 
   const getHeaderInfo = () => {
@@ -430,8 +430,8 @@ export default function FacultyDashboard() {
       <aside
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
         className={cn(
-          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 md:left-3 rounded-2xl overflow-hidden",
-          collapsed ? "w-20 p-3" : "w-60 p-5"
+          "glass-panel dark:glass-panel border-r transition-all duration-300 flex flex-col z-50 fixed top-3 bottom-3 left-0 lg:left-3 rounded-2xl overflow-hidden",
+          collapsed ? "w-0 p-0 opacity-0 pointer-events-none overflow-hidden" : "w-60 p-5"
         )}>
         <div className={cn("mb-6 flex flex-col", collapsed ? "items-center" : "items-center")}>
           <div className="flex items-center">
