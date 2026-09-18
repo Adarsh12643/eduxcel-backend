@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowUpRight, ArrowRight, Sparkles, Brain, BarChart3, Target, AlertTriangle, Users, CheckCircle2 } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, ArrowDown, Sparkles, Brain, BarChart3, Target, AlertTriangle, Users, CheckCircle2 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import FrontendNavbar from '@/components/layout/FrontendNavbar';
 import FrontendFooter from '@/components/layout/FrontendFooter';
@@ -175,12 +175,17 @@ export default function LandingPage() {
                     <p style={{ color: muted, lineHeight: 1.6 }}>{s.desc}</p>
                   </motion.div>
                   {i < 2 && (
-                     <div className="hidden md:flex" style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 20, width: 40 }}>
-                        <motion.div animate={{ x: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-                           <ArrowRight style={{ width: 32, height: 32, color: isDark ? 'rgba(53,103,251,0.5)' : 'rgba(0,71,186,0.3)' }} />
-                        </motion.div>
-                     </div>
-                  )}
+                       <div className="flex flex-col md:flex-row items-center justify-center pt-6 md:pt-5 w-full md:w-10">
+                          {/* Desktop Right Arrow */}
+                          <motion.div className="hidden md:block" animate={{ x: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                            <ArrowRight style={{ width: 32, height: 32, color: isDark ? 'rgba(53,103,251,0.5)' : 'rgba(0,71,186,0.3)' }} />
+                          </motion.div>
+                          {/* Mobile Down Arrow */}
+                          <motion.div className="md:hidden" animate={{ y: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                            <ArrowDown style={{ width: 32, height: 32, color: isDark ? 'rgba(53,103,251,0.5)' : 'rgba(0,71,186,0.3)' }} />
+                          </motion.div>
+                       </div>
+                    )}
                 </React.Fragment>
               ))}
             </div>
