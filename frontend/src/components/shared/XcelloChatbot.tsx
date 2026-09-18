@@ -174,7 +174,7 @@ export default function XcelloChatbot({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 24, scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="fixed bottom-32 right-6 w-[390px] h-[560px] flex flex-col rounded-3xl overflow-hidden z-50 shadow-2xl border border-white/20 dark:border-white/10 bg-white dark:bg-dark-surface"
+          className="fixed bottom-24 right-4 sm:bottom-32 sm:right-6 w-[calc(100vw-32px)] sm:w-[390px] h-[75vh] max-h-[560px] flex flex-col rounded-3xl overflow-hidden z-50 shadow-2xl border border-white/20 dark:border-white/10 bg-white dark:bg-dark-surface"
         >
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-dark-border bg-gradient-to-r from-brand-600 to-brand-700 dark:from-brand-700 dark:to-brand-800 flex items-center justify-between relative">
