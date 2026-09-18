@@ -158,7 +158,7 @@ function FacultyOverview() {
                   className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
                 >
                   <td className="p-4 pl-6">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                       <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 flex items-center justify-center font-bold text-xs">{(student.name || '?').charAt(0)}</div>
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white text-sm">{student.name}</p>
@@ -502,14 +502,14 @@ export default function FacultyDashboard() {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {userData?.streak && (
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm">
+              <div className="flex shrink-0 items-center gap-1.5 px-3 py-1 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 rounded-full shadow-sm whitespace-nowrap">
                 <img src="https://assets-v2.lottiefiles.com/a/2e8b88ac-bc78-11ee-9553-b368dc375ecb/dcGzDVCY9u.gif" alt="Streak Fire" className="w-8 h-8 scale-[1.3] mix-blend-multiply dark:mix-blend-screen object-contain drop-shadow-sm" />
-                <span className="text-sm font-black text-orange-600 dark:text-orange-400">{userData.streak} <span className="hidden sm:inline">Day Streak!</span></span>
+                <span className="text-sm font-black text-orange-600 dark:text-orange-400 whitespace-nowrap shrink-0 pr-1">{userData.streak} <span className="hidden sm:inline">Day Streak!</span></span>
               </div>
             )}
-            <div className="flex items-center gap-1.5 px-2 sm:px-4 py-1.5 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm">
+            <div className="flex shrink-0 items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-dark-elevated border border-slate-200 dark:border-dark-border rounded-full shadow-sm whitespace-nowrap">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
