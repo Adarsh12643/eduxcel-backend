@@ -55,9 +55,7 @@ export default function FrontendNavbar() {
         transition: 'all 0.3s',
       }}
     >
-      <div
-        style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-      >
+      <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto px-4 sm:px-6 w-full">
         <Logo />
 
         <div ref={navRef} className="hidden md:flex items-center gap-9 relative">
@@ -104,7 +102,7 @@ export default function FrontendNavbar() {
           ))}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <button
             onClick={toggleTheme}
             style={{
@@ -139,8 +137,7 @@ export default function FrontendNavbar() {
                 color: activeIndex === -1 ? activeText : text,
                 fontWeight: 600,
                 cursor: 'pointer',
-                fontSize: 14,
-                padding: '8px 4px',
+                fontSize: 14, padding: "8px 4px", whiteSpace: "nowrap",
                 transition: 'color 0.3s',
               }}
             >
@@ -167,10 +164,7 @@ export default function FrontendNavbar() {
               background: '#0047BA',
               color: '#fff',
               border: 'none',
-              padding: '10px 20px',
-              borderRadius: 999,
-              fontWeight: 700,
-              fontSize: 14,
+              padding: '8px 14px', borderRadius: 999, fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
